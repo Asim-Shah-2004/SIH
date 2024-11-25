@@ -1,11 +1,9 @@
+import AlumniConnectLanding from '@/pages/LandingPage'
 import './App.css'
-import AlumniConnectLanding from '../pages/LandingPage'
 
-function App() {
-  
-
+const App = () => {
   return (
-      <AlumniConnectLanding />
+    <AlumniConnectLanding />
   )
 }
 
