@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'meme_generator',
-    'spam'
+    'spam',
+    'post_analysis'
 ]
 
 MIDDLEWARE = [

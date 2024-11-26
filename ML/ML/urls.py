@@ -22,4 +22,6 @@ urlpatterns = [
     path('api/',include('spam.urls')),
     path('api/',include('meme_generator.urls')),
    
+   path('api/',include('post_analysis.urls')),
+   
 ]
