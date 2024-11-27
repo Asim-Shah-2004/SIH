@@ -3396,6 +3396,7 @@ __metadata:
     axios: "npm:^1.7.8"
     expo: "npm:~52.0.11"
     expo-constants: "npm:~17.0.3"
+    expo-linear-gradient: "npm:^14.0.1"
     expo-linking: "npm:~7.0.3"
     expo-router: "npm:~4.0.9"
     expo-status-bar: "npm:~2.0.0"
@@ -4270,6 +4271,17 @@ __metadata:
     expo: "*"
     react: "*"
   checksum: 10/a4b72ab4c6c41f44c04f4146f3eda955941f2c7ee500a43da45baff6ca74d40ada8e253b38b4925802a4a003642b0dc0af15501712367b90ae606d5355f7f5f0
+  languageName: node
+  linkType: hard
+
+"expo-linear-gradient@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "expo-linear-gradient@npm:14.0.1"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10/d0ff7b10e20b35c09ab7d3f8e8ba205b4274813160bf3eec81c5d4b601985831cf87cb403081c5ed30cf20264245494d29576f8ea7879340f5241b58358136f3
   languageName: node
   linkType: hard
 
