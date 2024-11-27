@@ -6,6 +6,7 @@ import { useFonts } from 'expo-font'
 import { Slot, SplashScreen } from 'expo-router'
 
 import HomePage from './index.jsx'
+import ProfilePage from "./screens/profileScreen.jsx";
 import { SafeAreaView } from "react-native";
 
 export {
@@ -39,7 +40,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={LightTheme}>
       <SafeAreaView className="flex-1">
-        <HomePage />
+        <ProfilePage />
       </SafeAreaView>
     </ThemeProvider>
   )
