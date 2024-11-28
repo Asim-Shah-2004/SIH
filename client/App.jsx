@@ -1,3 +1,4 @@
+import './global.css';
 import React from 'react';
 import { StatusBar, SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -30,8 +31,25 @@ const TabNavigator = () => {
         <Tab.Navigator
             screenOptions={{
                 header: () => <CustomHeader />,
-                tabBarActiveTintColor: 'blue',
-                tabBarInactiveTintColor: 'gray',
+                tabBarStyle: {
+                    height: 70,
+                    paddingBottom: 10,
+                    paddingTop: 10,
+                    backgroundColor: '#FFFFFF',
+                    borderTopWidth: 1,
+                    borderTopColor: '#F0F0F0',
+                    elevation: 8,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: -2 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 8,
+                },
+                tabBarActiveTintColor: '#007AFF',
+                tabBarInactiveTintColor: '#8E8E93',
+                tabBarLabelStyle: {
+                    fontSize: 12,
+                    fontWeight: '500',
+                },
             }}
         >
             <Tab.Screen
@@ -39,16 +57,16 @@ const TabNavigator = () => {
                 component={Home}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="home-outline" color={color} size={size} />
+                        <Ionicons name="home" color={color} size={26} />
                     ),
                 }}
             />
             <Tab.Screen
-                name="About"
+                name="Explore"
                 component={About}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="information-circle-outline" color={color} size={size} />
+                        <Ionicons name="compass" color={color} size={26} />
                     ),
                 }}
             />
@@ -57,25 +75,25 @@ const TabNavigator = () => {
                 component={New}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="add-circle-outline" color={color} size={size} />
+                        <Ionicons name="add-circle" color={color} size={26} />
                     ),
                 }}
             />
             <Tab.Screen
-                name="Other"
+                name="Activity"
                 component={Other}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="grid-outline" color={color} size={size} />
+                        <Ionicons name="pulse" color={color} size={26} />
                     ),
                 }}
             />
             <Tab.Screen
-                name="OtherTwo"
+                name="Profile"
                 component={Other}
                 options={{
                     tabBarIcon: ({ color, size }) => (
-                        <Ionicons name="grid-outline" color={color} size={size} />
+                        <Ionicons name="person" color={color} size={26} />
                     ),
                 }}
             />
@@ -88,17 +106,73 @@ const DrawerNavigator = () => {
     return (
         <Drawer.Navigator 
             screenOptions={{ 
-                headerShown: false 
+                headerShown: false,
+                drawerStyle: {
+                    backgroundColor: '#ffffff',
+                    width: 300,
+                    borderTopRightRadius: 20,
+                    borderBottomRightRadius: 20,
+                    paddingTop: 20,
+                },
+                drawerItemStyle: {
+                    borderRadius: 10,
+                    paddingVertical: 4,
+                    marginHorizontal: 12,
+                },
+                drawerLabelStyle: {
+                    fontSize: 16,
+                    fontWeight: '500',
+                    marginLeft: -16,
+                    paddingVertical: 6,
+                },
+                drawerActiveBackgroundColor: '#e7f3ff',
+                drawerActiveTintColor: '#131313',
+                drawerInactiveTintColor: '#5f6368',
             }}
+            initialRouteName="MainTabs"
         >
             <Drawer.Screen 
                 name="MainTabs" 
                 component={TabNavigator} 
-                options={{ title: 'Home' }}
+                options={{ 
+                    title: 'Home',
+                    drawerIcon: ({ color, size }) => (
+                        <Ionicons 
+                            name="home" 
+                            size={size} 
+                            color={color} 
+                            style={{ marginLeft: 4,marginRight: 8 }}
+                        />
+                    ),
+                }}
             />
             <Drawer.Screen 
                 name="Settings" 
                 component={Settings} 
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Ionicons 
+                            name="settings" 
+                            size={size} 
+                            color={color}
+                            style={{ marginLeft: 4,marginRight: 8 }}
+                        />
+                    ),
+                }}
+            />
+            <Drawer.Screen 
+                name="Events" 
+                component={Settings} 
+                options={{
+                    drawerIcon: ({ color, size }) => (
+                        <Ionicons 
+                            name="calendar" 
+                            size={size} 
+                            color={color}
+                            style={{ marginLeft: 4,marginRight: 8 }}
+                        />
+                    ),
+                }}
             />
         </Drawer.Navigator>
     );
@@ -108,7 +182,7 @@ const DrawerNavigator = () => {
 const App = () => {
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#e1e1e1" />
+            <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
             <NavigationContainer>
                 <Stack.Navigator>
                     <Stack.Screen

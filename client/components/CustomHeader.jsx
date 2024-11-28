@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         paddingHorizontal: 10,
         height: 60,
-        backgroundColor: '#f8f8f8',
+        backgroundColor: '#ffffff',
         elevation: 4,
     },
     searchBar: {

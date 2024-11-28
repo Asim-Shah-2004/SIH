@@ -1908,6 +1908,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/blur@npm:^4.4.1":
+  version: 4.4.1
+  resolution: "@react-native-community/blur@npm:4.4.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/6fa84036db480af765df08d680955e9b5acaa631a54678b8eef970799fc04bdc7f906cb06a94f2da9af097c52ddb56ca4cff2172372d1d5f7717864f43965e0a
+  languageName: node
+  linkType: hard
+
 "@react-native/assets-registry@npm:0.76.3":
   version: 0.76.3
   resolution: "@react-native/assets-registry@npm:0.76.3"
@@ -5134,6 +5144,17 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/1b1d28048e224d4899fe27e55e650a0a9a2cafb02afb3c2f1d58f4be032fdbaafebe8157dc734503ee7fc84e8f1aec3481aded9f61eaeeaecb4f4ab06d335524
+  languageName: node
+  linkType: hard
+
+"expo-blur@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "expo-blur@npm:14.0.1"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10/263fe270941b8d05792f266ac1101de34f89cd1cf69e54802bc97daf798a89d2c3bf9f72780840fd5ed0519a209f71845f4758b49757be0fdc67942fab7da477
   languageName: node
   linkType: hard
 
@@ -10947,6 +10968,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@expo/metro-runtime": "npm:~4.0.0"
     "@expo/vector-icons": "npm:^14.0.0"
+    "@react-native-community/blur": "npm:^4.4.1"
     "@react-navigation/drawer": "npm:^7.0.13"
     "@react-navigation/native": "npm:^7.0.0"
     "@react-navigation/stack": "npm:^7.0.4"
@@ -10958,6 +10980,7 @@ __metadata:
     eslint: "npm:^8.57.0"
     eslint-config-universe: "npm:^12.0.1"
     expo: "npm:^52.0.11"
+    expo-blur: "npm:^14.0.1"
     expo-constants: "npm:~17.0.3"
     expo-font: "npm:~13.0.1"
     expo-image: "npm:^2.0.2"
