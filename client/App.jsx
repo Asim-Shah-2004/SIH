@@ -22,6 +22,7 @@ import HomePage from './screens/onboarding';
 import Settings from './screens/Settings';
 import ProfileScreen from './screens/profileScreen';
 import Donations from './screens/Donations';
+import Connections from './screens/Connections';
 // import Map from './screens/Map';
 
 // Create Navigators
@@ -89,6 +90,15 @@ const TabNavigator = () => {
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="pulse" color={color} size={26} />
+                    ),
+                }}
+            />
+            <Tab.Screen
+                name="Connect"
+                component={Connections}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="person" color={color} size={26} />
                     ),
                 }}
             />
