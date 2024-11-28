@@ -1,23 +1,19 @@
 // screens/About.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 export default function About({ navigation }) {
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>This is the About Screen</Text>
-            <Button title="Go Back" onPress={() => navigation.goBack()} />
+        <View className="flex-1 justify-center items-center bg-white p-6">
+            <Text className="text-2xl font-bold text-gray-800 mb-6">
+                About Screen
+            </Text>
+            <TouchableOpacity 
+                className="bg-blue-500 px-6 py-3 rounded-xl"
+                onPress={() => navigation.goBack()}
+            >
+                <Text className="text-white font-semibold">Go Back</Text>
+            </TouchableOpacity>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    text: {
-        fontSize: 20,
-    },
-});

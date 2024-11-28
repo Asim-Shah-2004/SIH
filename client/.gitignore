@@ -54,3 +54,5 @@ expo-env.d.ts
 .env.development.local
 .env.test.localp
 .env.production.local
+
+.vscode/*

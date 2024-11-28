@@ -1,6 +1,6 @@
 // screens/ChatScreen.js
 import React from 'react';
-import { View, FlatList, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, FlatList, Text, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const ChatScreen = () => {
@@ -16,24 +16,23 @@ const ChatScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-gray-50">
             <FlatList
                 data={chatData}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <TouchableOpacity style={styles.chatItem} onPress={() => handleChatPress(item)}>
-                        <Text style={styles.name}>{item.name}</Text>
-                        <Text style={styles.lastMessage}>{item.lastMessage}</Text>
-                        <Text style={styles.timestamp}>{item.timestamp}</Text>
+                    <TouchableOpacity 
+                        className="p-4 bg-white mb-2 border-b border-gray-100"
+                        onPress={() => handleChatPress(item)}
+                    >
+                        <Text className="text-lg font-semibold text-gray-800">{item.name}</Text>
+                        <Text className="text-gray-600 mt-1">{item.lastMessage}</Text>
+                        <Text className="text-gray-400 text-sm mt-1">{item.timestamp}</Text>
                     </TouchableOpacity>
                 )}
             />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    // Styles omitted for brevity
-});
 
 export default ChatScreen;

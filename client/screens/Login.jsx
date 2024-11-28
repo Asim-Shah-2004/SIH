@@ -1,6 +1,6 @@
 // screens/LoginScreen.js
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
@@ -12,36 +12,37 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Login</Text>
+        <View className="flex-1 bg-white p-6 justify-center">
+            <Text className="text-3xl font-bold mb-8 text-center text-gray-800">Login</Text>
             <TextInput
-                style={styles.input}
+                className="w-full bg-gray-50 rounded-xl px-4 py-3 mb-4 border border-gray-200"
                 placeholder="Email"
                 value={email}
                 onChangeText={setEmail}
             />
             <TextInput
-                style={styles.input}
+                className="w-full bg-gray-50 rounded-xl px-4 py-3 mb-6 border border-gray-200"
                 placeholder="Password"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
             />
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity 
+                className="w-full bg-blue-500 rounded-xl px-4 py-4 mb-4"
+                onPress={handleLogin}
+            >
+                <Text className="text-white text-center font-bold text-lg">Login</Text>
             </TouchableOpacity>
             <TouchableOpacity
-                style={styles.button}
+                className="w-full rounded-xl px-4 py-4"
                 onPress={() => navigation.navigate('Register')}
             >
-                <Text style={styles.buttonText}>Register</Text>
+                <Text className="text-blue-500 text-center font-semibold">
+                    Don't have an account? Register
+                </Text>
             </TouchableOpacity>
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    // Styles omitted for brevity
-});
 
 export default LoginScreen;

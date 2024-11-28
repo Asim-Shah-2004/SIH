@@ -1,24 +1,19 @@
 // screens/Home.js
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
 export default function Home({ navigation }) {
     return (
-        <View style={styles.container} >
-            <Text style={styles.text}>This is the Home Screen</Text>
-            <Text className="font-bold bg-blue-700">Hello, Global Styles!</Text>
-            <Button title="Go to About" onPress={() => navigation.navigate('About')} />
+        <View className="flex-1 justify-center items-center bg-white p-6">
+            <Text className="text-2xl font-bold text-gray-800 mb-6">
+                Welcome Home
+            </Text>
+            <TouchableOpacity 
+                className="bg-blue-500 px-6 py-3 rounded-xl"
+                onPress={() => navigation.navigate('About')}
+            >
+                <Text className="text-white font-semibold">Go to About</Text>
+            </TouchableOpacity>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    text: {
-        fontSize: 20,
-    },
-});
