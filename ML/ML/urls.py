@@ -23,5 +23,6 @@ urlpatterns = [
     path('api/',include('meme_generator.urls')),
    
    path('api/',include('post_analysis.urls')),
+   path('api/',include('resume_autofill.urls')),
    
 ]
