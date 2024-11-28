@@ -1,7 +1,5 @@
-
 import { Text, View, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
-import { router } from 'expo-router';
 import {Image} from 'expo-image';
 
 const onboardingData = [
@@ -22,13 +20,13 @@ const onboardingData = [
   }
 ];
 
-export default function HomePage() {
+export default function HomePage({navigation}) {
   const [currentStep, setCurrentStep] = useState(0);
   console.log('Image source:', onboardingData[currentStep].image);
 
   const handleNext = () => {
     if (currentStep === onboardingData.length - 1) {
-      router.push('loginPage');
+      navigation.navigate('Login');
     } else {
       setCurrentStep(prev => prev + 1);
     }
@@ -72,7 +70,7 @@ export default function HomePage() {
       <View className="p-4">
         <TouchableOpacity
           onPress={handleNext}
-          className="bg-blue-500 p-4 rounded-full"
+          className="bg-primary text-dark  p-4 rounded-full"
         >
           <Text className="text-white text-center font-semibold text-lg">
             {currentStep === onboardingData.length - 1 ? 'Get Started' : 'Next'}

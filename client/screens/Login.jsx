@@ -7,7 +7,6 @@ const LoginScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
 
     const handleLogin = () => {
-        // Perform login logic here
         navigation.navigate('Tabs');
     };
 
@@ -28,7 +27,7 @@ const LoginScreen = ({ navigation }) => {
                 onChangeText={setPassword}
             />
             <TouchableOpacity 
-                className="w-full bg-blue-500 rounded-xl px-4 py-4 mb-4"
+                className="w-full bg-primary text-dark rounded-xl px-4 py-4 mb-4"
                 onPress={handleLogin}
             >
                 <Text className="text-white text-center font-bold text-lg">Login</Text>
@@ -41,6 +40,7 @@ const LoginScreen = ({ navigation }) => {
                     Don't have an account? Register
                 </Text>
             </TouchableOpacity>
+            
         </View>
     );
 };

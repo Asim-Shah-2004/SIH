@@ -15,6 +15,7 @@ import Login from './screens/Login';
 import Register from './screens/Register';
 import Chat from './screens/Chat';
 import Notifications from './screens/Notifications';
+import HomePage from './screens/onboarding';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -22,9 +23,14 @@ const Stack = createNativeStackNavigator();
 const App = () => {
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+            <StatusBar barStyle="dark-content" backgroundColor="#e1e1e1" />
             <NavigationContainer>
-                <Stack.Navigator>
+                <Stack.Navigator >
+                    <Stack.Screen
+                        name="Onboarding"
+                        component={HomePage}
+                        options={{ headerShown: false }}
+                    />
                     <Stack.Screen
                         name="Login"
                         component={Login}
@@ -93,7 +99,17 @@ const TabNavigator = () => {
                     ),
                 }}
             />
+            <Tab.Screen
+                name="fjdkfjkd"
+                component={Other}
+                options={{
+                    tabBarIcon: ({ color, size }) => (
+                        <Ionicons name="grid-outline" color={color} size={size} />
+                    ),
+                }}
+            />
         </Tab.Navigator>
+    
     );
 };
 
