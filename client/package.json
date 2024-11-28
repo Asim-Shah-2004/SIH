@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "private": true,
+  "packageManager": "yarn@4.5.3",
   "scripts": {
     "android": "expo start --android",
     "ios": "expo start --ios",
