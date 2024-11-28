@@ -19,6 +19,7 @@ import Chat from './screens/Chat';
 import Notifications from './screens/Notifications';
 import HomePage from './screens/onboarding';
 import Settings from './screens/Settings';
+import ProfileScreen from './screens/profileScreen';
 
 // Create Navigators
 const Tab = createBottomTabNavigator();
@@ -90,7 +91,7 @@ const TabNavigator = () => {
             />
             <Tab.Screen
                 name="Profile"
-                component={Other}
+                component={ProfileScreen}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="person" color={color} size={26} />
@@ -104,8 +105,8 @@ const TabNavigator = () => {
 // Drawer Navigator
 const DrawerNavigator = () => {
     return (
-        <Drawer.Navigator 
-            screenOptions={{ 
+        <Drawer.Navigator
+            screenOptions={{
                 headerShown: false,
                 drawerStyle: {
                     backgroundColor: '#ffffff',
@@ -131,45 +132,45 @@ const DrawerNavigator = () => {
             }}
             initialRouteName="MainTabs"
         >
-            <Drawer.Screen 
-                name="MainTabs" 
-                component={TabNavigator} 
-                options={{ 
+            <Drawer.Screen
+                name="MainTabs"
+                component={TabNavigator}
+                options={{
                     title: 'Home',
                     drawerIcon: ({ color, size }) => (
-                        <Ionicons 
-                            name="home" 
-                            size={size} 
-                            color={color} 
-                            style={{ marginLeft: 4,marginRight: 8 }}
+                        <Ionicons
+                            name="home"
+                            size={size}
+                            color={color}
+                            style={{ marginLeft: 4, marginRight: 8 }}
                         />
                     ),
                 }}
             />
-            <Drawer.Screen 
-                name="Settings" 
-                component={Settings} 
+            <Drawer.Screen
+                name="Settings"
+                component={Settings}
                 options={{
                     drawerIcon: ({ color, size }) => (
-                        <Ionicons 
-                            name="settings" 
-                            size={size} 
+                        <Ionicons
+                            name="settings"
+                            size={size}
                             color={color}
-                            style={{ marginLeft: 4,marginRight: 8 }}
+                            style={{ marginLeft: 4, marginRight: 8 }}
                         />
                     ),
                 }}
             />
-            <Drawer.Screen 
-                name="Events" 
-                component={Settings} 
+            <Drawer.Screen
+                name="Events"
+                component={Settings}
                 options={{
                     drawerIcon: ({ color, size }) => (
-                        <Ionicons 
-                            name="calendar" 
-                            size={size} 
+                        <Ionicons
+                            name="calendar"
+                            size={size}
                             color={color}
-                            style={{ marginLeft: 4,marginRight: 8 }}
+                            style={{ marginLeft: 4, marginRight: 8 }}
                         />
                     ),
                 }}
