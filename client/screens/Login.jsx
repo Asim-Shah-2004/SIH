@@ -1,12 +1,19 @@
 // screens/LoginScreen.js
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
+        try {
+            await AsyncStorage.setItem('isLoggedIn', 'true');
+            console.log('Data saved');
+        } catch (e) {
+            console.error('Error saving data', e);
+        }
         navigation.navigate('MainDrawer');
     };
 
@@ -26,7 +33,7 @@ const LoginScreen = ({ navigation }) => {
                 value={password}
                 onChangeText={setPassword}
             />
-            <TouchableOpacity 
+            <TouchableOpacity
                 className="w-full bg-primary text-dark rounded-xl px-4 py-4 mb-4"
                 onPress={handleLogin}
             >
@@ -40,7 +47,7 @@ const LoginScreen = ({ navigation }) => {
                     Don't have an account? Register
                 </Text>
             </TouchableOpacity>
-            
+
         </View>
     );
 };
