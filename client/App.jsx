@@ -11,9 +11,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // Import your screens
 import CustomHeader from './components/CustomHeader';
 import Home from './screens/Home';
-import About from './screens/About';
-import New from './screens/New';
-import Other from './screens/Other';
+import Events from './screens/Events';
+import NewPost from './screens/NewPost';
+import Jobs from './screens/Jobs';
 import Login from './screens/Login';
 import Register from './screens/Register';
 import Chat from './screens/Chat';
@@ -21,6 +21,7 @@ import Notifications from './screens/Notifications';
 import HomePage from './screens/onboarding';
 import Settings from './screens/Settings';
 import ProfileScreen from './screens/profileScreen';
+import Donations from './screens/Donations';
 // import Map from './screens/Map';
 
 // Create Navigators
@@ -65,8 +66,8 @@ const TabNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name="Explore"
-                component={About}
+                name="Donations"
+                component={Donations}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="compass" color={color} size={26} />
@@ -74,8 +75,8 @@ const TabNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name="New"
-                component={New}
+                name="Post"
+                component={NewPost}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="add-circle" color={color} size={26} />
@@ -83,8 +84,8 @@ const TabNavigator = () => {
                 }}
             />
             <Tab.Screen
-                name="Activity"
-                component={Other}
+                name="Jobs"
+                component={Jobs}
                 options={{
                     tabBarIcon: ({ color, size }) => (
                         <Ionicons name="pulse" color={color} size={26} />
@@ -165,7 +166,7 @@ const DrawerNavigator = () => {
             />
             <Drawer.Screen
                 name="Events"
-                component={Settings}
+                component={Events}
                 options={{
                     drawerIcon: ({ color, size }) => (
                         <Ionicons

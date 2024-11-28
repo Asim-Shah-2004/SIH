@@ -9,10 +9,10 @@ import {
   Animated,
   Platform,
   KeyboardAvoidingView,
+  StyleSheet
 } from 'react-native';
-import tw from 'twrnc';
 import { LinearGradient } from 'expo-linear-gradient';
-import { 
+import {
   Heart,
   MessageCircle,
   Share2,
@@ -29,245 +29,207 @@ import {
 } from 'lucide-react-native';
 
 const SAMPLE_POSTS = [
-    {
-      id: '1',
-      author: {
-        name: 'John Doe',
-        title: 'Senior Software Engineer at Tech Innovations Inc.',
-        avatar: 'https://via.placeholder.com/60',
-        isVerified: true
-      },
-      timestamp: '2h',
-      content: {
-        text: 'Excited to announce that our team just launched a major feature that will revolutionize how our users interact with the platform! 🚀\n\nProud of everyone\'s hard work and dedication. #TechInnovation #Engineering',
-        images: ['https://via.placeholder.com/600/400'],
-      },
-      metrics: {
-        likes: 1234,
-        comments: 89,
-        shares: 45
-      },
-      reactions: [
-        { type: 'thumbsUp', count: 892 },
-        { type: 'celebrate', count: 342 }
-      ],
-      comments: [
-        {
-          id: 'c1',
-          author: {
-            name: 'Jane Smith',
-            avatar: 'https://via.placeholder.com/40',
-            title: 'Product Manager'
-          },
-          text: 'Congratulations to the entire team! This is a game-changer! 🎉',
-          timestamp: '1h',
-          likes: 24
-        }
-      ],
-      isLiked: false,
-      isBookmarked: false
+  {
+    id: '1',
+    author: {
+      name: 'John Doe',
+      title: 'Senior Software Engineer at Tech Innovations Inc.',
+      avatar: 'https://via.placeholder.com/60',
+      isVerified: true
     },
-    {
-      id: '2',
-      author: {
-        name: 'Sarah Lee',
-        title: 'Marketing Strategist at Creative Minds Co.',
-        avatar: 'https://via.placeholder.com/60',
-        isVerified: true
-      },
-      timestamp: '5h',
-      content: {
-        text: 'Just wrapped up an incredible campaign launch! 🎯\n\nHuge thanks to the team for their creativity and energy. #Marketing #Teamwork',
-        images: ['https://via.placeholder.com/600/300', 'https://via.placeholder.com/600/301'],
-      },
-      metrics: {
-        likes: 1045,
-        comments: 76,
-        shares: 29
-      },
-      reactions: [
-        { type: 'thumbsUp', count: 720 },
-        { type: 'love', count: 325 }
-      ],
-      comments: [
-        {
-          id: 'c2',
-          author: {
-            name: 'Tom Wilson',
-            avatar: 'https://via.placeholder.com/40',
-            title: 'Graphic Designer'
-          },
-          text: 'This campaign looks amazing! Kudos to the team! 🎨👏',
-          timestamp: '4h',
-          likes: 17
-        }
-      ],
-      isLiked: true,
-      isBookmarked: false
+    timestamp: '2h',
+    content: {
+      text: 'Excited to announce that our team just launched a major feature that will revolutionize how our users interact with the platform! 🚀\n\nProud of everyone\'s hard work and dedication. #TechInnovation #Engineering',
+      images: ['https://via.placeholder.com/600/400'],
     },
-    {
-      id: '3',
-      author: {
-        name: 'Emily Davis',
-        title: 'CEO at Startup Accelerator',
-        avatar: 'https://via.placeholder.com/60',
-        isVerified: true
-      },
-      timestamp: '8h',
-      content: {
-        text: 'Thrilled to announce our latest investment in an innovative green tech company. 🌱\n\nLooking forward to seeing their impact on sustainability! #Innovation #GreenTech',
-        images: []
-      },
-      metrics: {
-        likes: 893,
-        comments: 56,
-        shares: 32
-      },
-      reactions: [
-        { type: 'celebrate', count: 512 },
-        { type: 'love', count: 381 }
-      ],
-      comments: [
-        {
-          id: 'c3',
-          author: {
-            name: 'Rachel Green',
-            avatar: 'https://via.placeholder.com/40',
-            title: 'Investor Relations Manager'
-          },
-          text: 'This is such an exciting initiative. Great work! 💡',
-          timestamp: '7h',
-          likes: 12
-        }
-      ],
-      isLiked: false,
-      isBookmarked: true
+    metrics: {
+      likes: 1234,
+      comments: 89,
+      shares: 45
     },
-    {
-      id: '4',
-      author: {
-        name: 'James Carter',
-        title: 'AI Researcher at FutureTech Labs',
-        avatar: 'https://via.placeholder.com/60',
-        isVerified: false
-      },
-      timestamp: '1d',
-      content: {
-        text: 'Sharing my latest research paper on generative AI. 📄\n\nWould love to hear your feedback! #AI #MachineLearning',
-        images: ['https://via.placeholder.com/600/500']
-      },
-      metrics: {
-        likes: 675,
-        comments: 48,
-        shares: 23
-      },
-      reactions: [
-        { type: 'lightbulb', count: 452 },
-        { type: 'love', count: 223 }
-      ],
-      comments: [
-        {
-          id: 'c4',
-          author: {
-            name: 'Anna Taylor',
-            avatar: 'https://via.placeholder.com/40',
-            title: 'AI Engineer'
-          },
-          text: 'Excited to read this! Generative AI is fascinating. 🧠',
-          timestamp: '23h',
-          likes: 8
-        }
-      ],
-      isLiked: true,
-      isBookmarked: false
+    reactions: [
+      { type: 'thumbsUp', count: 892 },
+      { type: 'celebrate', count: 342 }
+    ],
+    comments: [
+      {
+        id: 'c1',
+        author: {
+          name: 'Jane Smith',
+          avatar: 'https://via.placeholder.com/40',
+          title: 'Product Manager'
+        },
+        text: 'Congratulations to the entire team! This is a game-changer! 🎉',
+        timestamp: '1h',
+        likes: 24
+      }
+    ],
+    isLiked: false,
+    isBookmarked: false
+  },
+  {
+    id: '2',
+    author: {
+      name: 'Alice Brown',
+      title: 'UI/UX Designer at Creative Labs',
+      avatar: 'https://via.placeholder.com/60',
+      isVerified: true
     },
-    {
-      id: '5',
-      author: {
-        name: 'Michael Brown',
-        title: 'Freelance Photographer',
-        avatar: 'https://via.placeholder.com/60',
-        isVerified: false
-      },
-      timestamp: '3d',
-      content: {
-        text: 'Captured these breathtaking shots during my recent trip to Iceland. ❄️\n\nNature is truly the greatest artist. #Photography #Travel',
-        images: ['https://via.placeholder.com/600/200', 'https://via.placeholder.com/600/201']
-      },
-      metrics: {
-        likes: 2045,
-        comments: 112,
-        shares: 54
-      },
-      reactions: [
-        { type: 'love', count: 1320 },
-        { type: 'celebrate', count: 725 }
-      ],
-      comments: [
-        {
-          id: 'c5',
-          author: {
-            name: 'Chris Evans',
-            avatar: 'https://via.placeholder.com/40',
-            title: 'Travel Blogger'
-          },
-          text: 'These pictures are stunning! Makes me want to visit Iceland soon! 🌍📷',
-          timestamp: '2d',
-          likes: 42
-        }
-      ],
-      isLiked: false,
-      isBookmarked: true
+    timestamp: '5h',
+    content: {
+      text: 'Just wrapped up a new redesign for our mobile app! The new look is sleek, intuitive, and user-friendly. Can\'t wait for everyone to try it out. 🙌 #UXDesign #MobileApp',
+      images: ['https://via.placeholder.com/600/401'],
     },
-    {
-      id: '6',
-      author: {
-        name: 'Laura Kim',
-        title: 'Data Scientist at Analytics Pro',
-        avatar: 'https://via.placeholder.com/60',
-        isVerified: true
-      },
-      timestamp: '5d',
-      content: {
-        text: 'Just published my thoughts on the future of AI ethics. 🤖⚖️\n\nWould love to hear your perspective. #DataScience #AIethics',
-        images: []
-      },
-      metrics: {
-        likes: 1323,
-        comments: 65,
-        shares: 37
-      },
-      reactions: [
-        { type: 'lightbulb', count: 812 },
-        { type: 'celebrate', count: 511 }
-      ],
-      comments: [
-        {
-          id: 'c6',
-          author: {
-            name: 'Kevin Lee',
-            avatar: 'https://via.placeholder.com/40',
-            title: 'Ethics Researcher'
-          },
-          text: 'This is such an important topic. Thanks for sharing your insights! 🙌',
-          timestamp: '4d',
-          likes: 19
-        }
-      ],
-      isLiked: true,
-      isBookmarked: false
-    }
-  ];
-  
+    metrics: {
+      likes: 758,
+      comments: 52,
+      shares: 22
+    },
+    reactions: [
+      { type: 'heart', count: 532 },
+      { type: 'thumbsUp', count: 130 }
+    ],
+    comments: [
+      {
+        id: 'c2',
+        author: {
+          name: 'George White',
+          avatar: 'https://via.placeholder.com/40',
+          title: 'Senior Developer'
+        },
+        text: 'The redesign looks amazing! Great job, Alice! 👏',
+        timestamp: '4h',
+        likes: 18
+      }
+    ],
+    isLiked: true,
+    isBookmarked: false
+  },
+  {
+    id: '3',
+    author: {
+      name: 'Bob Miller',
+      title: 'Chief Technology Officer at InnovateX',
+      avatar: 'https://via.placeholder.com/60',
+      isVerified: true
+    },
+    timestamp: '1d',
+    content: {
+      text: 'Looking forward to attending the Global Tech Conference this year! I\'ll be speaking on AI innovations and their impact on industries. Let\'s connect! 🤖 #TechConference #AIRevolution',
+      images: ['https://via.placeholder.com/600/402'],
+    },
+    metrics: {
+      likes: 342,
+      comments: 12,
+      shares: 8
+    },
+    reactions: [
+      { type: 'thumbsUp', count: 215 },
+      { type: 'star', count: 127 }
+    ],
+    comments: [
+      {
+        id: 'c3',
+        author: {
+          name: 'Lisa Johnson',
+          avatar: 'https://via.placeholder.com/40',
+          title: 'AI Specialist'
+        },
+        text: 'I\'m excited to see your talk, Bob! AI is such an exciting field right now! 🌟',
+        timestamp: '1d',
+        likes: 10
+      }
+    ],
+    isLiked: true,
+    isBookmarked: true
+  },
+  {
+    id: '4',
+    author: {
+      name: 'Sarah Lee',
+      title: 'Data Scientist at DataVision',
+      avatar: 'https://via.placeholder.com/60',
+      isVerified: true
+    },
+    timestamp: '2d',
+    content: {
+      text: 'Just finished a fascinating data analysis project on predicting customer behavior patterns. The results are promising and could lead to big insights for the business! 📊 #DataScience #MachineLearning',
+      images: ['https://via.placeholder.com/600/403'],
+    },
+    metrics: {
+      likes: 890,
+      comments: 60,
+      shares: 37
+    },
+    reactions: [
+      { type: 'thumbsUp', count: 611 },
+      { type: 'celebrate', count: 220 }
+    ],
+    comments: [
+      {
+        id: 'c4',
+        author: {
+          name: 'Matthew Clark',
+          avatar: 'https://via.placeholder.com/40',
+          title: 'Business Analyst'
+        },
+        text: 'This sounds amazing, Sarah! Would love to see the findings sometime. 👀',
+        timestamp: '2d',
+        likes: 14
+      }
+    ],
+    isLiked: false,
+    isBookmarked: true
+  },
+  {
+    id: '5',
+    author: {
+      name: 'David King',
+      title: 'Marketing Strategist at NextGen Solutions',
+      avatar: 'https://via.placeholder.com/60',
+      isVerified: false
+    },
+    timestamp: '3d',
+    content: {
+      text: 'Happy to share the new marketing campaign I\'ve been working on! It\'s all about customer engagement and innovative advertising techniques. Stay tuned! 📈 #MarketingCampaign #CustomerEngagement',
+      images: ['https://via.placeholder.com/600/404'],
+    },
+    metrics: {
+      likes: 1123,
+      comments: 78,
+      shares: 54
+    },
+    reactions: [
+      { type: 'thumbsUp', count: 1002 },
+      { type: 'heart', count: 121 }
+    ],
+    comments: [
+      {
+        id: 'c5',
+        author: {
+          name: 'Emily Turner',
+          avatar: 'https://via.placeholder.com/40',
+          title: 'Social Media Manager'
+        },
+        text: 'Looking forward to seeing this campaign in action! 💥',
+        timestamp: '2d',
+        likes: 29
+      }
+    ],
+    isLiked: true,
+    isBookmarked: false
+  }
+];
+
 
 const AlumniPostsFeed = () => {
   const [posts, setPosts] = useState(SAMPLE_POSTS);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const updatePost = (postId, updates) => {
-    setPosts(currentPosts => 
-      currentPosts.map(post => 
-        post.id === postId 
+    setPosts(currentPosts =>
+      currentPosts.map(post =>
+        post.id === postId
           ? { ...post, ...updates }
           : post
       )
@@ -280,24 +242,24 @@ const AlumniPostsFeed = () => {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={tw`flex-1 bg-gray-100`}
+      style={styles.container}
     >
       <ScrollView
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        contentContainerStyle={tw`pb-4`}
+        contentContainerStyle={styles.scrollViewContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Create Post Card */}
         <CreatePostCard />
-        
+
         {/* Posts Feed */}
         {posts.map(post => (
-          <PostCard 
-            key={post.id} 
-            post={post} 
+          <PostCard
+            key={post.id}
+            post={post}
             onUpdate={updatePost}
           />
         ))}
@@ -307,23 +269,23 @@ const AlumniPostsFeed = () => {
 };
 
 const CreatePostCard = () => (
-  <View style={tw`bg-white p-4 mb-2 shadow-sm`}>
+  <View style={styles.createPostCard}>
     <LinearGradient
       colors={['#ffffff', '#f8f9fa']}
-      style={tw`rounded-xl p-4`}
+      style={styles.createPostCardGradient}
     >
-      <View style={tw`flex-row items-center mb-4`}>
+      <View style={styles.createPostCardHeader}>
         <Image
           source={{ uri: 'https://via.placeholder.com/40' }}
-          style={tw`w-10 h-10 rounded-full mr-3`}
+          style={styles.avatar}
         />
-        <TouchableOpacity 
-          style={tw`flex-1 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200`}
+        <TouchableOpacity
+          style={styles.createPostInput}
         >
-          <Text style={tw`text-gray-600`}>Share your thoughts...</Text>
+          <Text style={styles.createPostText}>Share your thoughts...</Text>
         </TouchableOpacity>
       </View>
-      <View style={tw`flex-row justify-around pt-2 border-t border-gray-100`}>
+      <View style={styles.createPostButtons}>
         <PostButton
           icon={<ImageIcon size={20} color="#0077B5" />}
           label="Photo"
@@ -342,226 +304,261 @@ const CreatePostCard = () => (
 );
 
 const PostButton = ({ icon, label }) => (
-  <TouchableOpacity 
-    style={tw`flex-row items-center px-4 py-2 rounded-lg hover:bg-gray-50`}
+  <TouchableOpacity
+    style={styles.postButton}
   >
     {icon}
-    <Text style={tw`ml-2 text-gray-700 font-medium`}>{label}</Text>
+    <Text style={styles.postButtonText}>{label}</Text>
   </TouchableOpacity>
 );
 
 const PostCard = ({ post, onUpdate }) => {
-    const [isCommenting, setIsCommenting] = useState(false);
-    const [commentText, setCommentText] = useState('');
-    const likeAnimation = useRef(new Animated.Value(1)).current;
-  
-    const handleLike = () => {
-      Animated.sequence([
-        Animated.spring(likeAnimation, {
-          toValue: 1.2,
-          useNativeDriver: true,
-        }),
-        Animated.spring(likeAnimation, {
-          toValue: 1,
-          useNativeDriver: true,
-        })
-      ]).start();
-      
-      onUpdate(post.id, { isLiked: !post.isLiked });
-    };
-  
-    return (
-      <View style={tw`bg-white mb-2 shadow-sm`}>
-        {/* Post Header */}
-        <View style={tw`p-4`}>
-          <View style={tw`flex-row items-center justify-between mb-3`}>
-            <View style={tw`flex-row items-center flex-1`}>
-              <Image
-                source={{ uri: post.author.avatar }}
-                style={tw`w-12 h-12 rounded-full mr-3`}
-              />
-              <View style={tw`flex-1`}>
-                <View style={tw`flex-row items-center`}>
-                  <Text style={tw`font-bold text-gray-900 mr-1`}>
-                    {post.author.name}
-                  </Text>
-                  {post.author.isVerified && (
-                    <Award size={16} color="#0077B5" />
-                  )}
-                </View>
-                <Text style={tw`text-gray-600 text-sm`}>{post.author.title}</Text>
-                <Text style={tw`text-gray-500 text-xs mt-1`}>{post.timestamp}</Text>
-              </View>
+  const [isCommenting, setIsCommenting] = useState(false);
+  const [commentText, setCommentText] = useState('');
+  const likeAnimation = useRef(new Animated.Value(1)).current;
+
+  const handleLike = () => {
+    Animated.sequence([
+      Animated.spring(likeAnimation, {
+        toValue: 1.2,
+        useNativeDriver: true,
+      }),
+      Animated.spring(likeAnimation, {
+        toValue: 1,
+        useNativeDriver: true,
+      })
+    ]).start();
+
+    onUpdate(post.id, { isLiked: !post.isLiked });
+  };
+
+  return (
+    <View style={styles.postCard}>
+      {/* Post Header */}
+      <View style={styles.postHeader}>
+        <View style={styles.postHeaderRow}>
+          <Image
+            source={{ uri: post.author.avatar }}
+            style={styles.avatar}
+          />
+          <View style={styles.postHeaderText}>
+            <View style={styles.postHeaderNameRow}>
+              <Text style={styles.authorName}>{post.author.name}</Text>
+              {post.author.isVerified && (
+                <Award size={16} color="#0077B5" />
+              )}
             </View>
-            {post.trending && (
-              <View style={tw`flex-row items-center bg-blue-50 px-2 py-1 rounded-full mr-2`}>
-                <TrendingUp size={14} color="#0077B5" />
-                <Text style={tw`text-blue-600 text-xs ml-1`}>Trending</Text>
-              </View>
-            )}
-            <TouchableOpacity style={tw`p-2`}>
-              <MoreHorizontal size={20} color="#666" />
-            </TouchableOpacity>
+            <Text style={styles.authorTitle}>{post.author.title}</Text>
+            <Text style={styles.timestamp}>{post.timestamp}</Text>
           </View>
-  
-          {/* Post Content */}
-          <Text style={tw`text-gray-800 leading-6 mb-3 text-base`}>
-            {post.content.text}
-          </Text>
-  
-          {/* Tags - Added null check */}
-          {post.content.tags && post.content.tags.length > 0 && (
-            <View style={tw`flex-row flex-wrap mb-3`}>
-              {post.content.tags.map((tag, index) => (
-                <TouchableOpacity 
-                  key={index}
-                  style={tw`flex-row items-center bg-gray-100 rounded-full px-3 py-1 mr-2 mb-2`}
-                >
-                  <Hash size={14} color="#666" />
-                  <Text style={tw`text-gray-700 text-sm ml-1`}>{tag}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-  
-          {post.content.images?.map((image, index) => (
-            <Image
-              key={index}
-              source={{ uri: image }}
-              style={tw`w-full h-64 rounded-xl mb-3`}
-              resizeMode="cover"
-            />
-          ))}
         </View>
-  
-        {/* Metrics Bar */}
-        <View style={tw`px-4 flex-row items-center justify-between py-2 border-t border-gray-100`}>
-          <View style={tw`flex-row items-center`}>
-            <View style={tw`flex-row items-center -space-x-2`}>
-              {post.reactions?.map((reaction, index) => (
-                <View
-                  key={index}
-                  style={tw`w-6 h-6 rounded-full bg-blue-500 items-center justify-center border-2 border-white`}
-                >
-                  <ThumbsUp size={12} color="#fff" />
-                </View>
-              ))}
-            </View>
-            <Text style={tw`text-gray-600 text-sm ml-2`}>
-              {post.metrics.likes.toLocaleString()}
-            </Text>
+        {post.trending && (
+          <View style={styles.trendingBadge}>
+            <TrendingUp size={16} color="#0077B5" />
+            <Text style={styles.trendingText}>Trending</Text>
           </View>
-          <Text style={tw`text-gray-600 text-sm`}>
-            {post.metrics.comments} comments • {post.metrics.shares} shares
-          </Text>
-        </View>
-
-      {/* Action Buttons */}
-      <View style={tw`flex-row justify-around py-1 border-t border-gray-100`}>
-        <ActionButton
-          icon={
-            <Animated.View style={{ transform: [{ scale: likeAnimation }] }}>
-              <Heart 
-                size={20} 
-                color={post.isLiked ? '#0077B5' : '#666'}
-                fill={post.isLiked ? '#0077B5' : 'none'}
-              />
-            </Animated.View>
-          }
-          label="Like"
-          onPress={handleLike}
-        />
-        
-        <ActionButton
-          icon={<MessageCircle size={20} color="#666" />}
-          label="Comment"
-          onPress={() => setIsCommenting(true)}
-        />
-
-        <ActionButton
-          icon={<Share2 size={20} color="#666" />}
-          label="Share"
-        />
-
-        {/* <ActionButton
-          icon={
-            <Bookmark 
-              size={20} 
-              color={post.isBookmarked ? '#0077B5' : '#666'}
-              fill={post.isBookmarked ? '#0077B5' : 'none'}
-            />
-          }
-          label="Save"
-        /> */}
+        )}
       </View>
-
+      <Text style={styles.postContent}>{post.content.text}</Text>
+      {post.content.images.length > 0 && (
+        <Image
+          source={{ uri: post.content.images[0] }}
+          style={styles.postImage}
+        />
+      )}
+      <View style={styles.postActions}>
+        {/* Like, Comment, Share buttons */}
+        <TouchableOpacity
+          onPress={handleLike}
+          style={styles.actionButton}
+        >
+          <ThumbsUp size={18} color={post.isLiked ? '#0077B5' : '#888'} />
+          <Text style={styles.actionButtonText}>{post.metrics.likes}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+        >
+          <MessageCircle size={18} color="#888" />
+          <Text style={styles.actionButtonText}>{post.metrics.comments}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.actionButton}
+        >
+          <Share2 size={18} color="#888" />
+          <Text style={styles.actionButtonText}>{post.metrics.shares}</Text>
+        </TouchableOpacity>
+      </View>
       {/* Comments Section */}
-      {(isCommenting || post.comments.length > 0) && (
-        <View style={tw`border-t border-gray-100 pt-4 bg-gray-50`}>
-          {post.comments.map(comment => (
-            <CommentCard key={comment.id} comment={comment} />
-          ))}
-          
-          {/* Add Comment Input */}
-          <View style={tw`p-4 flex-row items-center`}>
+      <View style={styles.commentSection}>
+        {post.comments.map(comment => (
+          <View key={comment.id} style={styles.comment}>
             <Image
-              source={{ uri: 'https://via.placeholder.com/40' }}
-              style={tw`w-8 h-8 rounded-full mr-3`}
+              source={{ uri: comment.author.avatar }}
+              style={styles.commentAvatar}
             />
-            <View style={tw`flex-1 flex-row items-center bg-white rounded-full px-4 border border-gray-200`}>
-              <TextInput
-                style={tw`flex-1 py-2 text-gray-700`}
-                placeholder="Add a comment..."
-                value={commentText}
-                onChangeText={setCommentText}
-              />
-              <TouchableOpacity>
-                <Send size={20} color="#0077B5" />
-              </TouchableOpacity>
+            <View style={styles.commentText}>
+              <Text style={styles.commentAuthor}>{comment.author.name}</Text>
+              <Text style={styles.commentContent}>{comment.text}</Text>
             </View>
           </View>
-        </View>
-      )}
+        ))}
+      </View>
     </View>
   );
 };
 
-const ActionButton = ({ icon, label, onPress }) => (
-  <TouchableOpacity 
-    style={tw`flex-row items-center px-4 py-2 rounded-lg`}
-    onPress={onPress}
-  >
-    {icon}
-    <Text style={tw`ml-2 text-gray-600`}>{label}</Text>
-  </TouchableOpacity>
-);
-
-const CommentCard = ({ comment }) => (
-  <View style={tw`px-4 mb-4 flex-row`}>
-    <Image
-      source={{ uri: comment.author.avatar }}
-      style={tw`w-8 h-8 rounded-full mr-3`}
-    />
-    <View style={tw`flex-1 bg-white rounded-2xl p-3 border border-gray-200`}>
-      <View style={tw`flex-row items-center mb-1`}>
-        <Text style={tw`font-bold text-gray-900 mr-2`}>
-          {comment.author.name}
-        </Text>
-        <Text style={tw`text-gray-500 text-xs`}>
-          {comment.author.title}
-        </Text>
-      </View>
-      <Text style={tw`text-gray-800`}>{comment.text}</Text>
-      <View style={tw`flex-row items-center mt-2`}>
-        <TouchableOpacity style={tw`mr-4`}>
-          <Text style={tw`text-gray-500 text-sm`}>Like • {comment.likes}</Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={tw`text-gray-500 text-sm`}>Reply</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8f9fa',
+  },
+  scrollViewContent: {
+    paddingBottom: 4,
+  },
+  createPostCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 3,
+    borderRadius: 8,
+  },
+  createPostCardGradient: {
+    borderRadius: 12,
+    padding: 16,
+  },
+  createPostCardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 16,
+  },
+  createPostInput: {
+    flex: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
+  },
+  createPostText: {
+    color: '#888',
+  },
+  createPostButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+  },
+  postButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postButtonText: {
+    marginLeft: 8,
+    color: '#0077B5',
+    fontSize: 14,
+  },
+  postCard: {
+    backgroundColor: '#ffffff',
+    padding: 16,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.5,
+    elevation: 3,
+    borderRadius: 8,
+  },
+  postHeader: {
+    marginBottom: 8,
+  },
+  postHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  postHeaderText: {
+    marginLeft: 12,
+  },
+  postHeaderNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  authorName: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  authorTitle: {
+    fontSize: 14,
+    color: '#888',
+  },
+  timestamp: {
+    fontSize: 12,
+    color: '#888',
+  },
+  trendingBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  trendingText: {
+    marginLeft: 4,
+    fontSize: 12,
+    color: '#0077B5',
+  },
+  postContent: {
+    fontSize: 16,
+    marginBottom: 8,
+    lineHeight: 24,
+  },
+  postImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  postActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButtonText: {
+    marginLeft: 4,
+    color: '#888',
+  },
+  commentSection: {
+    marginTop: 8,
+  },
+  comment: {
+    flexDirection: 'row',
+    marginBottom: 12,
+  },
+  commentAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+  },
+  commentText: {
+    marginLeft: 8,
+  },
+  commentAuthor: {
+    fontWeight: 'bold',
+  },
+  commentContent: {
+    marginTop: 4,
+    fontSize: 14,
+    color: '#555',
+  },
+});
 
 export default AlumniPostsFeed;
