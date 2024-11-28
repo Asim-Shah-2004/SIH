@@ -20,6 +20,7 @@ import Notifications from './screens/Notifications';
 import HomePage from './screens/onboarding';
 import Settings from './screens/Settings';
 import ProfileScreen from './screens/profileScreen';
+import Map from './screens/Map';
 
 // Create Navigators
 const Tab = createBottomTabNavigator();
@@ -208,6 +209,7 @@ const App = () => {
                     />
                     <Stack.Screen name="Chat" component={Chat} />
                     <Stack.Screen name="Notifications" component={Notifications} />
+                    <Stack.Screen name="Map" component={Map} />
                 </Stack.Navigator>
             </NavigationContainer>
         </SafeAreaView>

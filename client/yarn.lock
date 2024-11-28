@@ -2435,6 +2435,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/geojson@npm:^7946.0.13":
+  version: 7946.0.14
+  resolution: "@types/geojson@npm:7946.0.14"
+  checksum: 10/ae511bee6488ae3bd5a3a3347aedb0371e997b14225b8983679284e22fa4ebd88627c6e3ff8b08bf4cc35068cb29310c89427311ffc9322c255615821a922e71
+  languageName: node
+  linkType: hard
+
 "@types/graceful-fs@npm:^4.1.3":
   version: 4.1.9
   resolution: "@types/graceful-fs@npm:4.1.9"
@@ -5241,6 +5248,15 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/c2d3e04c5cde99616357182b9b9303814473eebb2dabacc58e7dd91d90bc590618091259d19b8e761cee973f8dece7619660318c347e047f0aaae99163a7e5ae
+  languageName: node
+  linkType: hard
+
+"expo-location@npm:^18.0.2":
+  version: 18.0.2
+  resolution: "expo-location@npm:18.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/cb4a9e6511a0415bda112123045ad80eefceb95ddad9b28e9987a44d628ee06c370030a326e3199eb5b59aa621b6932d7ddd9d7eb19aaf8de261dc3f88407d29
   languageName: node
   linkType: hard
 
@@ -9049,6 +9065,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-dotenv@npm:^3.4.11":
+  version: 3.4.11
+  resolution: "react-native-dotenv@npm:3.4.11"
+  dependencies:
+    dotenv: "npm:^16.4.5"
+  peerDependencies:
+    "@babel/runtime": ^7.20.6
+  checksum: 10/09e8a7310fcb01ac021e71db9328e9d342d1e117bf68026b12de0392bfe17292ac6a071f03b88e7fb42c82a8f2fdf03bc520c7dedd2f80a1448cb3de5e03d4fb
+  languageName: node
+  linkType: hard
+
 "react-native-drawer-layout@npm:^4.0.2":
   version: 4.0.2
   resolution: "react-native-drawer-layout@npm:4.0.2"
@@ -9111,7 +9138,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-reanimated@npm:^3.16.3":
+"react-native-maps@npm:^1.20.1":
+  version: 1.20.1
+  resolution: "react-native-maps@npm:1.20.1"
+  dependencies:
+    "@types/geojson": "npm:^7946.0.13"
+  peerDependencies:
+    react: ">= 17.0.1"
+    react-native: ">= 0.64.3"
+    react-native-web: ">= 0.11"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10/582fbf4d2f210251626e7f8296cf05451453a974b56b6855dae44839c895462781057b0ebcece920cb413e58d2e4c57ec229bd55678da25d5600278317dc3e51
+  languageName: node
+  linkType: hard
+
+"react-native-reanimated@npm:~3.16.1":
   version: 3.16.3
   resolution: "react-native-reanimated@npm:3.16.3"
   dependencies:
@@ -10997,6 +11040,7 @@ __metadata:
     expo-image: "npm:^2.0.2"
     expo-linear-gradient: "npm:^14.0.1"
     expo-linking: "npm:~7.0.3"
+    expo-location: "npm:^18.0.2"
     expo-router: "npm:~4.0.9"
     expo-status-bar: "npm:~2.0.0"
     lucide-react-native: "npm:^0.462.0"
@@ -11006,9 +11050,11 @@ __metadata:
     react: "npm:18.3.1"
     react-dom: "npm:18.3.1"
     react-native: "npm:0.76.3"
+    react-native-dotenv: "npm:^3.4.11"
     react-native-gesture-handler: "npm:~2.20.2"
     react-native-heroicons: "npm:^4.0.0"
-    react-native-reanimated: "npm:^3.16.3"
+    react-native-maps: "npm:^1.20.1"
+    react-native-reanimated: "npm:~3.16.1"
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.1.0"
     react-native-svg: "npm:15.8.0"

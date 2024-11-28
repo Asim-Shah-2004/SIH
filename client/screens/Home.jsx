@@ -8,11 +8,11 @@ export default function Home({ navigation }) {
             <Text className="text-2xl font-bold text-gray-800 mb-6">
                 Welcome Home
             </Text>
-            <TouchableOpacity 
+            <TouchableOpacity
                 className="bg-blue-500 px-6 py-3 rounded-xl"
-                onPress={() => navigation.navigate('About')}
+                onPress={() => navigation.navigate('Map')}
             >
-                <Text className="text-white font-semibold">Go to About</Text>
+                <Text className="text-white font-semibold">Go to Map</Text>
             </TouchableOpacity>
         </View>
     );
