@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 
 const eventsData = [
     { id: '1', title: 'Tech Conference 2024', location: 'Mumbai, India', date: '25th December 2024', time: '10:00 AM' },
@@ -10,82 +10,27 @@ const eventsData = [
 
 const EventPortal = () => {
     const renderEvent = ({ item }) => (
-        <View style={styles.eventCard}>
-            <Text style={styles.eventTitle}>{item.title}</Text>
-            <Text style={styles.eventLocation}>{item.location}</Text>
-            <Text style={styles.eventDate}>{item.date}</Text>
-            <Text style={styles.eventTime}>{item.time}</Text>
-            <TouchableOpacity style={styles.registerButton}>
-                <Text style={styles.registerButtonText}>Register Now</Text>
+        <View className="bg-white p-4 mb-4 rounded-lg shadow-md">
+            <Text className="text-blue-900 text-lg font-bold">{item.title}</Text>
+            <Text className="text-blue-600 text-sm mt-1">{item.location}</Text>
+            <Text className="text-gray-700 text-sm mt-1">{item.date}</Text>
+            <Text className="text-gray-600 text-sm mt-1">{item.time}</Text>
+            <TouchableOpacity className="bg-blue-600 py-3 px-4 rounded-lg mt-4">
+                <Text className="text-white font-bold text-center">Register Now</Text>
             </TouchableOpacity>
         </View>
     );
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-gray-100 py-5 px-4">
             <FlatList
                 data={eventsData}
                 renderItem={renderEvent}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.flatListContainer}
+                contentContainerStyle={{ paddingBottom: 20 }}
             />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F7FA',  // Light gray-blue (background)
-        paddingVertical: 20,
-        paddingHorizontal: 16,
-    },
-    flatListContainer: {
-        paddingBottom: 20,
-    },
-    eventCard: {
-        backgroundColor: '#FFFFFF', // White
-        padding: 16,
-        marginBottom: 16,
-        borderRadius: 8,
-        shadowColor: '#000000',  // Shadow effect
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,  // Shadow for Android
-    },
-    eventTitle: {
-        color: '#2C3E8D',  // Deep blue (primary)
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    eventLocation: {
-        color: '#3498DB',  // Bright blue (secondary)
-        fontSize: 16,
-        marginTop: 5,
-    },
-    eventDate: {
-        color: '#2C3F4A',  // Dark navy gray (text)
-        fontSize: 14,
-        marginTop: 5,
-    },
-    eventTime: {
-        color: '#34495E',  // Highlight gray
-        fontSize: 14,
-        marginTop: 5,
-    },
-    registerButton: {
-        backgroundColor: '#3498DB',  // Bright blue (secondary)
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        marginTop: 16,
-    },
-    registerButtonText: {
-        color: '#FFFFFF',  // White text
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-});
 
 export default EventPortal;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 
 const AlumniRecommendations = ({ navigation }) => {
     const recommendations = [
@@ -30,25 +30,24 @@ const AlumniRecommendations = ({ navigation }) => {
     ];
 
     const renderRecommendationItem = ({ item }) => (
-        <View style={styles.recommendationCard}>
-            <View style={styles.profileContainer}>
+        <View className="bg-white rounded-lg p-4 mr-4 w-64">
+            <View className="flex-row items-center mb-3">
                 <Image
                     source={require('../assets/profile.jpg')}
-                    style={styles.profileImage}
+                    className="w-12 h-12 rounded-full mr-3"
                 />
                 <View>
-                    <Text style={styles.name}>{item.name}</Text>
-                    <Text style={styles.title}>{item.title}</Text>
+                    <Text className="text-lg font-bold">{item.name}</Text>
+                    <Text className="text-gray-500 text-sm">{item.title}</Text>
                 </View>
             </View>
-            <View style={styles.connectionContainer}>
-                {/* <Text style={styles.connection}>{item.connection}</Text> */}
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.connectButton}>
-                        <Text style={styles.connectButtonText}>View Profile</Text>
+            <View className="flex-row justify-between items-center">
+                <View className="flex-row">
+                    <TouchableOpacity className="bg-blue-600 px-3 py-2 rounded-md">
+                        <Text className="text-white text-sm font-bold">View Profile</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.connectButton}>
-                        <Text style={styles.connectButtonText}>Connect</Text>
+                    <TouchableOpacity className="bg-blue-600 px-3 py-2 rounded-md ml-2">
+                        <Text className="text-white text-sm font-bold">Connect</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -56,126 +55,49 @@ const AlumniRecommendations = ({ navigation }) => {
     );
 
     return (
-        <View style={styles.container}>
-            <View style={styles.tabContainer}>
-                <TouchableOpacity style={styles.tab} onPress={() => navigation.navigate('Map')}>
-                    <Text style={styles.tabText}>Alumni Map</Text>
+        <View className="bg-gray-100 p-4">
+            <View className="flex-row justify-between mb-4">
+                <TouchableOpacity
+                    className="bg-blue-700 px-4 py-2 rounded-md"
+                    onPress={() => navigation.navigate('Map')}
+                >
+                    <Text className="text-white text-base font-semibold">Alumni Map</Text>
                 </TouchableOpacity>
             </View>
 
-            <Text style={styles.sectionTitle}>Alumni Recommendations</Text>
+            <Text className="text-lg font-bold mb-3">Alumni Recommendations</Text>
 
-            <Text style={styles.sectionTitle}>Based on Location</Text>
+            <Text className="text-lg font-bold mb-3">Based on Location</Text>
             <FlatList
                 data={recommendations}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderRecommendationItem}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.recommendationsContainer}
+                contentContainerStyle={{ paddingVertical: 12 }}
             />
 
-            <Text style={styles.sectionTitle}>Based on Interests</Text>
+            <Text className="text-lg font-bold mb-3">Based on Interests</Text>
             <FlatList
                 data={recommendations}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderRecommendationItem}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.recommendationsContainer}
+                contentContainerStyle={{ paddingVertical: 12 }}
             />
 
-            <Text style={styles.sectionTitle}>Based on Batch</Text>
+            <Text className="text-lg font-bold mb-3">Based on Batch</Text>
             <FlatList
                 data={recommendations}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderRecommendationItem}
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.recommendationsContainer}
+                contentContainerStyle={{ paddingVertical: 12 }}
             />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        backgroundColor: '#f3f3f3',
-        padding: 16,
-    },
-    tabContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 16,
-    },
-    tab: {
-        backgroundColor: '#0077b6',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 4,
-    },
-    tabText: {
-        color: 'white',
-        fontSize: 16,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 12,
-    },
-    recommendationsContainer: {
-        paddingVertical: 12,
-    },
-    recommendationCard: {
-        backgroundColor: 'white',
-        borderRadius: 8,
-        padding: 16,
-        marginRight: 16,
-        width: 260,
-    },
-    profileContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 12,
-    },
-    profileImage: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
-        marginRight: 12,
-    },
-    name: {
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    title: {
-        fontSize: 14,
-        color: '#666',
-    },
-    connectionContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    connection: {
-        fontSize: 12,
-        color: '#666',
-    },
-    buttonContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    connectButton: {
-        backgroundColor: '#0077b6',
-        paddingHorizontal: 12,
-        paddingVertical: 8,
-        borderRadius: 4,
-        marginLeft: 8,
-    },
-    connectButtonText: {
-        color: 'white',
-        fontSize: 14,
-    },
-});
 
 export default AlumniRecommendations;

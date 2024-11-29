@@ -1,7 +1,5 @@
-// Post.js - A reusable Post component
-
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, TextInput, Button, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, FlatList, TextInput, Button } from 'react-native';
 
 const Post = ({ postData }) => {
     const [likes, setLikes] = useState(postData.likes);
@@ -22,35 +20,41 @@ const Post = ({ postData }) => {
     };
 
     return (
-        <View style={styles.postContainer}>
-            <View style={styles.postHeader}>
+        <View className="mb-5 border border-gray-300 rounded-lg p-4 bg-white shadow-sm">
+            {/* Post Header */}
+            <View className="flex-row items-center mb-3">
                 {postData.userProfilePic ? (
-                    <Image source={{ uri: postData.userProfilePic }} style={styles.profilePic} />
+                    <Image source={{ uri: postData.userProfilePic }} className="w-10 h-10 rounded-full mr-3" />
                 ) : (
-                    <View style={styles.defaultProfilePic} />
+                    <View className="w-10 h-10 rounded-full bg-gray-300 mr-3" />
                 )}
-                <View style={styles.headerText}>
-                    <Text style={styles.username}>{postData.username}</Text>
-                    <Text style={styles.timestamp}>{postData.timestamp}</Text>
+                <View>
+                    <Text className="font-bold text-gray-900">{postData.username}</Text>
+                    <Text className="text-xs text-gray-500">{postData.timestamp}</Text>
                 </View>
             </View>
 
-            <Text style={styles.postText}>{postData.postText}</Text>
+            {/* Post Content */}
+            <Text className="text-base text-gray-800 mb-3">{postData.postText}</Text>
 
-            {postData.image && <Image source={{ uri: postData.image }} style={styles.postImage} />}
+            {/* Post Image */}
+            {postData.image && (
+                <Image source={{ uri: postData.image }} className="w-full h-48 rounded-lg mb-3" />
+            )}
 
-            <View style={styles.actions}>
-                <TouchableOpacity onPress={handleLike} style={styles.likeButton}>
-                    <Text style={styles.likeText}>Like {likes}</Text>
+            {/* Actions (Like Button) */}
+            <View className="flex-row justify-between items-center mb-3">
+                <TouchableOpacity onPress={handleLike} className="flex-row items-center">
+                    <Text className="text-blue-600 font-semibold">Like {likes}</Text>
                 </TouchableOpacity>
             </View>
 
-            {/* Comments */}
+            {/* Comments Section */}
             <FlatList
                 data={comments}
                 renderItem={({ item }) => (
-                    <View style={styles.comment}>
-                        <Text style={styles.commentUser}>{item.user}:</Text>
+                    <View className="flex-row items-start mb-2">
+                        <Text className="font-semibold mr-2">{item.user}:</Text>
                         <Text>{item.text}</Text>
                     </View>
                 )}
@@ -58,9 +62,9 @@ const Post = ({ postData }) => {
             />
 
             {/* Add Comment Section */}
-            <View style={styles.addComment}>
+            <View className="flex-row items-center mt-3">
                 <TextInput
-                    style={styles.commentInput}
+                    className="flex-1 border border-gray-300 rounded-full px-3 py-2 mr-2"
                     placeholder="Add a comment..."
                     value={newComment}
                     onChangeText={setNewComment}
@@ -70,86 +74,5 @@ const Post = ({ postData }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    postContainer: {
-        marginBottom: 20,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 10,
-        backgroundColor: '#fff',
-    },
-    postHeader: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    profilePic: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        marginRight: 10,
-    },
-    defaultProfilePic: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#ccc',
-    },
-    headerText: {
-        flexDirection: 'column',
-    },
-    username: {
-        fontWeight: 'bold',
-    },
-    timestamp: {
-        fontSize: 12,
-        color: '#777',
-    },
-    postText: {
-        fontSize: 16,
-        marginVertical: 10,
-    },
-    postImage: {
-        width: '100%',
-        height: 200,
-        resizeMode: 'cover',
-        borderRadius: 8,
-        marginVertical: 10,
-    },
-    actions: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
-    likeButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    likeText: {
-        color: '#0077b5',
-    },
-    comment: {
-        flexDirection: 'row',
-        marginVertical: 5,
-    },
-    commentUser: {
-        fontWeight: 'bold',
-        marginRight: 5,
-    },
-    addComment: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    commentInput: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 20,
-        paddingLeft: 10,
-        marginRight: 10,
-        width: '80%',
-        height: 40,
-    },
-});
 
 export default Post;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, Button, TextInput, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native';
-import { MaterialIcons } from '@expo/vector-icons';  // To include emojis or icon support
+import { View, Text, TextInput, Image, TouchableOpacity, ScrollView } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function NewPost({ navigation }) {
     const [postContent, setPostContent] = useState('');
@@ -14,133 +14,94 @@ export default function NewPost({ navigation }) {
     };
 
     const handleMediaPick = () => {
-        // Here we mock a logic where you can pick either an image or a video
         if (!imageUri && !videoUri) {
-            setImageUri('https://via.placeholder.com/400');  // Mock image URI
+            setImageUri('https://via.placeholder.com/400'); // Mock image URI
         } else if (!videoUri) {
-            setVideoUri('https://www.w3schools.com/html/mov_bbb.mp4');  // Mock video URI
+            setVideoUri('https://www.w3schools.com/html/mov_bbb.mp4'); // Mock video URI
+        } else {
+            alert('You can only add one image and one video.');
         }
     };
 
     const handleWriteWithAI = () => {
-        // Logic for writing with AI (e.g., generating suggestions, prompts, etc.)
         alert('Write with AI feature is coming soon!');
     };
 
     const handleSentimentAnalysis = () => {
-        // Logic for sentiment analysis (e.g., analyzing post content)
         alert('Sentiment Analysis feature is coming soon!');
     };
 
+    const handleSubmit = () => {
+        alert('Post submitted successfully!');
+        setPostContent('');
+        setImageUri('');
+        setVideoUri('');
+    };
+
     return (
-        <ScrollView style={styles.container}>
-            <Text style={styles.heading}>Create a New Post</Text>
+        <ScrollView className="flex-1 bg-gray-100 p-4">
+            <Text className="text-2xl font-bold text-center mb-6">Create a New Post</Text>
 
             {/* Post Content Input */}
             <TextInput
-                style={styles.textInput}
+                className="bg-white p-4 rounded-md border border-gray-300 text-base"
                 multiline
                 placeholder="Write your post here..."
                 value={postContent}
                 onChangeText={handlePostContentChange}
                 maxLength={3000}
             />
-            <Text style={styles.charCount}>{postContent.length}/3000</Text>
+            <Text className="text-sm text-gray-500 text-right mt-1">{postContent.length}/3000</Text>
 
             {/* Add Media Button */}
-            <TouchableOpacity style={styles.button} onPress={handleMediaPick}>
+            <TouchableOpacity
+                className="flex-row items-center bg-blue-500 rounded-md p-3 my-4"
+                onPress={handleMediaPick}
+            >
                 <MaterialIcons name="insert-photo" size={24} color="white" />
-                <Text style={styles.buttonText}>Add Media</Text>
+                <Text className="text-white text-base ml-2">Add Media</Text>
             </TouchableOpacity>
 
             {/* Image Display */}
-            {imageUri ? <Image source={{ uri: imageUri }} style={styles.image} /> : null}
+            {imageUri ? (
+                <Image
+                    source={{ uri: imageUri }}
+                    className="w-full h-48 rounded-md mt-2"
+                    resizeMode="cover"
+                />
+            ) : null}
 
             {/* Video Display */}
             {videoUri ? (
-                <View style={styles.videoContainer}>
-                    <Text style={styles.videoText}>Video Preview (Mock)</Text>
+                <View className="w-full h-24 bg-gray-400 rounded-md flex items-center justify-center mt-4">
+                    <Text className="text-white text-sm">Video Preview: {videoUri}</Text>
                 </View>
             ) : null}
 
             {/* Additional Options */}
-            <TouchableOpacity style={styles.button} onPress={handleWriteWithAI}>
+            <TouchableOpacity
+                className="flex-row items-center bg-green-500 rounded-md p-3 my-4"
+                onPress={handleWriteWithAI}
+            >
                 <MaterialIcons name="create" size={24} color="white" />
-                <Text style={styles.buttonText}>Write with AI</Text>
+                <Text className="text-white text-base ml-2">Write with AI</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.button} onPress={handleSentimentAnalysis}>
+            <TouchableOpacity
+                className="flex-row items-center bg-purple-500 rounded-md p-3 my-4"
+                onPress={handleSentimentAnalysis}
+            >
                 <MaterialIcons name="analytics" size={24} color="white" />
-                <Text style={styles.buttonText}>Sentiment Analysis</Text>
+                <Text className="text-white text-base ml-2">Sentiment Analysis</Text>
             </TouchableOpacity>
 
             {/* Submit Button */}
-            <TouchableOpacity style={styles.button} onPress={() => alert('Post submitted')}>
-                <Text style={styles.buttonText}>Submit Post</Text>
+            <TouchableOpacity
+                className="bg-blue-600 rounded-md p-4 mt-4"
+                onPress={handleSubmit}
+            >
+                <Text className="text-white text-center text-lg">Submit Post</Text>
             </TouchableOpacity>
         </ScrollView>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 20,
-        backgroundColor: '#f4f4f4',
-    },
-    heading: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 20,
-        textAlign: 'center',
-    },
-    textInput: {
-        height: 150,
-        borderColor: '#ddd',
-        borderWidth: 1,
-        borderRadius: 5,
-        padding: 10,
-        fontSize: 16,
-        backgroundColor: '#fff',
-        textAlignVertical: 'top',
-    },
-    charCount: {
-        fontSize: 14,
-        textAlign: 'right',
-        color: '#888',
-        marginTop: 5,
-    },
-    button: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#007BFF',
-        padding: 10,
-        marginVertical: 10,
-        borderRadius: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        marginLeft: 10,
-    },
-    image: {
-        width: '100%',
-        height: 200,
-        marginVertical: 10,
-        borderRadius: 5,
-        resizeMode: 'cover',
-    },
-    videoContainer: {
-        width: '100%',
-        height: 200,
-        backgroundColor: '#333',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginVertical: 10,
-        borderRadius: 5,
-    },
-    videoText: {
-        color: '#fff',
-        fontSize: 18,
-    },
-});

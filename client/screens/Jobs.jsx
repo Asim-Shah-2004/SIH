@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity } from 'react-native';
 
 const jobsData = [
     { id: '1', title: 'Software Engineer', company: 'TechCorp', location: 'Mumbai, India', salary: '₹10,00,000' },
@@ -8,84 +8,29 @@ const jobsData = [
     { id: '4', title: 'UI/UX Designer', company: 'Designify', location: 'Pune, India', salary: '₹8,00,000' },
 ];
 
-const JobPortal = () => {
+const JobPortal = ({ navigation }) => {
     const renderJob = ({ item }) => (
-        <View style={styles.jobCard}>
-            <Text style={styles.jobTitle}>{item.title}</Text>
-            <Text style={styles.jobCompany}>{item.company}</Text>
-            <Text style={styles.jobLocation}>{item.location}</Text>
-            <Text style={styles.jobSalary}>{item.salary}</Text>
-            <TouchableOpacity style={styles.applyButton}>
-                <Text style={styles.applyButtonText}>Apply Now</Text>
+        <View className="bg-white p-4 mb-4 rounded-lg shadow-md">
+            <Text className="text-lg font-bold text-blue-800">{item.title}</Text>
+            <Text className="text-blue-600 mt-1">{item.company}</Text>
+            <Text className="text-gray-700 mt-1">{item.location}</Text>
+            <Text className="text-gray-600 mt-1">{item.salary}</Text>
+            <TouchableOpacity className="bg-blue-500 mt-4 py-3 rounded-md">
+                <Text className="text-white font-bold text-center">Apply Now</Text>
             </TouchableOpacity>
         </View>
     );
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-gray-100 p-4">
             <FlatList
                 data={jobsData}
                 renderItem={renderJob}
                 keyExtractor={(item) => item.id}
-                contentContainerStyle={styles.flatListContainer}
+                contentContainerStyle={{ paddingBottom: 20 }}
             />
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#F5F7FA',  // Light gray-blue (background)
-        paddingVertical: 20,
-        paddingHorizontal: 16,
-    },
-    flatListContainer: {
-        paddingBottom: 20,
-    },
-    jobCard: {
-        backgroundColor: '#FFFFFF', // White
-        padding: 16,
-        marginBottom: 16,
-        borderRadius: 8,
-        shadowColor: '#000000',  // Shadow effect
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,  // Shadow for Android
-    },
-    jobTitle: {
-        color: '#2C3E8D',  // Deep blue (primary)
-        fontSize: 18,
-        fontWeight: 'bold',
-    },
-    jobCompany: {
-        color: '#3498DB',  // Bright blue (secondary)
-        fontSize: 16,
-        marginTop: 5,
-    },
-    jobLocation: {
-        color: '#2C3F4A',  // Dark navy gray (text)
-        fontSize: 14,
-        marginTop: 5,
-    },
-    jobSalary: {
-        color: '#34495E',  // Highlight gray
-        fontSize: 14,
-        marginTop: 5,
-    },
-    applyButton: {
-        backgroundColor: '#3498DB',  // Bright blue (secondary)
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        marginTop: 16,
-    },
-    applyButtonText: {
-        color: '#FFFFFF',  // White text
-        fontWeight: 'bold',
-        textAlign: 'center',
-    },
-});
 
 export default JobPortal;
