@@ -1,7 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
-import { TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
+import { useState, useEffect } from 'react';
 
 import MainHeader from './components/MainHeader';
 import Connections from '../screens/Connections';
@@ -12,28 +13,28 @@ import NewPost from '../screens/NewPost';
 
 const Tab = createBottomTabNavigator();
 
+const { width, height } = Dimensions.get('window');
+const isSmallDevice = width < 375;
+const isLargeDevice = width >= 768;
+
 const tabConfig = {
   screenOptions: ({ navigation }) => ({
     header: () => <MainHeader />,
     tabBarShowLabel: false,
     tabBarHideOnKeyboard: true,
     tabBarStyle: {
-      position: 'absolute',
-      left: 12,
-      right: 12,
-      elevation: 8,
       backgroundColor: '#000',
-      borderRadius: 5,
-      height: 60,
+      height: isSmallDevice ? 50 : isLargeDevice ? 70 : 60,
       shadowColor: '#000',
       shadowOpacity: 0.1,
       shadowOffset: {
         width: 0,
-        height: 6,
+        height: -2,
       },
-      shadowRadius: 8,
-      paddingHorizontal: 10,
+      shadowRadius: 4,
       borderTopWidth: 0,
+      paddingHorizontal: 10,
+      paddingBottom: Platform.OS === 'ios' ? 20 : 0, // Account for iOS home indicator
     },
     tabBarActiveTintColor: '#fff',
     tabBarInactiveTintColor: '#7A7A7A',
@@ -69,29 +70,31 @@ const tabConfig = {
   }),
 };
 
-const getTabIcon =
-  (name) =>
-  ({ focused, color, size }) => (
+const getTabIcon = (name) => ({ focused, color, size }) => {
+  const iconSize = isSmallDevice ? size : isLargeDevice ? size * 1.3 : size + 4;
+  return (
     <Ionicons
       name={focused ? name : `${name}-outline`}
-      size={focused ? size + 6 : size + 2}
+      size={focused ? iconSize + 6 : iconSize + 2}
       color={color}
       style={[styles.icon, focused && styles.activeIcon]}
     />
   );
+};
 
 const styles = StyleSheet.create({
   tabButton: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 10,
+    padding: isSmallDevice ? 8 : isLargeDevice ? 14 : 10,
+    minHeight: 44, // Minimum touch target size
   },
   icon: {
     transform: [{ scale: 1 }],
   },
   activeIcon: {
-    transform: [{ scale: 1.1 }],
+    transform: [{ scale: isSmallDevice ? 1.05 : 1.1 }],
   },
 });
 
@@ -103,7 +106,7 @@ const tabs = [
   { name: 'Connect', component: Connections, icon: 'people' },
 ];
 
-export default function TabNavigator() {
+const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={tabConfig.screenOptions}>
       {tabs.map(({ name, component, icon }) => (
@@ -118,4 +121,6 @@ export default function TabNavigator() {
       ))}
     </Tab.Navigator>
   );
-}
+};
+
+export default TabNavigator;
