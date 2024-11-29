@@ -149,25 +149,25 @@ export const alumniRecommendations = [
   {
     id: 1,
     name: 'Blah Blah',
-    title: 'SDE at JP Morgan',
+    position: 'SDE at JP Morgan',
     connection: '173 other mutual connections',
   },
   {
     id: 2,
     name: 'Nina Rose',
-    title: 'SDE Hackathon Finalist at Microsoft',
+    position: 'SDE Hackathon Finalist at Microsoft',
     connection: '299 other mutual connections',
   },
   {
     id: 3,
     name: 'John Doe',
-    title: 'Product Manager at Google',
+    position: 'Product Manager at Google',
     connection: '87 other mutual connections',
   },
   {
     id: 4,
     name: 'Jane Smith',
-    title: 'Data Scientist at Amazon',
+    position: 'Data Scientist at Amazon',
     connection: '42 other mutual connections',
   },
 ];
