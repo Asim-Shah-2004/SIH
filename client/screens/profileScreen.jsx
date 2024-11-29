@@ -9,9 +9,10 @@ import {
   Linkedin,
   Twitter,
   Trophy,
+  MessageCircle
 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, Text, View, FlatList } from 'react-native';
 
 import Badge from '../components/profile/Badge';
 import Card from '../components/profile/Card';
@@ -19,6 +20,8 @@ import LinkText from '../components/profile/LinkText';
 import ReadMore from '../components/profile/ReadMore';
 import StatItem from '../components/profile/StatItem';
 import { DEFAULT_ALUMNI_DATA } from '../constants/profileData';
+import myPost from '../constants/posts/myPost';
+import Post from '../components/Post';
 
 const SectionTitle = ({ children }) => (
   <Text className="mb-2 text-base font-bold text-gray-800">{children}</Text>
@@ -41,9 +44,62 @@ const getSocialIcon = (platform) => {
   }
 };
 
+const PostsSection = ({ myPost }) => {
+  const [showAllPosts, setShowAllPosts] = useState(false);
+  const [editingPostId, setEditingPostId] = useState(null); // to track which post is being edited
+
+  const handleEdit = (postId) => {
+    setEditingPostId(postId);
+    // You can handle editing logic here (open modal, navigate to edit screen, etc.)
+  };
+
+  const handleDelete = (postId) => {
+    // Handle delete logic here
+    console.log(`Deleting post with id ${postId}`);
+  };
+
+  // Limit the number of posts shown initially
+  const postsToShow = showAllPosts ? myPost : myPost.slice(0, 1); // Show first post initially, all if 'See All' clicked
+
+  return (
+    <View className="space-y-4">
+      <FlatList
+        data={postsToShow}
+        renderItem={({ item }) => (
+          <View className="bg-white p-4 rounded-lg shadow-md mb-4">
+            <Post key={item.userId} postData={item} />
+            {editingPostId === item.userId && (
+              <Text className="text-sm text-gray-600 mt-2">Edit Mode for Post {item.userId}</Text>
+            )}
+
+            {/* Edit and Delete buttons */}
+            <View className="flex-row justify-between items-center mt-4">
+              <Pressable onPress={() => handleEdit(item.userId)} className="flex-1 mr-2 bg-blue-500 rounded-md py-2">
+                <Text className="text-center text-white">Edit</Text>
+              </Pressable>
+              <Pressable onPress={() => handleDelete(item.userId)} className="flex-1 ml-2 bg-red-500 rounded-md py-2">
+                <Text className="text-center text-white">Delete</Text>
+              </Pressable>
+            </View>
+          </View>
+        )}
+        keyExtractor={(item) => item.userId.toString()}
+      />
+
+      {/* Show "See All Posts" button if not showing all posts */}
+      {!showAllPosts && (
+        <Pressable onPress={() => setShowAllPosts(true)} className="mt-4 bg-gray-200 rounded-md p-2">
+          <Text className="text-center text-blue-500">See All Posts</Text>
+        </Pressable>
+      )}
+    </View>
+  );
+};
+
 const ProfileScreen = ({ route = {} }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const data = { ...DEFAULT_ALUMNI_DATA, ...(route.params?.alumni || {}) };
+
 
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
@@ -114,6 +170,8 @@ const ProfileScreen = ({ route = {} }) => {
             />
           ))}
         </View>
+
+        <PostsSection myPost={myPost} />
 
         {/* Education */}
         <View>

@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, FlatList, TextInput, Button } from 'react-native';
 
 const Post = ({ postData }) => {
-  const [likes, setLikes] = useState(postData.likes);
+  const [likes, setLikes] = useState(postData.likes.length);
   const [comments, setComments] = useState(postData.comments);
+  const [reactions, setReactions] = useState(postData.reactions); // Handle reactions
   const [newComment, setNewComment] = useState('');
 
   // Handle Like button
@@ -14,50 +15,86 @@ const Post = ({ postData }) => {
   // Handle Add Comment button
   const handleAddComment = () => {
     if (newComment.trim()) {
-      setComments([...comments, { text: newComment, user: 'You' }]);
+      setComments([
+        ...comments,
+        { user: 'You', text: newComment, createdAt: new Date(), updatedAt: new Date() },
+      ]);
       setNewComment(''); // Clear the input field
     }
   };
 
+  // Handle Reactions (e.g., love, haha, wow, etc.)
+  const handleReaction = (reactionType) => {
+    setReactions([
+      ...reactions,
+      { userId: 'You', type: reactionType }, // Add reaction
+    ]);
+  };
+
   return (
-    <View className="mb-5 rounded-lg border border-gray-300 bg-white p-4 shadow-sm">
+    <View style={{ marginBottom: 20, borderRadius: 10, borderWidth: 1, borderColor: '#ccc', padding: 15, backgroundColor: '#fff' }}>
       {/* Post Header */}
-      <View className="mb-3 flex-row items-center">
-        {postData.userProfilePic ? (
-          <Image
-            source={{ uri: postData.userProfilePic }}
-            className="mr-3 h-10 w-10 rounded-full"
-          />
-        ) : (
-          <View className="mr-3 h-10 w-10 rounded-full bg-gray-300" />
-        )}
+      <View style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center' }}>
+        <Image
+          source={{ uri: 'https://www.example.com/userProfilePic.jpg' }} // Use user profile pic
+          style={{ marginRight: 10, height: 40, width: 40, borderRadius: 20 }}
+        />
         <View>
-          <Text className="font-bold text-gray-900">{postData.username}</Text>
-          <Text className="text-xs text-gray-500">{postData.timestamp}</Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>John Doe</Text>
+          <Text style={{ fontSize: 12, color: '#888' }}>2 hours ago</Text>
         </View>
       </View>
 
       {/* Post Content */}
-      <Text className="mb-3 text-base text-gray-800">{postData.postText}</Text>
+      <Text style={{ marginBottom: 10, fontSize: 16, color: '#333' }}>{postData.text}</Text>
 
-      {/* Post Image */}
-      {postData.image && (
-        <Image source={{ uri: postData.image }} className="mb-3 h-48 w-full rounded-lg" />
+      {/* Media (Image or Video) */}
+      {postData.media && postData.media.length > 0 && (
+        <FlatList
+          data={postData.media}
+          horizontal
+          renderItem={({ item }) => (
+            <View style={{ marginRight: 10 }}>
+              {item.type === 'image' ? (
+                <Image
+                  source={{ uri: item.url }}
+                  style={{ height: 200, width: 200, borderRadius: 10 }}
+                />
+              ) : item.type === 'video' ? (
+                <Text style={{ color: '#555' }}>[Video Placeholder]</Text> // Add video component if needed
+              ) : null}
+            </View>
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
       )}
 
-      {/* Actions (Like Button) */}
-      <View className="mb-3 flex-row items-center justify-between">
-        <TouchableOpacity onPress={handleLike} className="flex-row items-center">
-          <Text className="font-semibold text-blue-600">Like {likes}</Text>
+      {/* Actions (Like Button, Reactions) */}
+      <View style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
+        <TouchableOpacity onPress={handleLike} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text style={{ fontWeight: 'bold', color: '#007BFF' }}>Like {likes}</Text>
         </TouchableOpacity>
+
+        {/* Reaction Buttons */}
+        <View style={{ flexDirection: 'row' }}>
+          {['love', 'haha', 'wow', 'sad', 'angry'].map((reactionType) => (
+            <TouchableOpacity
+              key={reactionType}
+              onPress={() => handleReaction(reactionType)}
+              style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}
+            >
+              <Text style={{ fontWeight: 'bold', color: '#666' }}>{reactionType}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
 
       {/* Comments Section */}
       <FlatList
         data={comments}
         renderItem={({ item }) => (
-          <View className="mb-2 flex-row items-start">
-            <Text className="mr-2 font-semibold">{item.user}:</Text>
+          <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'flex-start' }}>
+            <Text style={{ fontWeight: 'bold', marginRight: 5 }}>{item.user}:</Text>
             <Text>{item.text}</Text>
           </View>
         )}
@@ -65,9 +102,17 @@ const Post = ({ postData }) => {
       />
 
       {/* Add Comment Section */}
-      <View className="mt-3 flex-row items-center">
+      <View style={{ marginTop: 10, flexDirection: 'row', alignItems: 'center' }}>
         <TextInput
-          className="mr-2 flex-1 rounded-full border border-gray-300 px-3 py-2"
+          style={{
+            flex: 1,
+            padding: 8,
+            borderWidth: 1,
+            borderColor: '#ccc',
+            borderRadius: 20,
+            marginRight: 10,
+            fontSize: 14,
+          }}
           placeholder="Add a comment..."
           value={newComment}
           onChangeText={setNewComment}

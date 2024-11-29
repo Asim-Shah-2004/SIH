@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { useNavigation } from '@react-navigation/native';
 
 import TabNavigator from './TabNavigator';
 import Events from '../screens/Events';
@@ -51,19 +52,20 @@ const drawerConfig = {
 
 const getDrawerIcon =
   (name) =>
-  ({ focused, color, size }) => (
-    <Ionicons
-      name={name}
-      size={24}
-      color={color}
-      style={{
-        transform: [{ scale: focused ? 1.1 : 1 }],
-        opacity: focused ? 1 : 0.85,
-      }}
-    />
-  );
+    ({ focused, color, size }) => (
+      <Ionicons
+        name={name}
+        size={24}
+        color={color}
+        style={{
+          transform: [{ scale: focused ? 1.1 : 1 }],
+          opacity: focused ? 1 : 0.85,
+        }}
+      />
+    );
 
 export default function DrawerNavigator() {
+  const navigation = useNavigation();
   return (
     <Drawer.Navigator screenOptions={drawerConfig.screenOptions}>
       <Drawer.Screen
@@ -72,6 +74,7 @@ export default function DrawerNavigator() {
         options={{
           title: 'Home',
           drawerIcon: getDrawerIcon('home'),
+          // drawerItemStyle: { display: 'none' },
         }}
       />
       <Drawer.Screen
@@ -79,6 +82,7 @@ export default function DrawerNavigator() {
         component={ProfileScreen}
         options={{
           drawerIcon: getDrawerIcon('person'),
+          headerShown: true,
         }}
       />
       <Drawer.Screen
@@ -86,6 +90,7 @@ export default function DrawerNavigator() {
         component={Events}
         options={{
           drawerIcon: getDrawerIcon('calendar'),
+          headerShown: true
         }}
       />
       <Drawer.Screen
@@ -93,6 +98,7 @@ export default function DrawerNavigator() {
         component={Settings}
         options={{
           drawerIcon: getDrawerIcon('settings'),
+          headerShown: true
         }}
       />
     </Drawer.Navigator>
