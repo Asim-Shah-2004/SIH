@@ -5324,6 +5324,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-media-library@npm:^17.0.3":
+  version: 17.0.3
+  resolution: "expo-media-library@npm:17.0.3"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10/481f867a257608fc4d83241a6377439e7bef1f849a663843248cdefbd8c2aa7009fd02800fed3714c94937c2e6448c79c470622c7551e672fd962a17c1af9ee9
+  languageName: node
+  linkType: hard
+
 "expo-modules-autolinking@npm:2.0.2":
   version: 2.0.2
   resolution: "expo-modules-autolinking@npm:2.0.2"
@@ -5384,6 +5394,15 @@ __metadata:
     react-native-reanimated:
       optional: true
   checksum: 10/61a05aef842a6caa338809f3d99f64ccae5891be006fa16ae36c694ecb5194dc572f3a8ccd4fb40670e9dca81e96e61af990d6e64f8cc3de8f14a7c0bd29e91d
+  languageName: node
+  linkType: hard
+
+"expo-sharing@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "expo-sharing@npm:13.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/f0ac8e5970cfdd50ff7c4bc6e4dc04596d5b416cf321ee9c0c2b4504186d5cacfc8b078d432d064befdeee9d2bb00618a175ca18527a5b71aa84fb1689c35d3b
   languageName: node
   linkType: hard
 
@@ -9730,6 +9749,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rn-emoji-keyboard@npm:^1.7.0":
+  version: 1.7.0
+  resolution: "rn-emoji-keyboard@npm:1.7.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/88f4bb02f848ca3400df57ecc48c87fabe79704f3591c396b33f1969f22fd7addd96aa8f853f31294e33220ea61d3ecee406fa3bd7ef8754778ed2fc4e2260b1
+  languageName: node
+  linkType: hard
+
 "run-parallel@npm:^1.1.9":
   version: 1.2.0
   resolution: "run-parallel@npm:1.2.0"
@@ -11127,7 +11156,9 @@ __metadata:
     expo-linear-gradient: "npm:^14.0.1"
     expo-linking: "npm:~7.0.3"
     expo-location: "npm:^18.0.2"
+    expo-media-library: "npm:^17.0.3"
     expo-router: "npm:~4.0.9"
+    expo-sharing: "npm:^13.0.0"
     expo-status-bar: "npm:~2.0.0"
     lucide-react-native: "npm:^0.462.0"
     nativewind: "npm:^4.1.23"
@@ -11145,6 +11176,7 @@ __metadata:
     react-native-screens: "npm:~4.1.0"
     react-native-svg: "npm:15.8.0"
     react-native-web: "npm:~0.19.13"
+    rn-emoji-keyboard: "npm:^1.7.0"
     tailwindcss: "npm:^3.4.15"
     typescript: "npm:~5.3.3"
   languageName: unknown

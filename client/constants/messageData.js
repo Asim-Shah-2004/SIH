@@ -2,45 +2,75 @@ export const sampleMessages = [
   {
     id: 1,
     type: 'text',
-    text: 'Hello! Welcome to Alumni Connect 👋',
+    text: 'Hey! How are you?',
     sender: 'them',
-    timestamp: Date.now() - 86400000 * 2, // 2 days ago
+    timestamp: new Date('2024-01-10T10:00:00').getTime(),
   },
   {
     id: 2,
     type: 'text',
-    text: 'Hi! Thanks for connecting!',
+    text: "I'm doing great! Just got back from my trip.",
     sender: 'me',
-    timestamp: Date.now() - 86400000 * 2 + 60000, // 2 days ago + 1 minute
+    timestamp: new Date('2024-01-10T10:01:00').getTime(),
   },
   {
     id: 3,
     type: 'image',
     uri: 'https://picsum.photos/400/300',
-    sender: 'them',
-    timestamp: Date.now() - 86400000, // 1 day ago
+    sender: 'me',
+    timestamp: new Date('2024-01-10T10:02:00').getTime(),
   },
   {
     id: 4,
-    type: 'document',
-    fileName: 'Project_Proposal.pdf',
-    fileSize: 1024 * 1024, // 1MB
-    uri: 'dummy-uri',
-    sender: 'me',
-    timestamp: Date.now() - 3600000, // 1 hour ago
+    type: 'text',
+    text: 'Wow, that looks amazing! Where was this taken?',
+    sender: 'them',
+    timestamp: new Date('2024-01-10T10:03:00').getTime(),
   },
   {
     id: 5,
     type: 'audio',
-    uri: 'dummy-audio-uri',
+    uri: 'https://www2.cs.uic.edu/~i101/SoundFiles/StarWars60.wav',
     sender: 'them',
-    timestamp: Date.now() - 1800000, // 30 minutes ago
+    timestamp: new Date('2024-01-10T10:04:00').getTime(),
   },
   {
     id: 6,
+    type: 'document',
+    fileName: 'Trip_Itinerary.pdf',
+    fileSize: 2048 * 1024, // 2MB
+    uri: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+    sender: 'me',
+    timestamp: new Date('2024-01-10T10:05:00').getTime(),
+  },
+  {
+    id: 7,
     type: 'text',
-    text: 'Check out this semester project details 📚',
+    text: "Here's another photo from the beach 🏖️",
+    sender: 'me',
+    timestamp: new Date('2024-01-10T10:06:00').getTime(),
+  },
+  {
+    id: 8,
+    type: 'image',
+    uri: 'https://picsum.photos/400/301',
+    sender: 'me',
+    timestamp: new Date('2024-01-10T10:07:00').getTime(),
+  },
+  {
+    id: 9,
+    type: 'audio',
+    uri: 'https://www2.cs.uic.edu/~i101/SoundFiles/CantinaBand60.wav',
+    sender: 'me',
+    timestamp: new Date('2024-01-10T10:08:00').getTime(),
+  },
+  {
+    id: 10,
+    type: 'document',
+    fileName: 'Travel_Expenses.xlsx',
+    fileSize: 1536 * 1024, // 1.5MB
+    uri: 'https://file-examples.com/storage/fe8c7eef0c6364f6c9504cc/2017/02/file_example_XLSX_50.xlsx',
     sender: 'them',
-    timestamp: Date.now() - 300000, // 5 minutes ago
+    timestamp: new Date('2024-01-10T10:09:00').getTime(),
   },
 ];

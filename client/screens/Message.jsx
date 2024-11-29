@@ -17,6 +17,8 @@ const DateSeparator = ({ date }) => (
   </View>
 );
 
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
+
 const MessageScreen = ({ route }) => {
   const { chatData } = route.params;
   const [message, setMessage] = useState('');
@@ -45,17 +47,25 @@ const MessageScreen = ({ route }) => {
   const handleAttachment = async () => {
     try {
       const result = await DocumentPicker.getDocumentAsync({
-        type: '*/*',
         copyToCacheDirectory: true,
+        multiple: false,
       });
 
-      if (result.type === 'success') {
+      if (result.assets && result.assets.length > 0) {
+        const file = result.assets[0];
+
+        if (file.size > MAX_FILE_SIZE) {
+          Alert.alert('Error', 'File size must be less than 10MB');
+          return;
+        }
+
         const newMessage = {
           id: messages.length + 1,
           type: 'document',
-          fileName: result.name,
-          fileSize: result.size,
-          uri: result.uri,
+          fileName: file.name,
+          fileSize: file.size,
+          uri: file.uri,
+          mimeType: file.mimeType,
           sender: 'me',
           timestamp: new Date().getTime(),
         };
@@ -73,8 +83,9 @@ const MessageScreen = ({ route }) => {
         ? ImagePicker.launchCameraAsync
         : ImagePicker.launchImageLibraryAsync;
       const result = await method({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        mediaTypes: ['images'],
         quality: 0.8,
+        allowsEditing: true,
       });
 
       if (!result.canceled) {
