@@ -1,47 +1,70 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 
-const jobsData = [
-  {
-    id: '1',
-    title: 'Software Engineer',
-    company: 'TechCorp',
-    location: 'Mumbai, India',
-    salary: '₹10,00,000',
-  },
-  {
-    id: '2',
-    title: 'Data Scientist',
-    company: 'DataX',
-    location: 'Bangalore, India',
-    salary: '₹12,00,000',
-  },
-  {
-    id: '3',
-    title: 'Product Manager',
-    company: 'InnovateCo',
-    location: 'Delhi, India',
-    salary: '₹15,00,000',
-  },
-  {
-    id: '4',
-    title: 'UI/UX Designer',
-    company: 'Designify',
-    location: 'Pune, India',
-    salary: '₹8,00,000',
-  },
-];
+import { jobsData } from '../constants/jobData';
 
 const JobPortal = ({ navigation }) => {
   const renderJob = ({ item }) => (
-    <View className="mb-4 rounded-lg bg-white p-4 shadow-md">
-      <Text className="text-lg font-bold text-blue-800">{item.title}</Text>
-      <Text className="mt-1 text-blue-600">{item.company}</Text>
-      <Text className="mt-1 text-gray-700">{item.location}</Text>
-      <Text className="mt-1 text-gray-600">{item.salary}</Text>
-      <TouchableOpacity className="mt-4 rounded-md bg-blue-500 py-3">
-        <Text className="text-center font-bold text-white">Apply Now</Text>
-      </TouchableOpacity>
+    <View className="mb-4 overflow-hidden rounded-xl bg-white shadow-lg">
+      <View className="p-4">
+        <View className="mb-4 flex-row items-center">
+          <Image source={{ uri: item.logo }} className="mr-3 h-12 w-12 rounded-lg" />
+          <View>
+            <Text className="text-xl font-bold text-gray-900">{item.title}</Text>
+            <Text className="text-base text-blue-600">{item.company}</Text>
+          </View>
+        </View>
+
+        {/* Extended Job Details */}
+        <View className="mb-4 space-y-2">
+          <Text className="mt-1 text-gray-700">{item.location}</Text>
+          <Text className="mt-1 text-gray-600">{item.salary}</Text>
+          <Text className="text-blue-600">
+            {item.type} • {item.experience}
+          </Text>
+          <Text className="text-gray-600">Posted on {item.postedDate}</Text>
+          <Text className="text-gray-600">
+            {item.department} • {item.vacancies} openings
+          </Text>
+        </View>
+
+        {/* Requirements Section */}
+        <View className="mb-4">
+          <Text className="mb-2 font-semibold text-gray-700">Requirements:</Text>
+          {item.requirements?.map((req, index) => (
+            <Text key={index} className="ml-2 text-sm text-gray-600">
+              • {req}
+            </Text>
+          ))}
+        </View>
+
+        {/* Benefits Section */}
+        <View className="mb-4">
+          <Text className="mb-2 font-semibold text-gray-700">Benefits:</Text>
+          <View className="flex-row flex-wrap gap-2">
+            {item.benefits?.map((benefit, index) => (
+              <Text
+                key={index}
+                className="rounded-full bg-green-100 px-3 py-1 text-sm text-green-800">
+                {benefit}
+              </Text>
+            ))}
+          </View>
+        </View>
+
+        {/* Skills Section */}
+        <View className="mb-4 flex-row flex-wrap gap-2">
+          {item.skills.map((skill) => (
+            <Text key={skill} className="rounded-full bg-blue-100 px-3 py-1 text-sm text-blue-800">
+              {skill}
+            </Text>
+          ))}
+        </View>
+
+        <TouchableOpacity className="rounded-lg bg-blue-600 px-4 py-3">
+          <Text className="text-center font-bold text-white">Apply Now</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 

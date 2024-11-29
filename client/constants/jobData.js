@@ -1,0 +1,37 @@
+export const jobsData = [
+  {
+    id: '1',
+    title: 'Senior Software Engineer',
+    company: 'Google India',
+    logo: 'https://logo.clearbit.com/google.com',
+    location: 'Bangalore, India (Hybrid)',
+    salary: '₹35,00,000 - ₹55,00,000',
+    type: 'Full-time',
+    experience: '5-8 years',
+    skills: ['React', 'Node.js', 'Cloud Architecture', 'System Design', 'Go'],
+    benefits: ['Health Insurance', 'Stock Options', 'Flexible Hours', 'Remote Work'],
+    description: 'Join our core engineering team to build next-gen cloud products...',
+    postedDate: '2024-01-15',
+    department: 'Engineering',
+    vacancies: 3,
+    requirements: [
+      'B.Tech/M.Tech in Computer Science',
+      'Experience with distributed systems',
+      'Strong problem-solving skills',
+    ],
+  },
+  {
+    id: '2',
+    title: 'AI/ML Research Scientist',
+    company: 'Microsoft Research',
+    logo: 'https://logo.clearbit.com/microsoft.com',
+    location: 'Hyderabad, India',
+    salary: '₹45,00,000 - ₹75,00,000',
+    type: 'Full-time',
+    experience: '3-6 years',
+    skills: ['Python', 'PyTorch', 'TensorFlow', 'NLP', 'Computer Vision'],
+    benefits: ['Relocation Assistance', 'Research Budget', 'Conference Travel'],
+    postedDate: '2024-01-20',
+  },
+  // ...add 8-10 more similar detailed job entries
+];

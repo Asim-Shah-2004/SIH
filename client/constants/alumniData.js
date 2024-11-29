@@ -1,0 +1,173 @@
+import profileImg from '../assets/profile.jpg';
+
+export const alumniMapData = [
+  // Users in India
+  {
+    id: 1,
+    name: 'John Doe',
+    latitude: 28.6139,
+    longitude: 77.209,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 2,
+    name: 'Jane Smith',
+    latitude: 19.076,
+    longitude: 72.8777,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 3,
+    name: 'Alice Johnson',
+    latitude: 12.9716,
+    longitude: 77.5946,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 4,
+    name: 'Bob Brown',
+    latitude: 22.5726,
+    longitude: 88.3639,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 5,
+    name: 'Charlie Davis',
+    latitude: 13.0827,
+    longitude: 80.2707,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 6,
+    name: 'David Wilson',
+    latitude: 17.385044,
+    longitude: 78.486671,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 7,
+    name: 'Eva Martinez',
+    latitude: 23.0225,
+    longitude: 72.5714,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 8,
+    name: 'Frank White',
+    latitude: 26.8467,
+    longitude: 80.9462,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 9,
+    name: 'Grace Green',
+    latitude: 28.7041,
+    longitude: 77.1025,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 10,
+    name: 'Henry Clark',
+    latitude: 19.2183,
+    longitude: 84.7915,
+    profilePhoto: profileImg,
+  },
+  // Users outside of India
+  {
+    id: 11,
+    name: 'Isla Turner',
+    latitude: 31.5497,
+    longitude: 74.3436,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 12,
+    name: 'Jack Walker',
+    latitude: 51.5074,
+    longitude: -0.1278,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 13,
+    name: 'Kathy Scott',
+    latitude: 40.7128,
+    longitude: -74.006,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 14,
+    name: 'Leo Harris',
+    latitude: 48.8566,
+    longitude: 2.3522,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 15,
+    name: 'Mona King',
+    latitude: 34.0522,
+    longitude: -118.2437,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 16,
+    name: 'Nina Lee',
+    latitude: 52.52,
+    longitude: 13.405,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 17,
+    name: 'Oscar Perez',
+    latitude: 40.7306,
+    longitude: -73.9352,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 18,
+    name: 'Penny Lewis',
+    latitude: 43.65107,
+    longitude: -79.347015,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 19,
+    name: 'Quinn Allen',
+    latitude: -33.8688,
+    longitude: 151.2093,
+    profilePhoto: profileImg,
+  },
+  {
+    id: 20,
+    name: 'Rachel Adams',
+    latitude: 35.6895,
+    longitude: 139.6917,
+    profilePhoto: profileImg,
+  },
+];
+
+export const alumniRecommendations = [
+  {
+    id: 1,
+    name: 'Blah Blah',
+    title: 'SDE at JP Morgan',
+    connection: '173 other mutual connections',
+  },
+  {
+    id: 2,
+    name: 'Nina Rose',
+    title: 'SDE Hackathon Finalist at Microsoft',
+    connection: '299 other mutual connections',
+  },
+  {
+    id: 3,
+    name: 'John Doe',
+    title: 'Product Manager at Google',
+    connection: '87 other mutual connections',
+  },
+  {
+    id: 4,
+    name: 'Jane Smith',
+    title: 'Data Scientist at Amazon',
+    connection: '42 other mutual connections',
+  },
+];

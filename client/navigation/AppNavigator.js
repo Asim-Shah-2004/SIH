@@ -13,9 +13,18 @@ const screenConfig = {
   headerScreens: {
     headerShown: true,
     headerStyle: {
-      className: 'bg-background',
+      backgroundColor: '#FFFFFF',
+      elevation: 0,
+      shadowColor: '#000000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 5,
     },
-    headerTintColor: 'rgb(var(--color-text))',
+    headerTintColor: '#000000',
+    headerTitleStyle: {
+      fontSize: 18,
+      fontWeight: '600',
+    },
     headerShadowVisible: false,
   },
 };

@@ -1,33 +1,9 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 
+import { alumniRecommendations } from '../constants/alumniData';
+
 const AlumniRecommendations = ({ navigation }) => {
-  const recommendations = [
-    {
-      id: 1,
-      name: 'Blah Blah',
-      title: 'SDE at JP Morgan',
-      connection: '173 other mutual connections',
-    },
-    {
-      id: 2,
-      name: 'Nina Rose',
-      title: 'SDE Hackathon Finalist at Microsoft',
-      connection: '299 other mutual connections',
-    },
-    {
-      id: 3,
-      name: 'John Doe',
-      title: 'Product Manager at Google',
-      connection: '87 other mutual connections',
-    },
-    {
-      id: 4,
-      name: 'Jane Smith',
-      title: 'Data Scientist at Amazon',
-      connection: '42 other mutual connections',
-    },
-  ];
 
   const renderRecommendationItem = ({ item }) => (
     <View className="mr-4 w-64 rounded-lg bg-white p-4">
@@ -65,7 +41,7 @@ const AlumniRecommendations = ({ navigation }) => {
 
       <Text className="mb-3 text-lg font-bold">Based on Location</Text>
       <FlatList
-        data={recommendations}
+        data={alumniRecommendations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderRecommendationItem}
         horizontal
@@ -75,7 +51,7 @@ const AlumniRecommendations = ({ navigation }) => {
 
       <Text className="mb-3 text-lg font-bold">Based on Interests</Text>
       <FlatList
-        data={recommendations}
+        data={alumniRecommendations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderRecommendationItem}
         horizontal
@@ -85,7 +61,7 @@ const AlumniRecommendations = ({ navigation }) => {
 
       <Text className="mb-3 text-lg font-bold">Based on Batch</Text>
       <FlatList
-        data={recommendations}
+        data={alumniRecommendations}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderRecommendationItem}
         horizontal
