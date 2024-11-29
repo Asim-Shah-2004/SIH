@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import * as Haptics from 'expo-haptics';
+import { TouchableOpacity, StyleSheet } from 'react-native';
 
 import MainHeader from './components/MainHeader';
 import Connections from '../screens/Connections';
@@ -11,49 +13,76 @@ import NewPost from '../screens/NewPost';
 const Tab = createBottomTabNavigator();
 
 const tabConfig = {
-  screenOptions: {
+  screenOptions: ({ navigation }) => ({
     header: () => <MainHeader />,
+    tabBarShowLabel: false,
     tabBarStyle: {
+      position: 'absolute',
+      left: 12,
+      right: 12,
+      elevation: 8,
+      backgroundColor: '#000',
+      borderRadius: 5,
       height: 60,
-      paddingHorizontal: 5,
-      paddingBottom: 8,
-      paddingTop: 8,
-      backgroundColor: '#FFFFFF',
+      shadowColor: '#000',
+      shadowOpacity: 0.1,
+      shadowOffset: {
+        width: 0,
+        height: 6,
+      },
+      shadowRadius: 8,
+      paddingHorizontal: 10,
       borderTopWidth: 0,
-      elevation: 10,
-      shadowColor: '#000000',
-      shadowOffset: { width: 0, height: -3 },
-      shadowOpacity: 0.15,
-      shadowRadius: 10,
     },
-    tabBarActiveTintColor: '#0066FF',
+    tabBarActiveTintColor: '#fff',
     tabBarInactiveTintColor: '#7A7A7A',
-    tabBarLabelStyle: {
-      fontSize: 11,
-      fontWeight: '600',
-      marginBottom: 4,
-    },
-    tabBarItemStyle: {
-      paddingVertical: 5,
-    },
-    tabBarPressColor: '#E6EFFF',
-    tabBarPressOpacity: 0.8,
-  },
+    tabBarButton: (props) => (
+      <TouchableOpacity
+        activeOpacity={0.6}
+        {...props}
+        style={[props.style, styles.tabButton]}
+        onPress={(e) => {
+          // Enhanced haptic feedback
+          if (props.accessibilityState?.selected) {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          } else {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }
+          props.onPress?.(e);
+        }}
+      />
+    ),
+  }),
 };
 
 const getTabIcon =
   (name) =>
-  ({ focused, color, size }) => (
-    <Ionicons
-      name={name}
-      size={size}
-      color={color}
-      style={{
-        transform: [{ scale: focused ? 1.1 : 1 }],
-        opacity: focused ? 1 : 0.8,
-      }}
-    />
-  );
+  ({ focused, color, size }) =>
+    (
+      <Ionicons
+        name={focused ? name : `${name}-outline`}
+        size={focused ? size + 6 : size + 2}
+        color={color}
+        style={[
+          styles.icon,
+          focused && styles.activeIcon
+        ]}
+      />
+    );
+
+const styles = StyleSheet.create({
+  tabButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  icon: {
+    transform: [{ scale: 1 }],
+  },
+  activeIcon: {
+    transform: [{ scale: 1.1 }],
+  }
+});
 
 const tabs = [
   { name: 'Home', component: Home, icon: 'home' },
