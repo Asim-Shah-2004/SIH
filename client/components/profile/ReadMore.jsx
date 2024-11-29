@@ -17,21 +17,24 @@ const ReadMore = ({ children, numberOfLines, className }) => {
 
   return (
     <View>
-      <Animated.View style={{
-        transform: [{
-          scale: animation.interpolate({
-            inputRange: [0, 1],
-            outputRange: [1, 1.02],
-          }),
-        }],
-      }}>
+      <Animated.View
+        style={{
+          transform: [
+            {
+              scale: animation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [1, 1.02],
+              }),
+            },
+          ],
+        }}>
         <Text numberOfLines={isExpanded ? undefined : numberOfLines} className={className}>
           {children}
         </Text>
       </Animated.View>
       {children.length > 150 && (
         <TouchableOpacity onPress={toggleExpand} className="mt-2">
-          <Text className="text-secondary font-semibold text-base">
+          <Text className="text-base font-semibold text-secondary">
             {isExpanded ? '▲ Show less' : '▼ Read more'}
           </Text>
         </TouchableOpacity>

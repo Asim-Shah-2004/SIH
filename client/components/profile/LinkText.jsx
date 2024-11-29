@@ -11,13 +11,16 @@ const LinkText = ({ text, className }) => {
         <Text
           key={index}
           className="text-secondary underline"
-          onPress={() => Linking.openURL(part.startsWith('http') ? part : `https://${part}`)}
-        >
+          onPress={() => Linking.openURL(part.startsWith('http') ? part : `https://${part}`)}>
           {part}
         </Text>
       );
     }
-    return <Text key={index} className={className}>{part}</Text>;
+    return (
+      <Text key={index} className={className}>
+        {part}
+      </Text>
+    );
   });
 };
 

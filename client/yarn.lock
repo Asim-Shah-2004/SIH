@@ -1908,14 +1908,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-async-storage/async-storage@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@react-native-async-storage/async-storage@npm:2.1.0"
+"@react-native-async-storage/async-storage@npm:1.23.1":
+  version: 1.23.1
+  resolution: "@react-native-async-storage/async-storage@npm:1.23.1"
   dependencies:
     merge-options: "npm:^3.0.4"
   peerDependencies:
-    react-native: ^0.0.0-0 || >=0.65 <1.0
-  checksum: 10/ce7995f456a688042a5a4cd31e97aafff24d42d10c9d573e9e763ca7775156a87e4d1685daa9c9ea67c2721cbceeb464a0b75641723a89b47f45806e5f8960c2
+    react-native: ^0.0.0-0 || >=0.60 <1.0
+  checksum: 10/9d0acc7edb0ba9ee414d6e62c656e5d571c9d9615e7e9f4748865b965178998f2e73786b8050387ada00ddb6faaca97b5cf2e010ceaeebe91571991364a0f515
   languageName: node
   linkType: hard
 
@@ -4860,7 +4860,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:^2.27.5":
+"eslint-plugin-import@npm:^2.27.5, eslint-plugin-import@npm:^2.31.0":
   version: 2.31.0
   resolution: "eslint-plugin-import@npm:2.31.0"
   dependencies:
@@ -9165,9 +9165,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-maps@npm:^1.20.1":
-  version: 1.20.1
-  resolution: "react-native-maps@npm:1.20.1"
+"react-native-maps@npm:1.18.0":
+  version: 1.18.0
+  resolution: "react-native-maps@npm:1.18.0"
   dependencies:
     "@types/geojson": "npm:^7946.0.13"
   peerDependencies:
@@ -9177,7 +9177,7 @@ __metadata:
   peerDependenciesMeta:
     react-native-web:
       optional: true
-  checksum: 10/582fbf4d2f210251626e7f8296cf05451453a974b56b6855dae44839c895462781057b0ebcece920cb413e58d2e4c57ec229bd55678da25d5600278317dc3e51
+  checksum: 10/90db39bbdc5e09d6e5b90a5c9fafae733dc92e073ef46cf0244a20695b6c0db192f839b8e3edfc6ec6a7af837655f866731ded107ddb3dc4091127a9cde2cd9e
   languageName: node
   linkType: hard
 
@@ -11049,7 +11049,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@expo/metro-runtime": "npm:~4.0.0"
     "@expo/vector-icons": "npm:^14.0.0"
-    "@react-native-async-storage/async-storage": "npm:^2.1.0"
+    "@react-native-async-storage/async-storage": "npm:1.23.1"
     "@react-native-community/blur": "npm:^4.4.1"
     "@react-navigation/drawer": "npm:^7.0.0"
     "@react-navigation/native": "npm:^7.0.0"
@@ -11061,6 +11061,7 @@ __metadata:
     "@typescript-eslint/parser": "npm:^7.7.0"
     eslint: "npm:^8.57.0"
     eslint-config-universe: "npm:^12.0.1"
+    eslint-plugin-import: "npm:^2.31.0"
     expo: "npm:^52.0.11"
     expo-blur: "npm:^14.0.1"
     expo-constants: "npm:~17.0.3"
@@ -11081,7 +11082,7 @@ __metadata:
     react-native-dotenv: "npm:^3.4.11"
     react-native-gesture-handler: "npm:~2.20.2"
     react-native-heroicons: "npm:^4.0.0"
-    react-native-maps: "npm:^1.20.1"
+    react-native-maps: "npm:1.18.0"
     react-native-reanimated: "npm:~3.16.1"
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.1.0"

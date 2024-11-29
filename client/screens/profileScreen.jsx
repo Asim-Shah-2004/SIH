@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
   Award,
@@ -10,8 +8,10 @@ import {
   Link2,
   Linkedin,
   Twitter,
-  Trophy
+  Trophy,
 } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 
 import Badge from '../components/profile/Badge';
 import Card from '../components/profile/Card';
@@ -21,12 +21,12 @@ import StatItem from '../components/profile/StatItem';
 import { DEFAULT_ALUMNI_DATA } from '../constants/profileData';
 
 const SectionTitle = ({ children }) => (
-  <Text className="text-base font-bold text-gray-800 mb-2">{children}</Text>
+  <Text className="mb-2 text-base font-bold text-gray-800">{children}</Text>
 );
 
 const getSocialIcon = (platform) => {
   const iconSize = 20;
-  const iconColor = "text-primary";
+  const iconColor = 'text-primary';
   switch (platform.toLowerCase()) {
     case 'github':
       return <Github size={iconSize} className={iconColor} />;
@@ -50,15 +50,14 @@ const ProfileScreen = ({ route = {} }) => {
       {/* Header Section */}
       <LinearGradient
         colors={['#2C3E8D', '#3498DB']} // Using actual color values
-        className="pb-4 bg-gradient-to-r from-primary to-secondary"
-      >
-        <View className="px-4 pt-6 items-center">
+        className="bg-gradient-to-r from-primary to-secondary pb-4">
+        <View className="items-center px-4 pt-6">
           <Image
             source={{ uri: data.profilePicture }}
-            className="w-20 h-20 rounded-full border-2 border-background"
+            className="h-20 w-20 rounded-full border-2 border-background"
           />
-          <Text className="text-lg font-bold mt-2 text-text">{data.name}</Text>
-          <ReadMore numberOfLines={3} className="text-text/90 text-sm mb-4">
+          <Text className="mt-2 text-lg font-bold text-text">{data.name}</Text>
+          <ReadMore numberOfLines={3} className="mb-4 text-sm text-text/90">
             <LinkText text={data.bio} className="text-text/90" />
           </ReadMore>
 
@@ -66,7 +65,7 @@ const ProfileScreen = ({ route = {} }) => {
             {[
               ['Posts', data.posts],
               ['Followers', data.followers],
-              ['Following', data.following]
+              ['Following', data.following],
             ].map(([label, value]) => (
               <StatItem key={label} label={label} value={value} />
             ))}
@@ -75,18 +74,17 @@ const ProfileScreen = ({ route = {} }) => {
       </LinearGradient>
 
       {/* Main Content */}
-      <View className="p-4 space-y-6">
+      <View className="space-y-6 p-4">
         {/* Action Buttons */}
         <View className="flex-row space-x-2">
           <Pressable
             onPress={() => setIsFollowing(!isFollowing)}
-            className={`flex-1 py-2 rounded-lg items-center ${isFollowing ? 'bg-accent' : 'bg-primary'}`}
-          >
+            className={`flex-1 items-center rounded-lg py-2 ${isFollowing ? 'bg-accent' : 'bg-primary'}`}>
             <Text className={isFollowing ? 'text-text' : 'text-accent'}>
               {isFollowing ? 'Following' : 'Follow'}
             </Text>
           </Pressable>
-          <Pressable className="flex-1 py-2 rounded-lg items-center border border-primary">
+          <Pressable className="flex-1 items-center rounded-lg border border-primary py-2">
             <Text className="text-primary">Message</Text>
           </Pressable>
         </View>
@@ -163,7 +161,7 @@ const ProfileScreen = ({ route = {} }) => {
               key={index}
               icon={getSocialIcon(platform)}
               title={platform.charAt(0).toUpperCase() + platform.slice(1)}
-              subtitle={<LinkText text={url} className="text-gray-600 text-base" />}
+              subtitle={<LinkText text={url} className="text-base text-gray-600" />}
             />
           ))}
         </View>

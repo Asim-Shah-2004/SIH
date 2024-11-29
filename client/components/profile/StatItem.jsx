@@ -14,29 +14,14 @@ const StatItem = ({ label, value }) => {
   }, []);
 
   return (
-    <Animated.View 
+    <Animated.View
+      className="items-center px-4 py-2"
       style={{
         transform: [{ scale: animatedValue }],
         opacity: animatedValue,
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-      }}
-    >
-      <Text style={{ 
-        fontSize: 24, 
-        fontWeight: 'bold',
-        color: '#FFF'  // White text for better contrast
       }}>
-        {value}
-      </Text>
-      <Text style={{ 
-        fontSize: 16,
-        color: '#ECF0F1',  // Light gray text for secondary info
-        fontWeight: '500'
-      }}>
-        {label}
-      </Text>
+      <Text className="text-2xl font-bold text-white">{value}</Text>
+      <Text className="mt-1 text-base text-white/80">{label}</Text>
     </Animated.View>
   );
 };

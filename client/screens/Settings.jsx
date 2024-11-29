@@ -1,17 +1,14 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native'
-import React, { useState } from 'react'
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 
 const Settings = () => {
-  const [notifications, setNotifications] = useState(true)
-  const [emailUpdates, setEmailUpdates] = useState(true)
-  const [privateProfile, setPrivateProfile] = useState(false)
+  const [notifications, setNotifications] = useState(true);
+  const [emailUpdates, setEmailUpdates] = useState(true);
+  const [privateProfile, setPrivateProfile] = useState(false);
 
   const SettingItem = ({ icon, title, value, onPress, isSwitch }) => (
-    <TouchableOpacity 
-      style={styles.settingItem} 
-      onPress={isSwitch ? null : onPress}
-    >
+    <TouchableOpacity style={styles.settingItem} onPress={isSwitch ? null : onPress}>
       <View style={styles.settingLeft}>
         <Ionicons name={icon} size={24} color="#666" />
         <Text style={styles.settingText}>{title}</Text>
@@ -22,7 +19,7 @@ const Settings = () => {
         <Ionicons name="chevron-forward" size={24} color="#666" />
       )}
     </TouchableOpacity>
-  )
+  );
 
   return (
     <ScrollView style={styles.container}>
@@ -34,16 +31,16 @@ const Settings = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Notifications</Text>
-        <SettingItem 
-          icon="notifications-outline" 
-          title="Push Notifications" 
+        <SettingItem
+          icon="notifications-outline"
+          title="Push Notifications"
           value={notifications}
           onPress={() => setNotifications(!notifications)}
           isSwitch
         />
-        <SettingItem 
-          icon="mail-outline" 
-          title="Email Updates" 
+        <SettingItem
+          icon="mail-outline"
+          title="Email Updates"
           value={emailUpdates}
           onPress={() => setEmailUpdates(!emailUpdates)}
           isSwitch
@@ -52,9 +49,9 @@ const Settings = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Privacy</Text>
-        <SettingItem 
-          icon="lock-closed-outline" 
-          title="Private Profile" 
+        <SettingItem
+          icon="lock-closed-outline"
+          title="Private Profile"
           value={privateProfile}
           onPress={() => setPrivateProfile(!privateProfile)}
           isSwitch
@@ -72,8 +69,8 @@ const Settings = () => {
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -119,6 +116,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-})
+});
 
-export default Settings
+export default Settings;
