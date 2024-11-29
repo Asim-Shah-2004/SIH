@@ -12,8 +12,8 @@
     "ios": "expo start --ios",
     "start": "expo start",
     "prebuild": "expo prebuild",
-    "lint": "eslint \"App.{js,jsx,ts,tsx}\" && eslint \"components/**/*.{js,jsx,ts,tsx}\" && eslint \"constants/**/*.{js,jsx,ts,tsx}\" && eslint \"navigation/**/*.{js,jsx,ts,tsx}\" && eslint \"screens/**/*.{js,jsx,ts,tsx}\" && prettier -c \"App.{js,jsx,ts,tsx}\" && prettier -c \"components/**/*.{js,jsx,ts,tsx,json}\" && prettier -c \"constants/**/*.{js,jsx,ts,tsx,json}\" && prettier -c \"navigation/**/*.{js,jsx,ts,tsx,json}\" && prettier -c \"screens/**/*.{js,jsx,ts,tsx,json}\"",
-    "format": "eslint \"App.{js,jsx,ts,tsx}\" --fix && eslint \"components/**/*.{js,jsx,ts,tsx}\" --fix && eslint \"constants/**/*.{js,jsx,ts,tsx}\" --fix && eslint \"navigation/**/*.{js,jsx,ts,tsx}\" --fix && eslint \"screens/**/*.{js,jsx,ts,tsx}\" --fix && prettier \"App.{js,jsx,ts,tsx}\" --write && prettier \"components/**/*.{js,jsx,ts,tsx,json}\" --write && prettier \"constants/**/*.{js,jsx,ts,tsx,json}\" --write && prettier \"navigation/**/*.{js,jsx,ts,tsx,json}\" --write && prettier \"screens/**/*.{js,jsx,ts,tsx,json}\" --write"
+    "lint": "eslint \"{App,components,constants,navigation,screens,utils}/**/*.{js,jsx,ts,tsx}\" && prettier -c \"{App,components,constants,navigation,screens,utils}/**/*.{js,jsx,ts,tsx,json}\"",
+    "format": "eslint \"{App,components,constants,navigation,screens,utils}/**/*.{js,jsx,ts,tsx}\" --fix && prettier \"{App,components,constants,navigation,screens,utils}/**/*.{js,jsx,ts,tsx,json}\" --write"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.0",
@@ -24,11 +24,14 @@
     "@react-navigation/native": "^7.0.0",
     "@react-navigation/stack": "^7.0.4",
     "expo": "^52.0.11",
+    "expo-av": "~15.0.1",
     "expo-blur": "^14.0.1",
     "expo-constants": "~17.0.3",
+    "expo-document-picker": "~13.0.1",
     "expo-font": "~13.0.1",
     "expo-haptics": "^14.0.0",
     "expo-image": "^2.0.2",
+    "expo-image-picker": "^16.0.3",
     "expo-linear-gradient": "^14.0.1",
     "expo-linking": "~7.0.3",
     "expo-location": "^18.0.2",

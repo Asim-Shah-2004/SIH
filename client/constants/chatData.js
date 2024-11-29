@@ -1,0 +1,38 @@
+export const chatData = [
+  {
+    id: '1',
+    name: 'Arjun Patel',
+    lastMessage: 'Kaise ho bhai?',
+    timestamp: '10:30 AM',
+    unread: 2,
+    avatar: 'https://randomuser.me/api/portraits/men/11.jpg',
+    isOnline: true,
+  },
+  {
+    id: '2',
+    name: 'Priya Sharma',
+    lastMessage: 'Meeting ka schedule bhej do',
+    timestamp: '2:45 PM',
+    unread: 0,
+    avatar: 'https://randomuser.me/api/portraits/women/12.jpg',
+    isOnline: false,
+  },
+  {
+    id: '3',
+    name: 'Rahul Verma',
+    lastMessage: 'Project complete ho gaya',
+    timestamp: 'Yesterday',
+    unread: 1,
+    avatar: 'https://randomuser.me/api/portraits/men/13.jpg',
+    isOnline: true,
+  },
+  {
+    id: '4',
+    name: 'Deepika Kumar',
+    lastMessage: 'Thanks yaar!',
+    timestamp: 'Yesterday',
+    unread: 0,
+    avatar: 'https://randomuser.me/api/portraits/women/14.jpg',
+    isOnline: false,
+  },
+];

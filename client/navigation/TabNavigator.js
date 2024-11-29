@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
-import { useState, useEffect } from 'react';
 
 import MainHeader from './components/MainHeader';
 import Connections from '../screens/Connections';
@@ -70,17 +69,19 @@ const tabConfig = {
   }),
 };
 
-const getTabIcon = (name) => ({ focused, color, size }) => {
-  const iconSize = isSmallDevice ? size : isLargeDevice ? size * 1.3 : size + 4;
-  return (
-    <Ionicons
-      name={focused ? name : `${name}-outline`}
-      size={focused ? iconSize + 6 : iconSize + 2}
-      color={color}
-      style={[styles.icon, focused && styles.activeIcon]}
-    />
-  );
-};
+const getTabIcon =
+  (name) =>
+  ({ focused, color, size }) => {
+    const iconSize = isSmallDevice ? size : isLargeDevice ? size * 1.3 : size + 4;
+    return (
+      <Ionicons
+        name={focused ? name : `${name}-outline`}
+        size={focused ? iconSize + 6 : iconSize + 2}
+        color={color}
+        style={[styles.icon, focused && styles.activeIcon]}
+      />
+    );
+  };
 
 const styles = StyleSheet.create({
   tabButton: {

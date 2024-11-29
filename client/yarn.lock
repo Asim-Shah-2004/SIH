@@ -5165,6 +5165,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-av@npm:~15.0.1":
+  version: 15.0.1
+  resolution: "expo-av@npm:15.0.1"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10/98f8275e9f7ca29739f291fc85f86261aa29d5c54a716c5f847f833ce17369e2b04f11f79b6940eaac63168041f8346590fe4136e3c60f8f698ebd8661f46669
+  languageName: node
+  linkType: hard
+
 "expo-blur@npm:^14.0.1":
   version: 14.0.1
   resolution: "expo-blur@npm:14.0.1"
@@ -5186,6 +5201,15 @@ __metadata:
     expo: "*"
     react-native: "*"
   checksum: 10/25487b469010c57ffbb1bf5e052d5e546db0bc7af9a68acd0e359a2f3978c99fc28b49527514da862dfcaf6b7915674b16d70a3c63d31a64cbdb0d27c6294a69
+  languageName: node
+  linkType: hard
+
+"expo-document-picker@npm:~13.0.1":
+  version: 13.0.1
+  resolution: "expo-document-picker@npm:13.0.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/d4404154fbe763d478b2eb4a2a7a06a417ffcc2411556eb97c78156d574c3ac9c956d6fd092cd1a670b1e3a4a02319014daf5e9f186a1bf9d6713121d6dbe7e2
   languageName: node
   linkType: hard
 
@@ -5219,6 +5243,26 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10/da25773a8f59410fe2066d21404a2cb2a7a93e55b433d21e103dc1cb7ac437926860655672f8f6dfba88d3124c53f911a6b4ef4e935b9f34d2e04c7d4b13d24e
+  languageName: node
+  linkType: hard
+
+"expo-image-loader@npm:~5.0.0":
+  version: 5.0.0
+  resolution: "expo-image-loader@npm:5.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/a7495e24d6c6e78493cd6ea9d738cf6feb296ea2307e11cc0206fc181fe14624d29ab6b598217417bd20494bf8ce7a901c2d0f68305c911cf31ad0b6cb89d163
+  languageName: node
+  linkType: hard
+
+"expo-image-picker@npm:^16.0.3":
+  version: 16.0.3
+  resolution: "expo-image-picker@npm:16.0.3"
+  dependencies:
+    expo-image-loader: "npm:~5.0.0"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/c034070753774dd2cb996256382f9e721b302cea473ca681fb2de2fae12c7bf8ce0e14539a94fab7ed4770081f211775196269f520202e448613c32d16a06be7
   languageName: node
   linkType: hard
 
@@ -11072,11 +11116,14 @@ __metadata:
     eslint-config-universe: "npm:^12.0.1"
     eslint-plugin-import: "npm:^2.31.0"
     expo: "npm:^52.0.11"
+    expo-av: "npm:~15.0.1"
     expo-blur: "npm:^14.0.1"
     expo-constants: "npm:~17.0.3"
+    expo-document-picker: "npm:~13.0.1"
     expo-font: "npm:~13.0.1"
     expo-haptics: "npm:^14.0.0"
     expo-image: "npm:^2.0.2"
+    expo-image-picker: "npm:^16.0.3"
     expo-linear-gradient: "npm:^14.0.1"
     expo-linking: "npm:~7.0.3"
     expo-location: "npm:^18.0.2"
