@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
-import { TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
+import { TouchableOpacity, StyleSheet, Platform } from 'react-native';
 
 import MainHeader from './components/MainHeader';
 import Connections from '../screens/Connections';
@@ -43,12 +43,25 @@ const tabConfig = {
         {...props}
         style={[props.style, styles.tabButton]}
         onPress={(e) => {
-          // Enhanced haptic feedback
-          if (props.accessibilityState?.selected) {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-          } else {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          if (Platform.OS === 'web') {
+            e.preventDefault();
           }
+
+          // Handle haptics only on mobile
+          if (Platform.OS !== 'web') {
+            if (props.accessibilityState?.selected) {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            } else {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }
+          }
+
+          // Navigate to the screen
+          const screen = props?.children?.props?.href?.split('/').pop();
+          if (screen) {
+            navigation.navigate(screen);
+          }
+
           props.onPress?.(e);
         }}
       />
@@ -58,18 +71,14 @@ const tabConfig = {
 
 const getTabIcon =
   (name) =>
-  ({ focused, color, size }) =>
-    (
-      <Ionicons
-        name={focused ? name : `${name}-outline`}
-        size={focused ? size + 6 : size + 2}
-        color={color}
-        style={[
-          styles.icon,
-          focused && styles.activeIcon
-        ]}
-      />
-    );
+  ({ focused, color, size }) => (
+    <Ionicons
+      name={focused ? name : `${name}-outline`}
+      size={focused ? size + 6 : size + 2}
+      color={color}
+      style={[styles.icon, focused && styles.activeIcon]}
+    />
+  );
 
 const styles = StyleSheet.create({
   tabButton: {
@@ -83,7 +92,7 @@ const styles = StyleSheet.create({
   },
   activeIcon: {
     transform: [{ scale: 1.1 }],
-  }
+  },
 });
 
 const tabs = [

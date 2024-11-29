@@ -4,7 +4,6 @@ import { View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { alumniRecommendations } from '../constants/alumniData';
 
 const AlumniRecommendations = ({ navigation }) => {
-
   const renderRecommendationItem = ({ item }) => (
     <View className="mr-4 w-64 rounded-lg bg-white p-4">
       <View className="mb-3 flex-row items-center">
