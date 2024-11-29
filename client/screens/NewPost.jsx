@@ -1,101 +1,310 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  Image, 
+  TouchableOpacity, 
+  ScrollView, 
+  Modal,
+  Platform,
+  KeyboardAvoidingView,
+  Animated
+} from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { MaterialIcons, Feather, Ionicons } from '@expo/vector-icons';
 
-export default function NewPost({ navigation }) {
+// Expanded Alumni Data
+const ALUMNI_DATA = [
+  { 
+    id: '1', 
+    name: 'John Doe', 
+    username: 'johndoe', 
+    avatar: 'https://randomuser.me/api/portraits/men/1.jpg',
+    bio: 'Software Engineer'
+  },
+  { 
+    id: '2', 
+    name: 'Jane Smith', 
+    username: 'janesmith', 
+    avatar: 'https://randomuser.me/api/portraits/women/2.jpg',
+    bio: 'Product Manager'
+  },
+  { 
+    id: '3', 
+    name: 'Mike Johnson', 
+    username: 'mikejohnson', 
+    avatar: 'https://randomuser.me/api/portraits/men/3.jpg',
+    bio: 'Design Lead'
+  },
+  { 
+    id: '4', 
+    name: 'Emily Brown', 
+    username: 'emilybrown', 
+    avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+    bio: 'Marketing Specialist'
+  },
+  { 
+    id: '5', 
+    name: 'David Wilson', 
+    username: 'davidwilson', 
+    avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
+    bio: 'Data Scientist'
+  }
+];
+
+export default function NewPostScreen({ navigation }) {
   const [postContent, setPostContent] = useState('');
-  const [imageUri, setImageUri] = useState('');
-  const [videoUri, setVideoUri] = useState('');
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [tagSuggestions, setTagSuggestions] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [showTagModal, setShowTagModal] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
-  const handlePostContentChange = (text) => {
-    if (text.length <= 3000) {
-      setPostContent(text);
+  // Advanced Tagging Logic
+  const handleTagSearch = (searchText = '') => {
+    const suggestions = ALUMNI_DATA.filter(alumni => 
+      alumni.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      alumni.username.toLowerCase().includes(searchText.toLowerCase()) ||
+      alumni.bio.toLowerCase().includes(searchText.toLowerCase())
+    );
+    
+    setTagSuggestions(suggestions);
+    setShowTagModal(true);
+  };
+
+  const handleSelectTag = (alumni) => {
+    if (!selectedTags.find(tag => tag.id === alumni.id)) {
+      setSelectedTags([...selectedTags, alumni]);
+      
+      // Replace the last partial tag with full tag
+      const taggedText = postContent.replace(/@\w*$/, `@${alumni.username} `);
+      setPostContent(taggedText);
+    }
+    
+    setShowTagModal(false);
+    setTagSuggestions([]);
+  };
+
+  const removeTag = (alumniToRemove) => {
+    setSelectedTags(selectedTags.filter(tag => tag.id !== alumniToRemove.id));
+  };
+
+  // Media Picker
+  const pickMedia = async (type) => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: type === 'image' 
+          ? ImagePicker.MediaTypeOptions.Images 
+          : ImagePicker.MediaTypeOptions.Videos,
+        allowsMultipleSelection: true,
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        const newFiles = result.assets.map(asset => ({
+          type,
+          uri: asset.uri
+        }));
+        setMediaFiles(prev => [...prev, ...newFiles]);
+      }
+    } catch (error) {
+      console.error('Media selection error:', error);
     }
   };
 
-  const handleMediaPick = () => {
-    if (!imageUri && !videoUri) {
-      setImageUri('https://via.placeholder.com/400'); // Mock image URI
-    } else if (!videoUri) {
-      setVideoUri('https://www.w3schools.com/html/mov_bbb.mp4'); // Mock video URI
-    } else {
-      alert('You can only add one image and one video.');
-    }
-  };
+  // Tag Selection Modal
+  const TagSelectionModal = () => (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={showTagModal}
+      onRequestClose={() => setShowTagModal(false)}
+    >
+      <View className="flex-1 bg-black/50 justify-end">
+        <View className="bg-white rounded-t-2xl p-4 max-h-[70%]">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-xl font-bold">Tag People</Text>
+            <TouchableOpacity onPress={() => setShowTagModal(false)}>
+              <Ionicons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
 
-  const handleWriteWithAI = () => {
-    alert('Write with AI feature is coming soon!');
-  };
+          {/* Search Input */}
+          <TextInput
+            placeholder="Search people, roles, or departments"
+            className="bg-gray-100 p-3 rounded-xl mb-4"
+            onChangeText={handleTagSearch}
+          />
 
-  const handleSentimentAnalysis = () => {
-    alert('Sentiment Analysis feature is coming soon!');
-  };
-
-  const handleSubmit = () => {
-    alert('Post submitted successfully!');
-    setPostContent('');
-    setImageUri('');
-    setVideoUri('');
-  };
+          {/* Tag Suggestions */}
+          <ScrollView>
+            {tagSuggestions.map(alumni => (
+              <TouchableOpacity 
+                key={alumni.id}
+                className="flex-row items-center p-3 border-b border-gray-200"
+                onPress={() => handleSelectTag(alumni)}
+              >
+                <Image 
+                  source={{ uri: alumni.avatar }}
+                  className="w-12 h-12 rounded-full mr-4"
+                />
+                <View>
+                  <Text className="font-bold">{alumni.name}</Text>
+                  <Text className="text-gray-500">{alumni.bio}</Text>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
-    <ScrollView className="flex-1 bg-gray-100 p-4">
-      <Text className="mb-6 text-center text-2xl font-bold">Create a New Post</Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1 bg-white"
+    >
+      {/* Tag Selection Modal */}
+      <TagSelectionModal />
 
-      {/* Post Content Input */}
-      <TextInput
-        className="rounded-md border border-gray-300 bg-white p-4 text-base"
-        multiline
-        placeholder="Write your post here..."
-        value={postContent}
-        onChangeText={handlePostContentChange}
-        maxLength={3000}
-      />
-      <Text className="mt-1 text-right text-sm text-gray-500">{postContent.length}/3000</Text>
+      {/* Header */}
+      <View className="flex-row justify-between items-center p-4 border-b border-gray-200">
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={24} color="black" />
+        </TouchableOpacity>
+        
+        <View className="flex-row space-x-2">
+          {/* AI Magic Button */}
+          <TouchableOpacity 
+            className="bg-purple-500 p-2 rounded-full"
+            onPress={() => {
+              // AI Rewrite logic
+              alert('AI Magic activated!');
+            }}
+          >
+            <Ionicons name="sparkles" size={20} color="white" />
+          </TouchableOpacity>
 
-      {/* Add Media Button */}
-      <TouchableOpacity
-        className="my-4 flex-row items-center rounded-md bg-blue-500 p-3"
-        onPress={handleMediaPick}>
-        <MaterialIcons name="insert-photo" size={24} color="white" />
-        <Text className="ml-2 text-base text-white">Add Media</Text>
-      </TouchableOpacity>
+          {/* Tag Button */}
+          <TouchableOpacity 
+            className="bg-green-500 p-2 rounded-full"
+            onPress={() => handleTagSearch()}
+          >
+            <Ionicons name="at" size={20} color="white" />
+          </TouchableOpacity>
 
-      {/* Image Display */}
-      {imageUri ? (
-        <Image
-          source={{ uri: imageUri }}
-          className="mt-2 h-48 w-full rounded-md"
-          resizeMode="cover"
-        />
-      ) : null}
-
-      {/* Video Display */}
-      {videoUri ? (
-        <View className="mt-4 flex h-24 w-full items-center justify-center rounded-md bg-gray-400">
-          <Text className="text-sm text-white">Video Preview: {videoUri}</Text>
+          {/* Post Button */}
+          <TouchableOpacity 
+            className="bg-blue-500 px-4 py-2 rounded-full"
+            onPress={() => {
+              // Post submission logic
+              alert('Post submitted!');
+            }}
+          >
+            <Text className="text-white font-bold">Post</Text>
+          </TouchableOpacity>
         </View>
-      ) : null}
+      </View>
 
-      {/* Additional Options */}
-      <TouchableOpacity
-        className="my-4 flex-row items-center rounded-md bg-green-500 p-3"
-        onPress={handleWriteWithAI}>
-        <MaterialIcons name="create" size={24} color="white" />
-        <Text className="ml-2 text-base text-white">Write with AI</Text>
-      </TouchableOpacity>
+      {/* Content Area */}
+      <View className="flex-1 p-4">
+        {/* Text Input */}
+        <TextInput
+          multiline
+          placeholder="What's happening?"
+          placeholderTextColor="#888"
+          value={postContent}
+          onChangeText={(text) => {
+            setPostContent(text);
+            
+            // Trigger tag modal when @ is typed
+            if (text.endsWith('@')) {
+              handleTagSearch();
+            }
+          }}
+          className="min-h-[150px] text-base bg-gray-50 p-3 rounded-xl"
+        />
 
-      <TouchableOpacity
-        className="my-4 flex-row items-center rounded-md bg-purple-500 p-3"
-        onPress={handleSentimentAnalysis}>
-        <MaterialIcons name="analytics" size={24} color="white" />
-        <Text className="ml-2 text-base text-white">Sentiment Analysis</Text>
-      </TouchableOpacity>
+        {/* Selected Tags */}
+        {selectedTags.length > 0 && (
+          <ScrollView 
+            horizontal 
+            className="mt-4"
+            showsHorizontalScrollIndicator={false}
+          >
+            {selectedTags.map(tag => (
+              <View 
+                key={tag.id} 
+                className="bg-blue-100 px-3 py-2 rounded-full mr-2 flex-row items-center"
+              >
+                <Image 
+                  source={{ uri: tag.avatar }}
+                  className="w-6 h-6 rounded-full mr-2"
+                />
+                <Text className="text-blue-600 mr-2">@{tag.username}</Text>
+                <TouchableOpacity onPress={() => removeTag(tag)}>
+                  <Ionicons name="close" size={16} color="blue" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        )}
 
-      {/* Submit Button */}
-      <TouchableOpacity className="mt-4 rounded-md bg-blue-600 p-4" onPress={handleSubmit}>
-        <Text className="text-center text-lg text-white">Submit Post</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        {/* Media Upload Buttons */}
+        <View className="flex-row space-x-4 mt-4">
+          <TouchableOpacity
+            className="flex-1 bg-gray-100 p-3 rounded-xl items-center flex-row justify-center"
+            onPress={() => pickMedia('image')}
+          >
+            <Ionicons name="image" size={24} color="gray" />
+            <Text className="ml-2 text-gray-700">Add Image</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-1 bg-gray-100 p-3 rounded-xl items-center flex-row justify-center"
+            onPress={() => pickMedia('video')}
+          >
+            <Ionicons name="videocam" size={24} color="gray" />
+            <Text className="ml-2 text-gray-700">Add Video</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Media Preview */}
+        {mediaFiles.length > 0 && (
+          <ScrollView 
+            horizontal 
+            className="mt-4"
+            showsHorizontalScrollIndicator={false}
+          >
+            {mediaFiles.map((file, index) => (
+              <View 
+                key={index} 
+                className="mr-4 relative rounded-xl overflow-hidden"
+              >
+                {file.type === 'image' ? (
+                  <Image 
+                    source={{ uri: file.uri }} 
+                    className="w-40 h-40 rounded-xl"
+                  />
+                ) : (
+                  <View className="w-40 h-40 bg-black rounded-xl justify-center items-center">
+                    <Ionicons name="videocam" size={40} color="white" />
+                  </View>
+                )}
+                <TouchableOpacity
+                  className="absolute top-2 right-2 bg-black/50 rounded-full p-1"
+                  onPress={() => {
+                    setMediaFiles(prev => prev.filter((_, i) => i !== index));
+                  }}
+                >
+                  <Ionicons name="close" size={16} color="white" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        )}
+      </View>
+    </KeyboardAvoidingView>
   );
 }
