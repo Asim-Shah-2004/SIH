@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { 
-  Award, 
-  Briefcase, 
-  Github, 
+import {
+  Award,
+  Briefcase,
+  Github,
   Globe,
-  GraduationCap, 
-  Link2, 
-  Linkedin, 
+  GraduationCap,
+  Link2,
+  Linkedin,
   Twitter,
-  Trophy 
+  Trophy
 } from 'lucide-react-native';
 
 import Badge from '../components/profile/Badge';
 import Card from '../components/profile/Card';
-import LinkText from '../components/common/LinkText';
+import LinkText from '../components/profile/LinkText';
 import ReadMore from '../components/profile/ReadMore';
 import StatItem from '../components/profile/StatItem';
 import { DEFAULT_ALUMNI_DATA } from '../constants/profileData';
@@ -26,8 +26,8 @@ const SectionTitle = ({ children }) => (
 
 const getSocialIcon = (platform) => {
   const iconSize = 20;
-  const iconColor = "text-primary"; 
-  switch(platform.toLowerCase()) {
+  const iconColor = "text-primary";
+  switch (platform.toLowerCase()) {
     case 'github':
       return <Github size={iconSize} className={iconColor} />;
     case 'linkedin':
@@ -48,13 +48,13 @@ const ProfileScreen = ({ route = {} }) => {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
       {/* Header Section */}
-      <LinearGradient 
+      <LinearGradient
         colors={['#2C3E8D', '#3498DB']} // Using actual color values
-        className="pb-4 bg-gradient-to-r from-primary to-secondary" 
+        className="pb-4 bg-gradient-to-r from-primary to-secondary"
       >
         <View className="px-4 pt-6 items-center">
-          <Image 
-            source={{ uri: data.profilePicture }} 
+          <Image
+            source={{ uri: data.profilePicture }}
             className="w-20 h-20 rounded-full border-2 border-background"
           />
           <Text className="text-lg font-bold mt-2 text-text">{data.name}</Text>
@@ -78,7 +78,7 @@ const ProfileScreen = ({ route = {} }) => {
       <View className="p-4 space-y-6">
         {/* Action Buttons */}
         <View className="flex-row space-x-2">
-          <Pressable 
+          <Pressable
             onPress={() => setIsFollowing(!isFollowing)}
             className={`flex-1 py-2 rounded-lg items-center ${isFollowing ? 'bg-accent' : 'bg-primary'}`}
           >
