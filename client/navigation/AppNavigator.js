@@ -8,6 +8,7 @@ import DrawerNavigator from './DrawerNavigator';
 import Chat from '../screens/Chat';
 import Message from '../screens/Message';
 import Notifications from '../screens/Notifications';
+import NewJob from '../screens/NewJob';
 // import Map from '../screens/Map';
 
 const Stack = createNativeStackNavigator();
@@ -83,6 +84,10 @@ export default function AppNavigator({ isLoggedIn }) {
             options={screenConfig.headerScreens}
           />
           {/* <Stack.Screen name="Map" component={Map} options={screenConfig.headerScreens} /> */}
+          <Stack.Screen name="NewJob" component={NewJob} options={{
+            ...screenConfig.headerScreens,
+            title: 'Post a New Job',
+          }} />
         </>
       )}
     </Stack.Navigator>
