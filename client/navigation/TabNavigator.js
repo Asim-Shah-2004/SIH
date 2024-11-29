@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import * as Haptics from 'expo-haptics';
-import { TouchableOpacity, StyleSheet } from 'react-native';
+import { TouchableOpacity, StyleSheet, Keyboard } from 'react-native';
 
 import MainHeader from './components/MainHeader';
 import Connections from '../screens/Connections';
@@ -16,6 +16,7 @@ const tabConfig = {
   screenOptions: ({ navigation }) => ({
     header: () => <MainHeader />,
     tabBarShowLabel: false,
+    tabBarHideOnKeyboard: true,
     tabBarStyle: {
       position: 'absolute',
       left: 12,
@@ -75,6 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    padding: 10,
   },
   icon: {
     transform: [{ scale: 1 }],
