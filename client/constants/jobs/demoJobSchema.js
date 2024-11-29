@@ -54,6 +54,7 @@ const jobSchema = new mongoose.Schema({
     department: {
         type: String,
         default: null,
+        required: true
     },
     vacancies: {
         type: Number,

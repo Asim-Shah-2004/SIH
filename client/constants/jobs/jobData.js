@@ -20,6 +20,9 @@ export const jobsData = [
       'Strong problem-solving skills',
     ],
     jdPdf: 'https://drive.google.com/drive/folders/1zxeuugiiSbTLxTZTEh6dkAbmJ83ih-_R',
+    postedBy: {
+      name: 'John Doe',
+    },
   },
   {
     id: '2',
@@ -33,7 +36,11 @@ export const jobsData = [
     skills: ['Python', 'PyTorch', 'TensorFlow', 'NLP', 'Computer Vision'],
     benefits: ['Relocation Assistance', 'Research Budget', 'Conference Travel'],
     postedDate: '2024-01-20',
+    department: 'Research & Development',
     jdPdf: 'https://example.com/jd/microsoft-ai-ml-research-scientist.pdf',
+    postedBy: {
+      name: 'Alice Smith',
+    },
   },
   {
     id: '3',
@@ -55,6 +62,9 @@ export const jobsData = [
       'Proven experience in statistical modeling and data analysis',
     ],
     jdPdf: 'https://example.com/jd/amazon-data-scientist.pdf',
+    postedBy: {
+      name: 'Bob Johnson',
+    },
   },
   {
     id: '4',
@@ -76,6 +86,9 @@ export const jobsData = [
       'Strong understanding of UX/UI principles',
     ],
     jdPdf: 'https://example.com/jd/adobe-frontend-developer.pdf',
+    postedBy: {
+      name: 'Charlie Lee',
+    },
   },
   {
     id: '5',
@@ -97,6 +110,9 @@ export const jobsData = [
       'Familiarity with cloud platforms like AWS or Azure',
     ],
     jdPdf: 'https://example.com/jd/flipkart-backend-developer.pdf',
+    postedBy: {
+      name: 'David Williams',
+    },
   },
   {
     id: '6',
@@ -118,6 +134,9 @@ export const jobsData = [
       'Strong communication and leadership skills',
     ],
     jdPdf: 'https://example.com/jd/linkedin-product-manager.pdf',
+    postedBy: {
+      name: 'Eve Davis',
+    },
   },
   {
     id: '7',
@@ -139,6 +158,9 @@ export const jobsData = [
       'Strong portfolio showcasing design work',
     ],
     jdPdf: 'https://example.com/jd/airbnb-ux-ui-designer.pdf',
+    postedBy: {
+      name: 'Frank Moore',
+    },
   },
   {
     id: '8',
@@ -160,6 +182,9 @@ export const jobsData = [
       'Strong understanding of both frontend and backend technologies',
     ],
     jdPdf: 'https://example.com/jd/zomato-full-stack-developer.pdf',
+    postedBy: {
+      name: 'Grace Taylor',
+    },
   },
   {
     id: '9',
@@ -181,6 +206,9 @@ export const jobsData = [
       'Strong knowledge of AWS and cloud technologies',
     ],
     jdPdf: 'https://example.com/jd/twitter-devops-engineer.pdf',
+    postedBy: {
+      name: 'Henry Brown',
+    },
   },
   {
     id: '10',
@@ -191,16 +219,19 @@ export const jobsData = [
     salary: '₹40,00,000 - ₹80,00,000',
     type: 'Full-time',
     experience: '5-10 years',
-    skills: ['Cloud Architecture', 'AWS', 'Azure', 'Terraform'],
-    benefits: ['Stock Options', 'Health Insurance', 'Annual Leave'],
-    description: 'Design and implement cloud solutions for large-scale systems...',
+    skills: ['Cloud Computing', 'AWS', 'Azure', 'Terraform'],
+    benefits: ['Paid Time Off', 'Health Insurance', 'Remote Work Opportunities'],
+    description: 'Design and implement cloud architectures for enterprise solutions...',
     postedDate: '2024-04-05',
-    department: 'Cloud Engineering',
-    vacancies: 3,
+    department: 'Engineering',
+    vacancies: 2,
     requirements: [
-      'Experience in designing and deploying cloud solutions',
-      'Strong knowledge of AWS, Azure, or Google Cloud',
+      'Experience designing cloud solutions with AWS or Azure',
+      'Strong knowledge of infrastructure as code using Terraform',
     ],
     jdPdf: 'https://example.com/jd/oracle-cloud-solutions-architect.pdf',
+    postedBy: {
+      name: 'Ivy Green',
+    },
   },
 ];

@@ -3,8 +3,16 @@ import { View, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { downloadPdf } from '../utils/downloadPDF';
 
+import ConnectModal from '../utils/ConnectModal';
+
 const JobCard = ({ item }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+    };
 
     return (
         <View className="mb-6 overflow-hidden rounded-xl bg-white shadow-lg">
@@ -48,11 +56,23 @@ const JobCard = ({ item }) => {
                         </View>
 
                         {/* Posted By Section */}
-                        <View className="mb-6">
-                            <Text className="text-sm font-medium text-gray-700">
+                        <View className="mb-6 flex-row items-center gap-4">
+                            <Text className="text-md font-medium text-gray-700">
                                 Posted By: <Text className="text-blue-600">{item.postedBy?.name}</Text>
                             </Text>
+                            <TouchableOpacity className="rounded-md bg-blue-500 px-4 py-2" onPress={() => setModalVisible(true)}>
+                                <Text className="text-white">Connect</Text>
+                            </TouchableOpacity>
+                            {/* Modal Component */}
+                            <ConnectModal
+                                isVisible={modalVisible} // Pass the visibility state
+                                closeModal={handleModalClose} // Function to close the modal
+                                item={item} // Pass the user data to the modal
+                            />
                         </View>
+
+
+
 
                         {/* Requirements Section */}
                         {item.requirements?.length > 0 && (
