@@ -39,7 +39,7 @@ const AlumniRecommendations = ({ navigation }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{ paddingVertical: 12 }}
-        ItemSeparatorComponent={() => <View style={{ width: 12 }} />} // Spacing between cards
+        ItemSeparatorComponent={() => <View style={{ width: 15 }} />} // Spacing between cards
       />
 
       <Text className="mb-3 text-lg font-bold">Based on Interests</Text>

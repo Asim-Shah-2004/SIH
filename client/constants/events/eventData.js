@@ -7,19 +7,19 @@ export const eventsData = [
     time: '10:00 AM - 6:00 PM',
     type: 'Conference',
     price: 'Free for Alumni',
-    image: 'https://example.com/tech-summit.jpg',
+    image: 'https://via.placeholder.com/400x250?text=Tech+Summit+2024', // Placeholder image
     speakers: [
       {
         name: 'Sundar Pichai',
         role: 'CEO, Google',
         company: 'Google',
-        image: 'https://example.com/speaker1.jpg',
+        image: 'https://via.placeholder.com/150?text=Sundar+Pichai', // Placeholder image
       },
       {
         name: 'Satya Nadella',
         role: 'CEO, Microsoft',
         company: 'Microsoft',
-        image: 'https://example.com/speaker2.jpg',
+        image: 'https://via.placeholder.com/150?text=Satya+Nadella', // Placeholder image
       },
     ],
     agenda: 'The summit will cover keynotes on emerging technologies, with speeches from global leaders on AI, Cloud Computing, and the Future of Tech.',
@@ -35,19 +35,19 @@ export const eventsData = [
     time: '9:00 AM - 4:00 PM',
     type: 'Seminar',
     price: '₹1000',
-    image: 'https://example.com/sustainability-summit.jpg',
+    image: 'https://via.placeholder.com/400x250?text=Sustainability+Summit+2024', // Placeholder image
     speakers: [
       {
         name: 'Greta Thunberg',
         role: 'Environmental Activist',
         company: 'Fridays for Future',
-        image: 'https://example.com/speaker3.jpg',
+        image: 'https://via.placeholder.com/150?text=Greta+Thunberg', // Placeholder image
       },
       {
         name: 'Elon Musk',
         role: 'CEO, Tesla',
         company: 'Tesla',
-        image: 'https://example.com/speaker4.jpg',
+        image: 'https://via.placeholder.com/150?text=Elon+Musk', // Placeholder image
       },
     ],
     agenda: 'The seminar will focus on climate change and the future of electric vehicles, with discussions on sustainable energy practices.',
@@ -63,19 +63,19 @@ export const eventsData = [
     time: '11:00 AM - 6:00 PM',
     type: 'Expo',
     price: '₹1500',
-    image: 'https://example.com/blockchain-expo.jpg',
+    image: 'https://via.placeholder.com/400x250?text=Blockchain+World+Expo', // Placeholder image
     speakers: [
       {
         name: 'Vitalik Buterin',
         role: 'Co-founder',
         company: 'Ethereum',
-        image: 'https://example.com/speaker5.jpg',
+        image: 'https://via.placeholder.com/150?text=Vitalik+Buterin', // Placeholder image
       },
       {
         name: 'Changpeng Zhao',
         role: 'CEO',
         company: 'Binance',
-        image: 'https://example.com/speaker6.jpg',
+        image: 'https://via.placeholder.com/150?text=Changpeng+Zhao', // Placeholder image
       },
     ],
     agenda: 'The expo will cover Ethereum 2.0 updates and discuss the future of cryptocurrency exchanges, with insights into blockchain scalability and security.',
@@ -91,19 +91,19 @@ export const eventsData = [
     time: '10:00 AM - 5:00 PM',
     type: 'Workshop',
     price: '₹500',
-    image: 'https://example.com/design-workshop.jpg',
+    image: 'https://via.placeholder.com/400x250?text=Design+Thinking+Workshop', // Placeholder image
     speakers: [
       {
         name: 'Don Norman',
         role: 'Author, Design of Everyday Things',
         company: 'Nielsen Norman Group',
-        image: 'https://example.com/speaker7.jpg',
+        image: 'https://via.placeholder.com/150?text=Don+Norman', // Placeholder image
       },
       {
         name: 'Tim Brown',
         role: 'Chairman',
         company: 'IDEO',
-        image: 'https://example.com/speaker8.jpg',
+        image: 'https://via.placeholder.com/150?text=Tim+Brown', // Placeholder image
       },
     ],
     agenda: 'The workshop will explore the principles of Design Thinking, offering practical methods for solving business problems through creative innovation.',
@@ -119,22 +119,22 @@ export const eventsData = [
     time: '9:00 AM - 3:00 PM',
     type: 'Conference',
     price: '₹1200',
-    image: 'https://example.com/space-exploration.jpg',
+    image: 'https://via.placeholder.com/400x250?text=Space+Exploration', // Placeholder image
     speakers: [
       {
         name: 'Dr. K. Sivan',
         role: 'Former Chairman',
         company: 'ISRO',
-        image: 'https://example.com/speaker9.jpg',
+        image: 'https://via.placeholder.com/150?text=K+Sivan', // Placeholder image
       },
       {
         name: 'Chris Hadfield',
         role: 'Astronaut',
         company: 'Canadian Space Agency',
-        image: 'https://example.com/speaker10.jpg',
+        image: 'https://via.placeholder.com/150?text=Chris+Hadfield', // Placeholder image
       },
     ],
-    agenda: 'The conference will explore India’s space achievements and offer insights into the future of Mars exploration and the challenges of living on Mars.',
+    agenda: 'The conference will explore India’s space achievements and offer insights into the future and challenges of Mars exploration.',
     sponsors: ['ISRO', 'NASA', 'SpaceX'],
     registeredCount: 700,
     maxCapacity: 1000,

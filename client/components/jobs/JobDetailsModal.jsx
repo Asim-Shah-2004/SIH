@@ -38,11 +38,10 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
 
   const SkillTag = ({ skill }) => (
     <Text
-      className={`rounded-xl px-4 py-2 text-sm font-medium ${
-        userSkills.includes(skill)
-          ? 'border-blue-200 bg-blue-100 text-blue-800'
-          : 'border-gray-200 bg-gray-100 text-gray-700'
-      }`}>
+      className={`rounded-xl px-4 py-2 text-sm font-medium ${userSkills.includes(skill)
+        ? 'border-blue-200 bg-blue-100 text-blue-800'
+        : 'border-gray-200 bg-gray-100 text-gray-700'
+        }`}>
       {skill}
       {userSkills.includes(skill) && ' ✓'}
     </Text>
@@ -55,28 +54,10 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
           className={`mt-${isSmallScreen ? '4' : '8'} flex-1 rounded-t-[32px] bg-white shadow-2xl`}>
           <ScrollView showsVerticalScrollIndicator={false} className="px-6 pt-6">
             {/* Header */}
-            <View className="mb-6 flex-row items-center justify-between">
+            <View className="mb-6 flex-row items-center justify-end">
               <TouchableOpacity onPress={onClose} className="rounded-full bg-gray-100 p-2">
                 <FontAwesome name="times" size={isSmallScreen ? 18 : 22} color="#374151" />
               </TouchableOpacity>
-              <TouchableOpacity className="rounded-full bg-black px-6 py-2.5 shadow-sm">
-                <Text className="font-semibold text-white">Apply Now</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Quick Actions */}
-            <View className="mb-6 flex-row gap-3">
-              <TouchableOpacity
-                onPress={handleDownloadPDF}
-                className="flex-1 flex-row items-center justify-center rounded-xl bg-blue-50 p-3">
-                <FontAwesome name="file-pdf-o" size={20} color="#000" className="mr-2" />
-                <Text className="font-medium text-black">View JD</Text>
-              </TouchableOpacity>
-              <View className="flex-1 rounded-xl bg-green-50 p-3">
-                <Text className="text-center font-medium text-green-700">
-                  {item.vacancies} {item.vacancies > 1 ? 'Vacancies' : 'Vacancy'}
-                </Text>
-              </View>
             </View>
 
             {/* Company Info with enhanced styling */}
@@ -90,7 +71,7 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
               </View>
             </View>
 
-            {/* Department & Posted Date */}
+            {/* Department, Vacancies & Posted Date */}
             <View className="mb-6 flex-row gap-4">
               <View className="flex-1 rounded-xl bg-purple-50 p-4">
                 <Text className="mb-1 text-sm text-purple-600">Department</Text>
@@ -100,6 +81,13 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
                 <Text className="mb-1 text-sm text-orange-600">Posted On</Text>
                 <Text className="font-medium text-orange-900">{formatDate(item.postedDate)}</Text>
               </View>
+            </View>
+
+            {/* Vacancies */}
+            <View className="mb-6 rounded-xl bg-green-50 p-4">
+              <Text className="text-center font-medium text-green-700">
+                {item.vacancies} {item.vacancies > 1 ? 'Vacancies' : 'Vacancy'}
+              </Text>
             </View>
 
             {/* Description */}
@@ -179,6 +167,22 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
               </View>
             </View>
 
+            {/* View JD & Apply Now Buttons Above Additional Info */}
+            <View className="mb-6">
+              {/* View Job Description Button */}
+              <TouchableOpacity
+                onPress={handleDownloadPDF}
+                className="mb-4 flex-row items-center justify-center rounded-xl bg-blue-400 p-3">
+                <FontAwesome name="file-pdf-o" size={20} color="#000" className="mr-2" />
+                <Text className="text-lg text-black">View Job Description</Text>
+              </TouchableOpacity>
+
+              {/* Apply Now Button */}
+              <TouchableOpacity className="rounded-xl bg-black px-6 py-2.5 shadow-sm">
+                <Text className="font-semibold text-lg text-white text-center">Apply Now</Text>
+              </TouchableOpacity>
+            </View>
+
             {/* Additional Info */}
             <View className="mb-8 rounded-xl bg-gray-50 p-4">
               <Text className="text-sm text-gray-500">
@@ -199,5 +203,4 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
     </Modal>
   );
 };
-
 export default JobDetailsModal;

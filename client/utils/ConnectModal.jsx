@@ -1,10 +1,18 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons'; // Add FontAwesome for pencil icon
 
 const ConnectModal = ({ isVisible, closeModal, item }) => {
     const [note, setNote] = useState('');
+    const [isNoteOpen, setIsNoteOpen] = useState(false); // State to toggle TextInput visibility
     const navigation = useNavigation();
+
+    const CustomClose = () => {
+        setIsNoteOpen(false);
+        setNote('');
+        closeModal();
+    }
 
     const handleConnect = () => {
         console.log('Connecting...');
@@ -13,21 +21,21 @@ const ConnectModal = ({ isVisible, closeModal, item }) => {
         } else {
             console.log('Sending without a note'); // Send connection without the note
         }
-        closeModal(); // Close the modal after sending the connection
+        CustomClose(); // Close the modal after sending the connection
     };
 
     const handleViewProfile = () => {
         navigation.navigate('Profile'); // Navigate to the profile with the user ID
-        closeModal(); // Close the modal after navigating to the profile
+        CustomClose(); // Close the modal after navigating to the profile
     };
 
     return (
-        <Modal visible={isVisible} animationType="slide" transparent onRequestClose={closeModal}>
+        <Modal visible={isVisible} animationType="slide" transparent onRequestClose={CustomClose}>
             <View className="flex-1 items-center justify-center bg-black bg-opacity-50">
                 <View className="max-h-80 w-80 rounded-lg bg-white p-6">
                     {/* Close Button (X) */}
                     <TouchableOpacity
-                        onPress={closeModal}
+                        onPress={CustomClose}
                         className="absolute right-4 top-4 p-2"
                         activeOpacity={0.7} // Click feedback
                         style={{ zIndex: 100 }} // Ensure it's on top
@@ -61,15 +69,22 @@ const ConnectModal = ({ isVisible, closeModal, item }) => {
                         <Text className="mb-4 text-blue-600">View Profile</Text>
                     </TouchableOpacity>
 
-                    {/* Note input (always open) */}
+                    {/* Note input with pencil icon */}
                     <View className="mb-6">
-                        <TextInput
-                            value={note}
-                            onChangeText={setNote}
-                            className="rounded-md border border-gray-300 p-3 text-sm"
-                            placeholder="Add a note (optional)"
-                            multiline
-                        />
+                        {!isNoteOpen ? (
+                            <TouchableOpacity onPress={() => setIsNoteOpen(true)} className="flex-row items-center">
+                                <FontAwesome name="pencil" size={16} color="gray" />
+                                <Text className="ml-2 text-sm text-gray-600">Add a Note</Text>
+                            </TouchableOpacity>
+                        ) : (
+                            <TextInput
+                                value={note}
+                                onChangeText={setNote}
+                                className="rounded-md border border-gray-300 p-3 text-sm"
+                                placeholder="Add a note (optional)"
+                                multiline
+                            />
+                        )}
                     </View>
 
                     {/* Connect Button */}

@@ -1,9 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
+import { FontAwesome } from '@expo/vector-icons'; // Add FontAwesome for pencil icon
 
 const UserCard = ({ user }) => {
   const [note, setNote] = useState('');
+  const [isNoteOpen, setIsNoteOpen] = useState(false); // State to toggle TextInput visibility
   const navigation = useNavigation();
 
   const handleConnect = () => {
@@ -39,20 +41,27 @@ const UserCard = ({ user }) => {
         <Text className="text-blue-600">View Profile</Text>
       </TouchableOpacity>
 
-      {/* Note input (always open) */}
+      {/* Note input with pencil icon */}
       <View className="mb-6">
-        <TextInput
-          value={note}
-          onChangeText={setNote}
-          className="rounded-md border border-gray-300 p-3 text-sm"
-          placeholder="Add a note (optional)"
-          multiline
-        />
+        {!isNoteOpen ? (
+          <TouchableOpacity onPress={() => setIsNoteOpen(true)} className="flex-row items-center">
+            <FontAwesome name="pencil" size={16} color="gray" />
+            <Text className="ml-2 text-sm text-gray-600">Add a Note</Text>
+          </TouchableOpacity>
+        ) : (
+          <TextInput
+            value={note}
+            onChangeText={setNote}
+            className="rounded-md border border-gray-300 p-3 text-sm"
+            placeholder="Add a note (optional)"
+            multiline
+          />
+        )}
       </View>
 
       {/* Connect Button */}
       <TouchableOpacity onPress={handleConnect} className="rounded-md bg-blue-600 px-4 py-2">
-        <Text className="text-sm font-medium text-white">Connect</Text>
+        <Text className="text-sm text-center font-medium text-white">Connect</Text>
       </TouchableOpacity>
     </View>
   );
