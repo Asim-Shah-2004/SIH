@@ -37,7 +37,7 @@ export const jobsData = [
     benefits: ['Relocation Assistance', 'Research Budget', 'Conference Travel'],
     postedDate: '2024-01-20',
     department: 'Research & Development',
-    jdPdf: 'https://example.com/jd/microsoft-ai-ml-research-scientist.pdf',
+    jdPdf: 'https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2',
     postedBy: {
       name: 'Alice Smith',
     },

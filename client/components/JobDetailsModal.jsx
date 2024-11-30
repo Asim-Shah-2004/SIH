@@ -1,7 +1,8 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity, ScrollView, Image, useWindowDimensions, Linking } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, ScrollView, Image, useWindowDimensions, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import ConnectModal from '../utils/ConnectModal';
+import * as WebBrowser from 'expo-web-browser';
 
 const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
   const [connectModalVisible, setConnectModalVisible] = React.useState(false);
@@ -11,7 +12,7 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
 
   const handleDownloadPDF = async () => {
     try {
-      await Linking.openURL(item.jdPdf);
+      await WebBrowser.openBrowserAsync(item.jdPdf);
     } catch (error) {
       console.error('Error opening PDF:', error);
     }

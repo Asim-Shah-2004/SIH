@@ -5416,6 +5416,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-web-browser@npm:^14.0.1":
+  version: 14.0.1
+  resolution: "expo-web-browser@npm:14.0.1"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10/fd25d8f3ca063f6f0c75a2af606b0407c2ffc1bb0da61c50749e535d9f27172a4e496c5dbb3fb217edf89c049c8cd28baba03e5a5d00657c7e1a86c4a5237137
+  languageName: node
+  linkType: hard
+
 "expo@npm:^52.0.11":
   version: 52.0.11
   resolution: "expo@npm:52.0.11"
@@ -9189,6 +9199,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-file-viewer@npm:^2.1.5":
+  version: 2.1.5
+  resolution: "react-native-file-viewer@npm:2.1.5"
+  peerDependencies:
+    react-native: ">=0.47"
+  checksum: 10/0a99496d193dedf51e3773a0703a79b7517b5266df49bcf994dafaf845705112ed8e11a1ffde2e923d3fbea6afbda559c057b81e9711fe4116ff09eac1f30f23
+  languageName: node
+  linkType: hard
+
 "react-native-gesture-handler@npm:~2.20.2":
   version: 2.20.2
   resolution: "react-native-gesture-handler@npm:2.20.2"
@@ -11160,6 +11179,7 @@ __metadata:
     expo-router: "npm:~4.0.9"
     expo-sharing: "npm:^13.0.0"
     expo-status-bar: "npm:~2.0.0"
+    expo-web-browser: "npm:^14.0.1"
     lucide-react-native: "npm:^0.462.0"
     nativewind: "npm:^4.1.23"
     prettier: "npm:^3.2.5"
@@ -11168,6 +11188,7 @@ __metadata:
     react-dom: "npm:18.3.1"
     react-native: "npm:0.76.3"
     react-native-dotenv: "npm:^3.4.11"
+    react-native-file-viewer: "npm:^2.1.5"
     react-native-gesture-handler: "npm:~2.20.2"
     react-native-heroicons: "npm:^4.0.0"
     react-native-maps: "npm:1.18.0"
