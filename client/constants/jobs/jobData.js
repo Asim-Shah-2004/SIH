@@ -153,10 +153,7 @@ export const jobsData = [
     postedDate: '2024-03-15',
     department: 'Design',
     vacancies: 3,
-    requirements: [
-      'Proven experience in UX/UI design',
-      'Strong portfolio showcasing design work',
-    ],
+    requirements: ['Proven experience in UX/UI design', 'Strong portfolio showcasing design work'],
     jdPdf: 'https://example.com/jd/airbnb-ux-ui-designer.pdf',
     postedBy: {
       name: 'Frank Moore',

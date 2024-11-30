@@ -9,19 +9,19 @@ import {
   Linkedin,
   Twitter,
   Trophy,
-  MessageCircle
+  MessageCircle,
 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View, FlatList } from 'react-native';
 
+import Post from '../components/Post';
 import Badge from '../components/profile/Badge';
 import Card from '../components/profile/Card';
 import LinkText from '../components/profile/LinkText';
 import ReadMore from '../components/profile/ReadMore';
 import StatItem from '../components/profile/StatItem';
+import { myPost } from '../constants/posts/myPost';
 import { DEFAULT_ALUMNI_DATA } from '../constants/profileData';
-import myPost from '../constants/posts/myPost';
-import Post from '../components/Post';
 
 const SectionTitle = ({ children }) => (
   <Text className="mb-2 text-base font-bold text-gray-800">{children}</Text>
@@ -66,18 +66,22 @@ const PostsSection = ({ myPost }) => {
       <FlatList
         data={postsToShow}
         renderItem={({ item }) => (
-          <View className="bg-white p-4 rounded-lg shadow-md mb-4">
+          <View className="mb-4 rounded-lg bg-white p-4 shadow-md">
             <Post key={item.userId} postData={item} />
             {editingPostId === item.userId && (
-              <Text className="text-sm text-gray-600 mt-2">Edit Mode for Post {item.userId}</Text>
+              <Text className="mt-2 text-sm text-gray-600">Edit Mode for Post {item.userId}</Text>
             )}
 
             {/* Edit and Delete buttons */}
-            <View className="flex-row justify-between items-center mt-4">
-              <Pressable onPress={() => handleEdit(item.userId)} className="flex-1 mr-2 bg-blue-500 rounded-md py-2">
+            <View className="mt-4 flex-row items-center justify-between">
+              <Pressable
+                onPress={() => handleEdit(item.userId)}
+                className="mr-2 flex-1 rounded-md bg-blue-500 py-2">
                 <Text className="text-center text-white">Edit</Text>
               </Pressable>
-              <Pressable onPress={() => handleDelete(item.userId)} className="flex-1 ml-2 bg-red-500 rounded-md py-2">
+              <Pressable
+                onPress={() => handleDelete(item.userId)}
+                className="ml-2 flex-1 rounded-md bg-red-500 py-2">
                 <Text className="text-center text-white">Delete</Text>
               </Pressable>
             </View>
@@ -88,7 +92,9 @@ const PostsSection = ({ myPost }) => {
 
       {/* Show "See All Posts" button if not showing all posts */}
       {!showAllPosts && (
-        <Pressable onPress={() => setShowAllPosts(true)} className="mt-4 bg-gray-200 rounded-md p-2">
+        <Pressable
+          onPress={() => setShowAllPosts(true)}
+          className="mt-4 rounded-md bg-gray-200 p-2">
           <Text className="text-center text-blue-500">See All Posts</Text>
         </Pressable>
       )}
@@ -99,7 +105,6 @@ const PostsSection = ({ myPost }) => {
 const ProfileScreen = ({ route = {} }) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const data = { ...DEFAULT_ALUMNI_DATA, ...(route.params?.alumni || {}) };
-
 
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 16 }}>

@@ -52,17 +52,17 @@ const drawerConfig = {
 
 const getDrawerIcon =
   (name) =>
-    ({ focused, color, size }) => (
-      <Ionicons
-        name={name}
-        size={24}
-        color={color}
-        style={{
-          transform: [{ scale: focused ? 1.1 : 1 }],
-          opacity: focused ? 1 : 0.85,
-        }}
-      />
-    );
+  ({ focused, color, size }) => (
+    <Ionicons
+      name={name}
+      size={24}
+      color={color}
+      style={{
+        transform: [{ scale: focused ? 1.1 : 1 }],
+        opacity: focused ? 1 : 0.85,
+      }}
+    />
+  );
 
 export default function DrawerNavigator() {
   const navigation = useNavigation();
@@ -90,7 +90,7 @@ export default function DrawerNavigator() {
         component={Events}
         options={{
           drawerIcon: getDrawerIcon('calendar'),
-          headerShown: true
+          headerShown: true,
         }}
       />
       <Drawer.Screen
@@ -98,7 +98,7 @@ export default function DrawerNavigator() {
         component={Settings}
         options={{
           drawerIcon: getDrawerIcon('settings'),
-          headerShown: true
+          headerShown: true,
         }}
       />
     </Drawer.Navigator>

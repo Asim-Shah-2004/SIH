@@ -1,16 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
+import * as Haptics from 'expo-haptics';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
-import * as Haptics from 'expo-haptics';
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
-import Animated, { 
-  withSpring, 
-  useAnimatedStyle, 
+import Animated, {
+  withSpring,
+  useAnimatedStyle,
   useSharedValue,
-  withSequence
+  withSequence,
 } from 'react-native-reanimated';
 
 import { formatMessageTime } from '../../utils/dateUtils';
@@ -100,17 +100,14 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
   const handleDoubleTap = () => {
     const now = Date.now();
     const DOUBLE_PRESS_DELAY = 300;
-    
-    if (lastTap && (now - lastTap) < DOUBLE_PRESS_DELAY) {
+
+    if (lastTap && now - lastTap < DOUBLE_PRESS_DELAY) {
       const newLikeState = !isLiked;
       setIsLiked(newLikeState);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      
+
       if (newLikeState) {
-        scale.value = withSequence(
-          withSpring(1.5),
-          withSpring(1)
-        );
+        scale.value = withSequence(withSpring(1.5), withSpring(1));
         opacity.value = withSpring(1);
       } else {
         opacity.value = withSpring(0);
@@ -157,7 +154,8 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
             </View>
             <View>
               <Text className={sender === 'me' ? 'text-white' : 'text-text'}>{fileName}</Text>
-              <Text className={`text-xs ${sender === 'me' ? 'text-white/70' : 'text-highlight/70'}`}>
+              <Text
+                className={`text-xs ${sender === 'me' ? 'text-white/70' : 'text-highlight/70'}`}>
                 {isDownloading
                   ? `Downloading... ${downloadProgress.toFixed(0)}%`
                   : `${(fileSize / 1024).toFixed(1)} KB`}
@@ -186,16 +184,10 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
         )}
         <View className="flex-row items-center justify-end gap-1">
           <Animated.View style={animatedStyle}>
-            <Ionicons
-              name="heart"
-              size={16}
-              color={sender === 'me' ? '#ffffff' : '#FF0000'}
-            />
+            <Ionicons name="heart" size={16} color={sender === 'me' ? '#ffffff' : '#FF0000'} />
           </Animated.View>
           <Text
-            className={`text-xs ${
-              sender === 'me' ? 'text-white/70' : 'text-highlight/70'
-            } mt-1`}>
+            className={`text-xs ${sender === 'me' ? 'text-white/70' : 'text-highlight/70'} mt-1`}>
             {formatMessageTime(timestamp)}
           </Text>
         </View>

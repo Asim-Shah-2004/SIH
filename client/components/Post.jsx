@@ -32,7 +32,15 @@ const Post = ({ postData }) => {
   };
 
   return (
-    <View style={{ marginBottom: 20, borderRadius: 10, borderWidth: 1, borderColor: '#ccc', padding: 15, backgroundColor: '#fff' }}>
+    <View
+      style={{
+        marginBottom: 20,
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 15,
+        backgroundColor: '#fff',
+      }}>
       {/* Post Header */}
       <View style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center' }}>
         <Image
@@ -71,7 +79,9 @@ const Post = ({ postData }) => {
 
       {/* Actions (Like Button, Reactions) */}
       <View style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity onPress={handleLike} style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity
+          onPress={handleLike}
+          style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={{ fontWeight: 'bold', color: '#007BFF' }}>Like {likes}</Text>
         </TouchableOpacity>
 
@@ -81,8 +91,7 @@ const Post = ({ postData }) => {
             <TouchableOpacity
               key={reactionType}
               onPress={() => handleReaction(reactionType)}
-              style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}
-            >
+              style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
               <Text style={{ fontWeight: 'bold', color: '#666' }}>{reactionType}</Text>
             </TouchableOpacity>
           ))}

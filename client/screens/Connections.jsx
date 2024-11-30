@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+
 import { alumniRecommendations } from '../constants/alumniData';
 import UserCard from '../utils/UserCard'; // Importing the UserCard component
 
@@ -22,8 +23,7 @@ const AlumniRecommendations = ({ navigation }) => {
       <View className="mb-4 flex-row justify-between">
         <TouchableOpacity
           className="rounded-md bg-blue-700 px-4 py-2"
-          onPress={() => navigation.navigate('Map')}
-        >
+          onPress={() => navigation.navigate('Map')}>
           <Text className="text-base font-semibold text-white">Alumni Map</Text>
         </TouchableOpacity>
       </View>

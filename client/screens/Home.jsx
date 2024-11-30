@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
+
 import Post from '../components/Post'; // Adjust the import based on your project structure
-import posts from '../constants/posts/postData'; // Adjust the import for posts data
+import { posts } from '../constants/posts/postData'; // Adjust the import for posts data
 
 const Home = () => {
   const [postData, setPostData] = useState([]);

@@ -18,11 +18,9 @@ const JobPortal = ({ navigation }) => {
       {/* Button to Post a New Job */}
       <TouchableOpacity
         onPress={openPostJobPage}
-        className="my-4 mx-4 bg-blue-600 px-5 py-3 rounded-lg"
-      >
-        <Text className="text-center text-white font-bold">Post a New Job</Text>
+        className="mx-4 my-4 rounded-lg bg-blue-600 px-5 py-3">
+        <Text className="text-center font-bold text-white">Post a New Job</Text>
       </TouchableOpacity>
-
 
       <FlatList
         data={jobsData}
