@@ -7,7 +7,7 @@ export const downloadPdf = async (url, filename) => {
 
     if (downloadResult.status === 200) {
       console.log('File downloaded successfully!');
-      return fileUri; // Return the local file URI
+      return fileUri;
     } else {
       console.error('Download failed, status:', downloadResult.status);
       return null;
