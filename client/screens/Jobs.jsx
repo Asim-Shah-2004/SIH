@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';
 
-import JobCard from '../components/JobCard';
+import JobCard from '../components/jobs/JobCard';
 import { jobsData } from '../constants/jobs/jobData';
 
 const JobPortal = ({ navigation }) => {

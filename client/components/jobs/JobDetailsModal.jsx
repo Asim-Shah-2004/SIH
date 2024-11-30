@@ -1,7 +1,7 @@
 import React from 'react';
 import { Modal, View, Text, TouchableOpacity, ScrollView, Image, useWindowDimensions, Platform } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import ConnectModal from '../utils/ConnectModal';
+import ConnectModal from '../../utils/ConnectModal';
 import * as WebBrowser from 'expo-web-browser';
 
 const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {

@@ -7,7 +7,7 @@ import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
 import Chat from '../screens/Chat';
 import Message from '../screens/Message';
-import NewJob from '../screens/NewJob';
+import NewJob from '../components/jobs/NewJob';
 import Notifications from '../screens/Notifications';
 // import Map from '../screens/Map';
 

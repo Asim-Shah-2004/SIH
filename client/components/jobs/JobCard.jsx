@@ -1,7 +1,6 @@
-import { FontAwesome } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, useWindowDimensions } from 'react-native';
-import JobDetailsModal from './JobDetailsModal';   
+import JobDetailsModal from './JobDetailsModal';
 
 const JobCard = ({ item, userSkills }) => {
     const [modalVisible, setModalVisible] = useState(false);
