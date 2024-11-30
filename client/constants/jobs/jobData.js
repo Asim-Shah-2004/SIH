@@ -8,7 +8,7 @@ export const jobsData = [
     salary: '₹35,00,000 - ₹55,00,000',
     type: 'Full-time',
     experience: '5-8 years',
-    skills: ['React', 'Node.js', 'Cloud Architecture', 'System Design', 'Go'],
+    skills: ['React Native', 'JavaScript', 'Python', 'AWS', 'UI/UX Design'],
     benefits: ['Health Insurance', 'Stock Options', 'Flexible Hours', 'Remote Work'],
     description: 'Join our core engineering team to build next-gen cloud products...',
     postedDate: '2024-01-15',
@@ -19,7 +19,7 @@ export const jobsData = [
       'Experience with distributed systems',
       'Strong problem-solving skills',
     ],
-    jdPdf: 'https://drive.google.com/drive/folders/1zxeuugiiSbTLxTZTEh6dkAbmJ83ih-_R',
+    jdPdf: 'https://library.spit.ac.in/AS2021-22/aiml-sem-1-4-2021.pdf',
     postedBy: {
       name: 'John Doe',
     },
