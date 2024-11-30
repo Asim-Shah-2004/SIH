@@ -1,21 +1,21 @@
+import { Ionicons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
+import debounce from 'lodash/debounce';
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  ScrollView, 
-  Pressable, 
-  Alert, 
-  KeyboardAvoidingView, 
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  Pressable,
+  Alert,
+  KeyboardAvoidingView,
   Platform,
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
-import { Ionicons } from '@expo/vector-icons';
-import debounce from 'lodash/debounce';
 
 const { width } = Dimensions.get('window');
 
@@ -32,7 +32,7 @@ const NewJob = () => {
     benefits: [],
     description: '',
     requirements: [],
-    jdPdf: null
+    jdPdf: null,
   });
 
   const [currentSkill, setCurrentSkill] = useState('');
@@ -44,7 +44,7 @@ const NewJob = () => {
   // Debounced change handler
   const debouncedHandleChange = useCallback(
     debounce((name, value) => {
-      setFormData(prev => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }, 300),
     []
   );
@@ -52,7 +52,7 @@ const NewJob = () => {
   const handleChange = (name, value) => {
     debouncedHandleChange(name, value);
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: null }));
+      setErrors((prev) => ({ ...prev, [name]: null }));
     }
   };
 
@@ -61,7 +61,7 @@ const NewJob = () => {
     const trimmedValue = value.trim();
     if (!trimmedValue) return;
 
-    setFormData(prev => {
+    setFormData((prev) => {
       if (prev[field].includes(trimmedValue)) {
         Alert.alert('Already exists', `This ${field.slice(0, -1)} is already added`);
         return prev;
@@ -72,28 +72,28 @@ const NewJob = () => {
       }
       return {
         ...prev,
-        [field]: [...prev[field], trimmedValue]
+        [field]: [...prev[field], trimmedValue],
       };
     });
     setter('');
   }, []);
 
   const removeFromArray = (field, index) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
+      [field]: prev[field].filter((_, i) => i !== index),
     }));
   };
 
   const handleFileUpload = async () => {
     try {
-      const result = await DocumentPicker.getDocumentAsync({ 
+      const result = await DocumentPicker.getDocumentAsync({
         type: 'application/pdf',
-        copyToCacheDirectory: true
+        copyToCacheDirectory: true,
       });
-      
+
       if (result.type === 'success') {
-        setFormData(prev => ({ ...prev, jdPdf: result }));
+        setFormData((prev) => ({ ...prev, jdPdf: result }));
         Alert.alert('Success', 'PDF uploaded successfully');
       }
     } catch (error) {
@@ -105,7 +105,7 @@ const NewJob = () => {
     const requiredFields = ['title', 'company', 'location', 'salary', 'experience', 'description'];
     const newErrors = {};
 
-    requiredFields.forEach(field => {
+    requiredFields.forEach((field) => {
       if (!formData[field]?.trim()) {
         newErrors[field] = 'This field is required';
       }
@@ -127,7 +127,7 @@ const NewJob = () => {
     setIsSubmitting(true);
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       Alert.alert('Success', 'Job posted successfully!');
     } catch (error) {
       Alert.alert('Error', 'Failed to post job');
@@ -138,10 +138,10 @@ const NewJob = () => {
 
   // Optimized array input renderer
   const renderArrayInput = (
-    label, 
-    value, 
-    setValue, 
-    arrayField, 
+    label,
+    value,
+    setValue,
+    arrayField,
     placeholder = 'Add item',
     required = false
   ) => (
@@ -161,26 +161,19 @@ const NewJob = () => {
         />
         <TouchableOpacity
           activeOpacity={0.7}
-          style={[
-            styles.addButton,
-            formData[arrayField].length >= 10 && styles.addButtonDisabled
-          ]}
+          style={[styles.addButton, formData[arrayField].length >= 10 && styles.addButtonDisabled]}
           disabled={formData[arrayField].length >= 10}
-          onPress={() => addToArray(arrayField, value, setValue)}
-        >
+          onPress={() => addToArray(arrayField, value, setValue)}>
           <Text style={styles.plusIcon}>+</Text>
         </TouchableOpacity>
       </View>
-      {errors[arrayField] && (
-        <Text style={styles.errorText}>{errors[arrayField]}</Text>
-      )}
+      {errors[arrayField] && <Text style={styles.errorText}>{errors[arrayField]}</Text>}
       <View style={styles.tagContainer}>
         {formData[arrayField].map((item, index) => (
-          <TouchableOpacity 
-            key={index} 
+          <TouchableOpacity
+            key={index}
             style={styles.tag}
-            onPress={() => removeFromArray(arrayField, index)}
-          >
+            onPress={() => removeFromArray(arrayField, index)}>
             <Text style={styles.tagText}>{item}</Text>
             <Ionicons name="close" size={16} color="white" />
           </TouchableOpacity>
@@ -190,29 +183,24 @@ const NewJob = () => {
   );
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
-    >
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={true}
+        showsVerticalScrollIndicator
         bounces={false}
         overScrollMode="never"
-        keyboardShouldPersistTaps="handled"
-      >
+        keyboardShouldPersistTaps="handled">
         <View style={styles.formContainer}>
           <Text style={styles.title}>Post a New Job</Text>
 
           {/* Basic Information Inputs */}
           <View style={styles.inputGroup}>
             <TextInput
-              style={[
-                styles.input, 
-                errors.title && styles.errorInput
-              ]}
+              style={[styles.input, errors.title && styles.errorInput]}
               placeholder="Job Title *"
               placeholderTextColor="#999"
               value={formData.title}
@@ -222,13 +210,10 @@ const NewJob = () => {
           </View>
 
           {/* Repeat similar pattern for other text inputs */}
-          {['company', 'location', 'salary', 'experience', 'description'].map(field => (
+          {['company', 'location', 'salary', 'experience', 'description'].map((field) => (
             <View key={field} style={styles.inputGroup}>
               <TextInput
-                style={[
-                  styles.input, 
-                  errors[field] && styles.errorInput
-                ]}
+                style={[styles.input, errors[field] && styles.errorInput]}
                 placeholder={`${field.charAt(0).toUpperCase() + field.slice(1)} *`}
                 placeholderTextColor="#999"
                 value={formData[field]}
@@ -239,37 +224,27 @@ const NewJob = () => {
           ))}
 
           {/* Dynamic Array Inputs */}
-          {renderArrayInput(
-            'Skills', 
-            currentSkill, 
-            setCurrentSkill, 
-            'skills', 
-            'Add a skill',
-            true
-          )}
+          {renderArrayInput('Skills', currentSkill, setCurrentSkill, 'skills', 'Add a skill', true)}
 
           {renderArrayInput(
-            'Benefits', 
-            currentBenefit, 
-            setCurrentBenefit, 
-            'benefits', 
+            'Benefits',
+            currentBenefit,
+            setCurrentBenefit,
+            'benefits',
             'Add a benefit'
           )}
 
           {renderArrayInput(
-            'Requirements', 
-            currentRequirement, 
-            setCurrentRequirement, 
-            'requirements', 
+            'Requirements',
+            currentRequirement,
+            setCurrentRequirement,
+            'requirements',
             'Add a requirement',
             true
           )}
 
           {/* File Upload */}
-          <TouchableOpacity 
-            style={styles.uploadButton} 
-            onPress={handleFileUpload}
-          >
+          <TouchableOpacity style={styles.uploadButton} onPress={handleFileUpload}>
             <Ionicons name="cloud-upload" size={24} color="white" />
             <Text style={styles.uploadButtonText}>
               {formData.jdPdf ? 'PDF Uploaded' : 'Upload Job Description'}
@@ -277,15 +252,14 @@ const NewJob = () => {
           </TouchableOpacity>
 
           {/* Submit Button */}
-          <Pressable 
+          <Pressable
             style={({ pressed }) => [
               styles.submitButton,
               pressed && styles.submitButtonPressed,
-              isSubmitting && styles.submitButtonDisabled
+              isSubmitting && styles.submitButtonDisabled,
             ]}
             disabled={isSubmitting}
-            onPress={handleSubmit}
-          >
+            onPress={handleSubmit}>
             {isSubmitting ? (
               <ActivityIndicator color="white" />
             ) : (
@@ -302,13 +276,13 @@ const NewJob = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FB'
+    backgroundColor: '#F5F7FB',
   },
   scrollViewContent: {
     flexGrow: 1,
     paddingVertical: 15,
     paddingHorizontal: 15,
-    paddingBottom: 50 // Add extra padding at bottom
+    paddingBottom: 50, // Add extra padding at bottom
   },
   formContainer: {
     backgroundColor: 'white',
@@ -318,17 +292,17 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 5
+    elevation: 5,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
     color: '#333',
     textAlign: 'center',
-    marginBottom: 20
+    marginBottom: 20,
   },
   inputGroup: {
-    marginBottom: 15
+    marginBottom: 15,
   },
   input: {
     backgroundColor: '#F9FAFB',
@@ -337,27 +311,27 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 12,
     paddingHorizontal: 15,
-    fontSize: 16
+    fontSize: 16,
   },
   errorInput: {
-    borderColor: '#EF4444'
+    borderColor: '#EF4444',
   },
   errorText: {
     color: '#EF4444',
     fontSize: 12,
-    marginTop: 5
+    marginTop: 5,
   },
   arrayInputContainer: {
-    marginBottom: 20
+    marginBottom: 20,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 8,
-    color: '#333'
+    color: '#333',
   },
   requiredLabel: {
-    color: '#EF4444'
+    color: '#EF4444',
   },
   arrayInputWrapper: {
     flexDirection: 'row',
@@ -414,7 +388,7 @@ const styles = StyleSheet.create({
   tagContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    marginTop: 10
+    marginTop: 10,
   },
   tag: {
     flexDirection: 'row',
@@ -447,13 +421,13 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
   uploadButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
-    marginLeft: 10
+    marginLeft: 10,
   },
   submitButton: {
     backgroundColor: '#3B82F6',
@@ -461,12 +435,12 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 20
+    marginTop: 20,
   },
   submitButtonText: {
     color: 'white',
     fontSize: 18,
-    fontWeight: '700'
+    fontWeight: '700',
   },
   submitButtonPressed: {
     transform: [{ scale: 0.98 }],
@@ -478,7 +452,7 @@ const styles = StyleSheet.create({
   },
   bottomSpacing: {
     height: 100, // Extra space at bottom
-  }
+  },
 });
 
 export default NewJob;

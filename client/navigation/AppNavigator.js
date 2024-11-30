@@ -5,9 +5,9 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
+import NewJob from '../components/jobs/NewJob';
 import Chat from '../screens/Chat';
 import Message from '../screens/Message';
-import NewJob from '../components/jobs/NewJob';
 import Notifications from '../screens/Notifications';
 // import Map from '../screens/Map';
 

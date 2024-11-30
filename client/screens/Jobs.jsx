@@ -1,27 +1,22 @@
 import React, { useState, useMemo } from 'react';
 import { View, FlatList, TouchableOpacity, Text } from 'react-native';
-import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';
 
 import JobCard from '../components/jobs/JobCard';
 import { jobsData } from '../constants/jobs/jobData';
+import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';
 
 const JobPortal = ({ navigation }) => {
   const [skills, setSkills] = useState(profileData.skills);
-  
+
   const sortedJobs = useMemo(() => {
     return [...jobsData].sort((a, b) => {
-      const aMatches = a.skills.filter(skill => skills.includes(skill)).length;
-      const bMatches = b.skills.filter(skill => skills.includes(skill)).length;
+      const aMatches = a.skills.filter((skill) => skills.includes(skill)).length;
+      const bMatches = b.skills.filter((skill) => skills.includes(skill)).length;
       return bMatches - aMatches;
     });
   }, [jobsData, skills]);
 
-  const renderJob = ({ item }) => (
-    <JobCard 
-      item={item} 
-      userSkills={skills}
-    />
-  );
+  const renderJob = ({ item }) => <JobCard item={item} userSkills={skills} />;
 
   const openPostJobPage = () => {
     // For now, just log to simulate the action of opening a new page
