@@ -7,7 +7,7 @@ export default function MainHeader() {
   const navigation = useNavigation();
 
   const handleChatPress = () => navigation.navigate('Chat');
-  const handleNotificationsPress = () => navigation.navigate('Notifications');
+  const handleNotificationsPress = () => navigation.navigate('Alerts');
 
   return (
     <View className="flex-row items-center justify-between border-b border-gray-200 bg-background px-4 py-3 shadow-sm">

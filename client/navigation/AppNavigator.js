@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { View, Text, Image, TouchableOpacity } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
@@ -45,30 +46,32 @@ const screenConfig = {
 
 export default function AppNavigator({ isLoggedIn }) {
   return (
-    <Stack.Navigator screenOptions={screenConfig.headerlessScreens}>
-      {!isLoggedIn ? (
-        <Stack.Screen name="Auth" component={AuthNavigator} />
-      ) : (
-        <>
-          <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
-          <Stack.Screen name="Chat" component={Chat} options={screenConfig.headerScreens} />
-          <Stack.Screen name="Message" component={Message} options={screenConfig.messageScreen} />
-          <Stack.Screen
-            name="Notifications"
-            component={Notifications}
-            options={screenConfig.headerScreens}
-          />
-          {/* <Stack.Screen name="Map" component={Map} options={screenConfig.headerScreens} /> */}
-          <Stack.Screen
-            name="NewJob"
-            component={NewJob}
-            options={{
-              ...screenConfig.headerScreens,
-              title: 'Post a New Job',
-            }}
-          />
-        </>
-      )}
-    </Stack.Navigator>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack.Navigator screenOptions={screenConfig.headerlessScreens}>
+        {!isLoggedIn ? (
+          <Stack.Screen name="Auth" component={AuthNavigator} />
+        ) : (
+          <>
+            <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
+            <Stack.Screen name="Chat" component={Chat} options={screenConfig.headerScreens} />
+            <Stack.Screen name="Message" component={Message} options={screenConfig.messageScreen} />
+            <Stack.Screen
+              name="Alerts"
+              component={Notifications}
+              options={screenConfig.headerScreens}
+            />
+            {/* <Stack.Screen name="Map" component={Map} options={screenConfig.headerScreens} /> */}
+            <Stack.Screen
+              name="NewJob"
+              component={NewJob}
+              options={{
+                ...screenConfig.headerScreens,
+                title: 'Post a New Job',
+              }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
+    </GestureHandlerRootView>
   );
 }

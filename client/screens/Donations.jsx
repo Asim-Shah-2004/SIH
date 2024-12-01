@@ -11,7 +11,7 @@ import {
   Modal,
 } from 'react-native';
 
-import { donationCampaigns } from '../constants/donationData';
+import { donationCampaigns } from '../constants/donations/donationData';
 
 const formatIndianNumber = (num) => {
   if (num >= 10000000) {
