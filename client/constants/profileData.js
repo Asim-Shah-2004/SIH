@@ -1,16 +1,16 @@
 export const DEFAULT_ALUMNI_DATA = {
   name: 'John Doe',
   username: '@johndoe',
-  profilePicture: 'https://ui-avatars.com/api/?name=John+Doe&background=random',
+  profilePicture: 'https://picsum.photos/200',
   coverPhoto: 'https://picsum.photos/800/200',
   bio: 'Passionate alumnus and tech enthusiast with over 5 years of experience in software development. Currently leading innovative projects at Tech Innovations Inc. Dedicated to mentoring young developers and contributing to open-source projects. Check out my work at github.com/johndoe',
   followers: 1234,
   following: 567,
   posts: 42,
   recentPosts: [
-    { id: '1', image: 'https://picsum.photos/150/150?random=1', likes: 234 },
-    { id: '2', image: 'https://picsum.photos/150/150?random=2', likes: 187 },
-    { id: '3', image: 'https://picsum.photos/150/150?random=3', likes: 342 },
+    { id: '1', image: 'https://picsum.photos/400?random=1', likes: 234 },
+    { id: '2', image: 'https://picsum.photos/400?random=2', likes: 187 },
+    { id: '3', image: 'https://picsum.photos/400?random=3', likes: 342 },
   ],
   workExperience: [
     {
