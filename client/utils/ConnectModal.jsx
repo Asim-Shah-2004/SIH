@@ -31,7 +31,7 @@ const ConnectModal = ({ isVisible, closeModal, item }) => {
 
     return (
         <Modal visible={isVisible} animationType="slide" transparent onRequestClose={CustomClose}>
-            <View className="flex-1 items-center justify-center bg-black bg-opacity-50">
+            <View className="flex-1 items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0, 0.8)' }}>
                 <View className="max-h-80 w-80 rounded-lg bg-white p-6">
                     {/* Close Button (X) */}
                     <TouchableOpacity
