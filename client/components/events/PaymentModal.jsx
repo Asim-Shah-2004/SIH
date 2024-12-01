@@ -8,6 +8,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete }) => {
     const screenHeight = Dimensions.get('window').height;
     const [isProcessing, setIsProcessing] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState(null);
+    const [processingMessage, setProcessingMessage] = useState('');
 
     const handlePayment = (method) => {
         setPaymentMethod(method);
@@ -16,11 +17,6 @@ const PaymentModal = ({ open, onClose, onPaymentComplete }) => {
         // Simulate the processing of payment
         setTimeout(() => {
             setIsProcessing(false);
-
-            // Simulate success
-            if (method === 'UPI') {
-                Alert.alert('Redirecting to UPI App', 'You will now be redirected to your UPI App');
-            }
             Alert.alert('Thank you!', `Payment successful via ${method}`);
 
             onPaymentComplete(); // Close both modals
