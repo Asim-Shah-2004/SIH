@@ -56,7 +56,7 @@ export default function App() {
       <NavigationContainer>
         <SafeAreaView className="flex-1 bg-background">
           <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-          <AppNavigator isLoggedIn={false} />
+          <AppNavigator isLoggedIn={true} />
         </SafeAreaView>
       </NavigationContainer>
     </I18nextProvider>

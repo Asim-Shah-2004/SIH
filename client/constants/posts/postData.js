@@ -1,3 +1,4 @@
+
 export const posts = [
   {
     userId: '60fbbf8c61bcd043c4f9b431', // Example user ID
@@ -5,7 +6,7 @@ export const posts = [
     media: [
       {
         type: 'image',
-        url: 'https://example.com/project-image.jpg',
+        url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSihkidiHiRhlnlL4a9OusGoj7XMP-aY03-8g&s',
         description: 'Project Launch Image',
       },
     ],
@@ -47,12 +48,12 @@ export const posts = [
     media: [
       {
         type: 'image',
-        url: 'https://example.com/offer-letter.jpg',
+        url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSihkidiHiRhlnlL4a9OusGoj7XMP-aY03-8g&s',
         description: 'Offer Letter',
       },
       {
         type: 'video',
-        url: 'https://example.com/celebration-video.mp4',
+        url: 'https://static.vecteezy.com/system/resources/previews/027/939/550/mp4/earphone-and-mobile-phone-3d-rendering-video.mp4',
         description: 'Celebration Video',
       },
     ],

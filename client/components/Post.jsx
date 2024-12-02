@@ -1,135 +1,201 @@
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, FlatList, TextInput, Button } from 'react-native';
+import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { 
+  ThumbsUpIcon, 
+  MessageCircleIcon, 
+  ShareIcon, 
+  HeartIcon,
+  SmileIcon,
+  StarIcon 
+} from 'lucide-react-native';
 
 const Post = ({ postData }) => {
-  const [likes, setLikes] = useState(postData.likes.length);
-  const [comments, setComments] = useState(postData.comments);
-  const [reactions, setReactions] = useState(postData.reactions); // Handle reactions
-  const [newComment, setNewComment] = useState('');
+  const [showAllComments, setShowAllComments] = useState(false);
 
-  // Handle Like button
-  const handleLike = () => {
-    setLikes(likes + 1); // Increase like count
+  // Format date to relative time
+  const getRelativeTime = (date) => {
+    const now = new Date();
+    const posted = new Date(date);
+    const diff = Math.floor((now - posted) / 1000); // seconds
+
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h`;
+    return posted.toLocaleDateString();
   };
 
-  // Handle Add Comment button
-  const handleAddComment = () => {
-    if (newComment.trim()) {
-      setComments([
-        ...comments,
-        { user: 'You', text: newComment, createdAt: new Date(), updatedAt: new Date() },
-      ]);
-      setNewComment(''); // Clear the input field
-    }
+  // Get reaction counts
+  const getReactionCounts = () => {
+    const counts = {};
+    postData.reactions.forEach(reaction => {
+      counts[reaction.type] = (counts[reaction.type] || 0) + 1;
+    });
+    return counts;
   };
 
-  // Handle Reactions (e.g., love, haha, wow, etc.)
-  const handleReaction = (reactionType) => {
-    setReactions([
-      ...reactions,
-      { userId: 'You', type: reactionType }, // Add reaction
-    ]);
+  const reactionIcons = {
+    like: <ThumbsUpIcon size={16} color="#0a66c2" />,
+    love: <HeartIcon size={16} color="#e11d48" />,
+    wow: <StarIcon size={16} color="#eab308" />
   };
 
   return (
-    <View
+    <LinearGradient
+      colors={['#ffffff', '#f8fafc']}
       style={{
-        marginBottom: 20,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        padding: 15,
-        backgroundColor: '#fff',
+        marginVertical: 8,
+        borderRadius: 12,
+        overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 3,
       }}>
       {/* Post Header */}
-      <View style={{ marginBottom: 10, flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
         <Image
-          source={{ uri: 'https://www.example.com/userProfilePic.jpg' }} // Use user profile pic
-          style={{ marginRight: 10, height: 40, width: 40, borderRadius: 20 }}
+          source={{ uri: `https://ui-avatars.com/api/?name=User&background=random` }}
+          style={{ width: 48, height: 48, borderRadius: 24 }}
         />
-        <View>
-          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>John Doe</Text>
-          <Text style={{ fontSize: 12, color: '#888' }}>2 hours ago</Text>
+        <View style={{ marginLeft: 12, flex: 1 }}>
+          <Text style={{ fontWeight: '600', fontSize: 16, color: '#1f2937' }}>
+            User {postData.userId.slice(-4)}
+          </Text>
+          <Text style={{ fontSize: 13, color: '#6b7280' }}>
+            {getRelativeTime(postData.createdAt)}
+          </Text>
         </View>
       </View>
 
       {/* Post Content */}
-      <Text style={{ marginBottom: 10, fontSize: 16, color: '#333' }}>{postData.text}</Text>
+      <View style={{ paddingHorizontal: 16 }}>
+        <Text style={{ fontSize: 15, lineHeight: 22, color: '#374151' }}>
+          {postData.text}
+        </Text>
+      </View>
 
-      {/* Media (Image or Video) */}
-      {postData.media && postData.media.length > 0 && (
-        <FlatList
-          data={postData.media}
-          horizontal
-          renderItem={({ item }) => (
-            <View style={{ marginRight: 10 }}>
-              {item.type === 'image' ? (
+      {/* Media Content */}
+      {postData.media && (
+        <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          style={{ marginTop: 12 }}
+        >
+          {postData.media.map((item, index) => (
+            <View key={index} style={{ marginHorizontal: 16, marginBottom: 12 }}>
+              {item.type === 'image' && (
                 <Image
                   source={{ uri: item.url }}
-                  style={{ height: 200, width: 200, borderRadius: 10 }}
+                  style={{
+                    width: 300,
+                    height: 200,
+                    borderRadius: 8,
+                  }}
                 />
-              ) : item.type === 'video' ? (
-                <Text style={{ color: '#555' }}>[Video Placeholder]</Text> // Add video component if needed
-              ) : null}
+              )}
+              {item.description && (
+                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
+                  {item.description}
+                </Text>
+              )}
             </View>
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
+          ))}
+        </ScrollView>
       )}
 
-      {/* Actions (Like Button, Reactions) */}
-      <View style={{ marginBottom: 10, flexDirection: 'row', justifyContent: 'space-between' }}>
-        <TouchableOpacity
-          onPress={handleLike}
-          style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontWeight: 'bold', color: '#007BFF' }}>Like {likes}</Text>
-        </TouchableOpacity>
-
-        {/* Reaction Buttons */}
-        <View style={{ flexDirection: 'row' }}>
-          {['love', 'haha', 'wow', 'sad', 'angry'].map((reactionType) => (
-            <TouchableOpacity
-              key={reactionType}
-              onPress={() => handleReaction(reactionType)}
-              style={{ flexDirection: 'row', alignItems: 'center', marginLeft: 10 }}>
-              <Text style={{ fontWeight: 'bold', color: '#666' }}>{reactionType}</Text>
-            </TouchableOpacity>
-          ))}
+      {/* Reactions & Stats */}
+      <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {Object.entries(getReactionCounts()).map(([type, count], index) => (
+              <View 
+                key={type}
+                style={{ 
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginRight: 8 
+                }}>
+                {reactionIcons[type]}
+                <Text style={{ marginLeft: 4, color: '#6b7280' }}>{count}</Text>
+              </View>
+            ))}
+          </View>
+          <Text style={{ marginLeft: 'auto', color: '#6b7280' }}>
+            {postData.comments.length} comments • {postData.shares.length} shares
+          </Text>
         </View>
       </View>
 
-      {/* Comments Section */}
-      <FlatList
-        data={comments}
-        renderItem={({ item }) => (
-          <View style={{ marginBottom: 5, flexDirection: 'row', alignItems: 'flex-start' }}>
-            <Text style={{ fontWeight: 'bold', marginRight: 5 }}>{item.user}:</Text>
-            <Text>{item.text}</Text>
-          </View>
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
-
-      {/* Add Comment Section */}
-      <View style={{ marginTop: 10, flexDirection: 'row', alignItems: 'center' }}>
-        <TextInput
-          style={{
-            flex: 1,
-            padding: 8,
-            borderWidth: 1,
-            borderColor: '#ccc',
-            borderRadius: 20,
-            marginRight: 10,
-            fontSize: 14,
-          }}
-          placeholder="Add a comment..."
-          value={newComment}
-          onChangeText={setNewComment}
-        />
-        <Button title="Add" onPress={handleAddComment} />
+      {/* Action Buttons */}
+      <View style={{
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingVertical: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#e5e7eb'
+      }}>
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <ThumbsUpIcon size={20} color="#6b7280" />
+          <Text style={{ marginLeft: 6, color: '#6b7280' }}>Like</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MessageCircleIcon size={20} color="#6b7280" />
+          <Text style={{ marginLeft: 6, color: '#6b7280' }}>Comment</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <ShareIcon size={20} color="#6b7280" />
+          <Text style={{ marginLeft: 6, color: '#6b7280' }}>Share</Text>
+        </TouchableOpacity>
       </View>
-    </View>
+
+      {/* Comments Section */}
+      {postData.comments.length > 0 && (
+        <View style={{ padding: 16, backgroundColor: '#f8fafc' }}>
+          <FlatList
+            data={showAllComments ? postData.comments : postData.comments.slice(0, 2)}
+            renderItem={({ item }) => (
+              <View style={{ marginBottom: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Image
+                    source={{ uri: `https://ui-avatars.com/api/?name=User&background=random` }}
+                    style={{ width: 32, height: 32, borderRadius: 16 }}
+                  />
+                  <View style={{ marginLeft: 8, flex: 1 }}>
+                    <Text style={{ fontWeight: '500' }}>
+                      User {item.userId.slice(-4)}
+                    </Text>
+                    <Text>{item.text}</Text>
+                    <View style={{ flexDirection: 'row', marginTop: 4 }}>
+                      <Text style={{ color: '#6b7280', fontSize: 12 }}>
+                        {getRelativeTime(item.createdAt)} • {item.likes.length} likes
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+          />
+          {postData.comments.length > 2 && (
+            <TouchableOpacity onPress={() => setShowAllComments(!showAllComments)}>
+              <Text style={{ color: '#0a66c2', fontWeight: '500' }}>
+                {showAllComments ? 'Show less' : `View all ${postData.comments.length} comments`}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      )}
+    </LinearGradient>
   );
 };
 
 export default Post;
+
+
+
+
+
+
+
+
