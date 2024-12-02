@@ -2,8 +2,10 @@ import './global.css';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
+import { I18nextProvider } from 'react-i18next';
 import { StatusBar, SafeAreaView, Text, ActivityIndicator } from 'react-native';
 
+import i18n from './i18n/i18n';
 import AppNavigator from './navigation/AppNavigator';
 
 export default function App() {
@@ -12,6 +14,7 @@ export default function App() {
 
   useEffect(() => {
     checkLoginStatus();
+    initializeLanguage();
   }, []);
 
   const checkLoginStatus = async () => {
@@ -22,6 +25,17 @@ export default function App() {
       console.error('Error reading AsyncStorage:', e);
     } finally {
       setTimeout(() => setLoading(false), 1000);
+    }
+  };
+
+  const initializeLanguage = async () => {
+    try {
+      const storedLang = await AsyncStorage.getItem('user-language');
+      if (storedLang) {
+        i18n.changeLanguage(storedLang);
+      }
+    } catch (error) {
+      console.error('Error initializing language:', error);
     }
   };
 
@@ -38,11 +52,13 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+    <I18nextProvider i18n={i18n}>
       <NavigationContainer>
-        <AppNavigator isLoggedIn={isLoggedIn} />
+        <SafeAreaView className="flex-1 bg-background">
+          <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+          <AppNavigator isLoggedIn={false} />
+        </SafeAreaView>
       </NavigationContainer>
-    </SafeAreaView>
+    </I18nextProvider>
   );
 }

@@ -1,7 +1,7 @@
+import { FontAwesome } from '@expo/vector-icons'; // Add FontAwesome for pencil icon
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons'; // Add FontAwesome for pencil icon
 
 const UserCard = ({ user }) => {
   const [note, setNote] = useState('');
@@ -61,7 +61,7 @@ const UserCard = ({ user }) => {
 
       {/* Connect Button */}
       <TouchableOpacity onPress={handleConnect} className="rounded-md bg-blue-600 px-4 py-2">
-        <Text className="text-sm text-center font-medium text-white">Connect</Text>
+        <Text className="text-center text-sm font-medium text-white">Connect</Text>
       </TouchableOpacity>
     </View>
   );

@@ -22,7 +22,8 @@ export const eventsData = [
         image: 'https://via.placeholder.com/150?text=Satya+Nadella', // Placeholder image
       },
     ],
-    agenda: 'The summit will cover keynotes on emerging technologies, with speeches from global leaders on AI, Cloud Computing, and the Future of Tech.',
+    agenda:
+      'The summit will cover keynotes on emerging technologies, with speeches from global leaders on AI, Cloud Computing, and the Future of Tech.',
     sponsors: ['Google', 'Microsoft', 'Amazon'],
     registeredCount: 1500,
     maxCapacity: 2000,
@@ -50,7 +51,8 @@ export const eventsData = [
         image: 'https://via.placeholder.com/150?text=Elon+Musk', // Placeholder image
       },
     ],
-    agenda: 'The seminar will focus on climate change and the future of electric vehicles, with discussions on sustainable energy practices.',
+    agenda:
+      'The seminar will focus on climate change and the future of electric vehicles, with discussions on sustainable energy practices.',
     sponsors: ['Tesla', 'IKEA', 'UNICEF'],
     registeredCount: 800,
     maxCapacity: 1000,
@@ -78,7 +80,8 @@ export const eventsData = [
         image: 'https://via.placeholder.com/150?text=Changpeng+Zhao', // Placeholder image
       },
     ],
-    agenda: 'The expo will cover Ethereum 2.0 updates and discuss the future of cryptocurrency exchanges, with insights into blockchain scalability and security.',
+    agenda:
+      'The expo will cover Ethereum 2.0 updates and discuss the future of cryptocurrency exchanges, with insights into blockchain scalability and security.',
     sponsors: ['Ethereum Foundation', 'Binance', 'Coinbase'],
     registeredCount: 900,
     maxCapacity: 1200,
@@ -106,7 +109,8 @@ export const eventsData = [
         image: 'https://via.placeholder.com/150?text=Tim+Brown', // Placeholder image
       },
     ],
-    agenda: 'The workshop will explore the principles of Design Thinking, offering practical methods for solving business problems through creative innovation.',
+    agenda:
+      'The workshop will explore the principles of Design Thinking, offering practical methods for solving business problems through creative innovation.',
     sponsors: ['IDEO', 'Adobe', 'Figma'],
     registeredCount: 600,
     maxCapacity: 800,
@@ -134,7 +138,8 @@ export const eventsData = [
         image: 'https://via.placeholder.com/150?text=Chris+Hadfield', // Placeholder image
       },
     ],
-    agenda: 'The conference will explore India’s space achievements and offer insights into the future and challenges of Mars exploration.',
+    agenda:
+      'The conference will explore India’s space achievements and offer insights into the future and challenges of Mars exploration.',
     sponsors: ['ISRO', 'NASA', 'SpaceX'],
     registeredCount: 700,
     maxCapacity: 1000,

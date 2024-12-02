@@ -38,10 +38,11 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
 
   const SkillTag = ({ skill }) => (
     <Text
-      className={`rounded-xl px-4 py-2 text-sm font-medium ${userSkills.includes(skill)
-        ? 'border-blue-200 bg-blue-100 text-blue-800'
-        : 'border-gray-200 bg-gray-100 text-gray-700'
-        }`}>
+      className={`rounded-xl px-4 py-2 text-sm font-medium ${
+        userSkills.includes(skill)
+          ? 'border-blue-200 bg-blue-100 text-blue-800'
+          : 'border-gray-200 bg-gray-100 text-gray-700'
+      }`}>
       {skill}
       {userSkills.includes(skill) && ' ✓'}
     </Text>
@@ -179,7 +180,7 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
 
               {/* Apply Now Button */}
               <TouchableOpacity className="rounded-xl bg-black px-6 py-2.5 shadow-sm">
-                <Text className="font-semibold text-lg text-white text-center">Apply Now</Text>
+                <Text className="text-center text-lg font-semibold text-white">Apply Now</Text>
               </TouchableOpacity>
             </View>
 

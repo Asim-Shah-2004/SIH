@@ -4,7 +4,7 @@ import { View, FlatList, Text, TouchableOpacity } from 'react-native';
 const ChatScreen = () => {
   // State to manage active tab (either 'invitations' or 'notifications')
   const [activeTab, setActiveTab] = useState(true);
-  const [isPressed, setIsPressed] = useState(false);  // Prevent multiple rapid clicks
+  const [isPressed, setIsPressed] = useState(false); // Prevent multiple rapid clicks
 
   // Sample data
   const invitations = [
@@ -33,38 +33,65 @@ const ChatScreen = () => {
     { id: '5', name: 'Security Alert', message: 'Account security update required' },
     { id: '6', name: 'New Message', message: 'You have received a new message from HR' },
     { id: '7', name: 'Password Reset', message: 'Your password was successfully reset' },
-    { id: '8', name: 'New Update', message: 'Your software has been updated to the latest version' },
-    { id: '9', name: 'Task Reminder', message: 'Don\'t forget to submit your report by the end of the day' },
-    { id: '10', name: 'Network Connectivity', message: 'There are issues with your network connection' },
-    { id: '11', name: 'Feature Announcement', message: 'New features have been added to your dashboard' },
+    {
+      id: '8',
+      name: 'New Update',
+      message: 'Your software has been updated to the latest version',
+    },
+    {
+      id: '9',
+      name: 'Task Reminder',
+      message: "Don't forget to submit your report by the end of the day",
+    },
+    {
+      id: '10',
+      name: 'Network Connectivity',
+      message: 'There are issues with your network connection',
+    },
+    {
+      id: '11',
+      name: 'Feature Announcement',
+      message: 'New features have been added to your dashboard',
+    },
     { id: '12', name: 'Product Launch', message: 'Check out our new product launching next week' },
-    { id: '13', name: 'Survey Reminder', message: 'Please complete the survey by the end of the week' },
+    {
+      id: '13',
+      name: 'Survey Reminder',
+      message: 'Please complete the survey by the end of the week',
+    },
     { id: '14', name: 'Job Alert', message: 'New job opening matching your profile' },
-    { id: '15', name: 'Meeting Invitation', message: 'A meeting has been scheduled for tomorrow afternoon' },
+    {
+      id: '15',
+      name: 'Meeting Invitation',
+      message: 'A meeting has been scheduled for tomorrow afternoon',
+    },
   ];
 
   // Handle press events for each item (you can add custom logic here)
   const handleInvitationPress = (item) => {
-    console.log("Invitation pressed:", item);
+    console.log('Invitation pressed:', item);
   };
 
   const handleNotificationPress = (item) => {
-    console.log("Notification pressed:", item);
+    console.log('Notification pressed:', item);
   };
 
   // Debounced tab press handler
-  const handleTabPress = useCallback((isInvitation) => {
-    if (!isPressed) {
-      setIsPressed(true);  // Disable rapid clicking
-      setActiveTab(isInvitation);
-      setTimeout(() => setIsPressed(false), 300);  // Re-enable after a short delay
-    }
-  }, [isPressed]);
+  const handleTabPress = useCallback(
+    (isInvitation) => {
+      if (!isPressed) {
+        setIsPressed(true); // Disable rapid clicking
+        setActiveTab(isInvitation);
+        setTimeout(() => setIsPressed(false), 300); // Re-enable after a short delay
+      }
+    },
+    [isPressed]
+  );
 
   return (
     <View className="flex-1 bg-gray-100 p-4">
       {/* Tab Buttons */}
-      <View className="flex-row mb-6">
+      <View className="mb-6 flex-row">
         <TouchableOpacity
           onPress={() => handleTabPress(true)}
           style={{
@@ -75,15 +102,13 @@ const ChatScreen = () => {
             marginRight: 8,
             justifyContent: 'center',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <Text
             style={{
               color: activeTab ? 'white' : 'black',
               fontWeight: 'bold',
               fontSize: 18, // Increased font size
-            }}
-          >
+            }}>
             Invitations
           </Text>
         </TouchableOpacity>
@@ -97,20 +122,17 @@ const ChatScreen = () => {
             borderRadius: 5,
             justifyContent: 'center',
             alignItems: 'center',
-          }}
-        >
+          }}>
           <Text
             style={{
               color: !activeTab ? 'white' : 'black',
               fontWeight: 'bold',
               fontSize: 18, // Increased font size
-            }}
-          >
+            }}>
             Notifications
           </Text>
         </TouchableOpacity>
       </View>
-
 
       {/* Conditional Rendering of Invitations Section */}
       {activeTab ? (
@@ -122,8 +144,7 @@ const ChatScreen = () => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   className="mb-4 rounded-lg bg-white p-4 shadow-md"
-                  onPress={() => handleInvitationPress(item)}
-                >
+                  onPress={() => handleInvitationPress(item)}>
                   <Text className="text-base font-bold">{item.name}</Text>
                   <Text className="text-sm text-gray-600">{item.message}</Text>
                 </TouchableOpacity>
@@ -142,8 +163,7 @@ const ChatScreen = () => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   className="mb-4 rounded-lg bg-white p-4 shadow-md"
-                  onPress={() => handleNotificationPress(item)}
-                >
+                  onPress={() => handleNotificationPress(item)}>
                   <Text className="text-base font-bold">{item.name}</Text>
                   <Text className="text-sm text-gray-600">{item.message}</Text>
                 </TouchableOpacity>
