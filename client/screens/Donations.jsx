@@ -1,5 +1,7 @@
+import { SERVER_URL } from '@env';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,8 +12,8 @@ import {
   Animated,
   Modal,
 } from 'react-native';
+// import { donationCampaigns } from '../constants/donations/donationData';
 
-import { donationCampaigns } from '../constants/donations/donationData';
 
 const formatIndianNumber = (num) => {
   if (num >= 10000000) {
@@ -29,8 +31,24 @@ const DonationPortal = ({ navigation }) => {
   const [donationAmount, setDonationAmount] = useState('');
   const [donationHistory, setDonationHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
-  const [campaigns, setCampaigns] = useState(donationCampaigns);
-  const [selectedCause, setSelectedCause] = useState(campaigns[0]);
+  const [campaigns, setCampaigns] = useState([]);
+  const [selectedCause, setSelectedCause] = useState({});
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      try {
+        const response = await axios.get(`${SERVER_URL}/donations`); // Use this if testing on physical device
+        setCampaigns(response.data); // Update campaigns with fetched data
+        setSelectedCause(response.data[0]); // Set the first cause as selected
+      } catch (error) {
+        console.error('Error fetching donation data:', error);
+        alert('Failed to load donation campaigns. Please try again later.');
+      }
+    };
+
+    fetchCampaigns();
+  }, []); // Empty dependency array to run only on mount
+
 
   const handleDonation = (amount) => {
     if (amount && !isNaN(amount) && amount > 0) {
@@ -186,7 +204,7 @@ const DonationPortal = ({ navigation }) => {
           <View className="mb-3 flex-row items-center justify-between">
             <View>
               <Text className="text-xl font-bold text-gray-900">Make a Donation</Text>
-              <Text className="text-sm text-gray-600">Selected Cause: {selectedCause.title}</Text>
+              {/* <Text className="text-sm text-gray-600">Selected Cause: {selectedCause.title}</Text> */}
             </View>
             <TouchableOpacity
               className="rounded-xl bg-gray-100 p-3"

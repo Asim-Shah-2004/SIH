@@ -1,12 +1,32 @@
-import React, { useState, useMemo } from 'react';
-import { View, FlatList, TouchableOpacity, Text } from 'react-native';
+import { SERVER_URL } from '@env';
+import axios from 'axios';
+import React, { useState, useMemo, useEffect } from 'react';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
 
 import JobCard from '../components/jobs/JobCard';
-import { jobsData } from '../constants/jobs/jobData';
+// import { jobsData } from '../constants/jobs/jobData';
 import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';
 
 const JobPortal = ({ navigation }) => {
   const [skills, setSkills] = useState(profileData.skills);
+  const [jobsData, setJobsData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${SERVER_URL}/jobs`); // Use this if testing on physical device
+        setJobsData(response.data); // Assuming the backend returns an array of jobs
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching jobs:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []);
 
   const sortedJobs = useMemo(() => {
     return [...jobsData].sort((a, b) => {
@@ -23,6 +43,14 @@ const JobPortal = ({ navigation }) => {
     console.log('Open a new page to post a job');
     navigation.navigate('NewJob');
   };
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center bg-gray-100">
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text className="mt-4 text-gray-600">Loading jobs...</Text>
+      </View>
+    );
+  }
 
   return (
     <View className="flex-1 bg-gray-100">
