@@ -1,6 +1,6 @@
 import {Event} from '../models/index.js';
 
-// Controller to fetch all events
+
 export const getAllEvents = async (req, res) => {
   try {
     const events = await Event.find();
@@ -10,7 +10,7 @@ export const getAllEvents = async (req, res) => {
   }
 };
 
-// Controller to fetch a single event by ID
+
 export const getEventById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -22,7 +22,7 @@ export const getEventById = async (req, res) => {
   }
 };
 
-// Controller to add a new event
+
 export const addEvent = async (req, res) => {
   try {
     const newEvent = new Event(req.body);
@@ -33,7 +33,7 @@ export const addEvent = async (req, res) => {
   }
 };
 
-// Controller to update an event
+
 export const updateEvent = async (req, res) => {
   try {
     const { id } = req.params;
@@ -48,7 +48,7 @@ export const updateEvent = async (req, res) => {
   }
 };
 
-// Controller to delete an event
+
 export const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;

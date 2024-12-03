@@ -5,7 +5,7 @@ import logger from './utils/logger.js';
 import cors from 'cors';
 
 import {connectMongoDB} from "./services/index.js"
-import {eventRouter,jobRouter} from "./routers/index.js"
+import {eventRouter,jobRouter,donationRouter} from "./routers/index.js"
 
 const app = express();
 const PORT = 3000;
@@ -24,6 +24,7 @@ app.use(cors({
 
 app.use('/events', eventRouter);
 app.use('/jobs', jobRouter);
+app.use('/donations', donationRouter);
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>');
