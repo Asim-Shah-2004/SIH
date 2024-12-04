@@ -9514,6 +9514,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-timeline-flatlist@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "react-native-timeline-flatlist@npm:0.8.0"
+  peerDependencies:
+    react-native: ">= 0.58.2"
+  checksum: 10/5840d89a92aa18d9c39bc235ec5859ddbc2f68d73f7035cff4bf8aa56e519f3496f5c4d21834024ebc12a79d9327d9d924a859aa7d21b6d5d7dac0831ff14c8b
+  languageName: node
+  linkType: hard
+
 "react-native-vector-icons@npm:^10.2.0":
   version: 10.2.0
   resolution: "react-native-vector-icons@npm:10.2.0"
@@ -11410,6 +11419,7 @@ __metadata:
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.1.0"
     react-native-svg: "npm:15.8.0"
+    react-native-timeline-flatlist: "npm:^0.8.0"
     react-native-vector-icons: "npm:^10.2.0"
     react-native-web: "npm:~0.19.13"
     rn-emoji-keyboard: "npm:^1.7.0"
