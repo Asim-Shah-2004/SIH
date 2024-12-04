@@ -45,7 +45,7 @@ const JobPortal = ({ navigation }) => {
   };
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gray-100">
+      <View className="flex-1 items-center justify-center bg-gray-100">
         <ActivityIndicator size="large" color="#0000ff" />
         <Text className="mt-4 text-gray-600">Loading jobs...</Text>
       </View>

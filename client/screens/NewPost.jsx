@@ -1,6 +1,6 @@
-import { MaterialIcons, Feather, Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
   Modal,
   Platform,
   KeyboardAvoidingView,
-  Animated,
 } from 'react-native';
 
 // Expanded Alumni Data

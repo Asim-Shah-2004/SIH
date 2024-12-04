@@ -6,7 +6,6 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from '@react-navigation/drawer';
-import { useNavigation } from '@react-navigation/native';
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View } from 'react-native';
@@ -75,7 +74,6 @@ const getDrawerIcon =
   );
 
 export default function DrawerNavigator() {
-  const navigation = useNavigation();
   const { i18n } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
 

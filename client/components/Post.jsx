@@ -1,14 +1,13 @@
+import { LinearGradient } from 'expo-linear-gradient';
+import {
+  ThumbsUpIcon,
+  MessageCircleIcon,
+  ShareIcon,
+  HeartIcon,
+  StarIcon,
+} from 'lucide-react-native';
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { 
-  ThumbsUpIcon, 
-  MessageCircleIcon, 
-  ShareIcon, 
-  HeartIcon,
-  SmileIcon,
-  StarIcon 
-} from 'lucide-react-native';
 
 const Post = ({ postData }) => {
   const [showAllComments, setShowAllComments] = useState(false);
@@ -28,7 +27,7 @@ const Post = ({ postData }) => {
   // Get reaction counts
   const getReactionCounts = () => {
     const counts = {};
-    postData.reactions.forEach(reaction => {
+    postData.reactions.forEach((reaction) => {
       counts[reaction.type] = (counts[reaction.type] || 0) + 1;
     });
     return counts;
@@ -37,7 +36,7 @@ const Post = ({ postData }) => {
   const reactionIcons = {
     like: <ThumbsUpIcon size={16} color="#0a66c2" />,
     love: <HeartIcon size={16} color="#e11d48" />,
-    wow: <StarIcon size={16} color="#eab308" />
+    wow: <StarIcon size={16} color="#eab308" />,
   };
 
   return (
@@ -71,18 +70,12 @@ const Post = ({ postData }) => {
 
       {/* Post Content */}
       <View style={{ paddingHorizontal: 16 }}>
-        <Text style={{ fontSize: 15, lineHeight: 22, color: '#374151' }}>
-          {postData.text}
-        </Text>
+        <Text style={{ fontSize: 15, lineHeight: 22, color: '#374151' }}>{postData.text}</Text>
       </View>
 
       {/* Media Content */}
       {postData.media && (
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          style={{ marginTop: 12 }}
-        >
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
           {postData.media.map((item, index) => (
             <View key={index} style={{ marginHorizontal: 16, marginBottom: 12 }}>
               {item.type === 'image' && (
@@ -110,12 +103,12 @@ const Post = ({ postData }) => {
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {Object.entries(getReactionCounts()).map(([type, count], index) => (
-              <View 
+              <View
                 key={type}
-                style={{ 
+                style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  marginRight: 8 
+                  marginRight: 8,
                 }}>
                 {reactionIcons[type]}
                 <Text style={{ marginLeft: 4, color: '#6b7280' }}>{count}</Text>
@@ -129,13 +122,14 @@ const Post = ({ postData }) => {
       </View>
 
       {/* Action Buttons */}
-      <View style={{
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: 8,
-        borderTopWidth: 1,
-        borderTopColor: '#e5e7eb'
-      }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          paddingVertical: 8,
+          borderTopWidth: 1,
+          borderTopColor: '#e5e7eb',
+        }}>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
           <ThumbsUpIcon size={20} color="#6b7280" />
           <Text style={{ marginLeft: 6, color: '#6b7280' }}>Like</Text>
@@ -163,9 +157,7 @@ const Post = ({ postData }) => {
                     style={{ width: 32, height: 32, borderRadius: 16 }}
                   />
                   <View style={{ marginLeft: 8, flex: 1 }}>
-                    <Text style={{ fontWeight: '500' }}>
-                      User {item.userId.slice(-4)}
-                    </Text>
+                    <Text style={{ fontWeight: '500' }}>User {item.userId.slice(-4)}</Text>
                     <Text>{item.text}</Text>
                     <View style={{ flexDirection: 'row', marginTop: 4 }}>
                       <Text style={{ color: '#6b7280', fontSize: 12 }}>
@@ -191,11 +183,3 @@ const Post = ({ postData }) => {
 };
 
 export default Post;
-
-
-
-
-
-
-
-

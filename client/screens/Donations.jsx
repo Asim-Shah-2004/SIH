@@ -14,7 +14,6 @@ import {
 } from 'react-native';
 // import { donationCampaigns } from '../constants/donations/donationData';
 
-
 const formatIndianNumber = (num) => {
   if (num >= 10000000) {
     // 1 crore or more
@@ -48,7 +47,6 @@ const DonationPortal = ({ navigation }) => {
 
     fetchCampaigns();
   }, []); // Empty dependency array to run only on mount
-
 
   const handleDonation = (amount) => {
     if (amount && !isNaN(amount) && amount > 0) {

@@ -9,7 +9,6 @@ import {
   ScrollView,
   Image,
   useWindowDimensions,
-  Platform,
 } from 'react-native';
 
 import ConnectModal from '../../utils/ConnectModal';

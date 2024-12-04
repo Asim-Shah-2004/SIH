@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import debounce from 'lodash/debounce';
-import React, { useState, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -11,13 +11,10 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  Dimensions,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-
-const { width } = Dimensions.get('window');
 
 const NewJob = () => {
   const scrollViewRef = useRef(null);

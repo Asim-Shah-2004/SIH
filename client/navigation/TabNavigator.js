@@ -4,6 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 
 import MainHeader from './components/MainHeader';
+import AlumniDirectory from '../screens/AlumniDirectory';
 import Connections from '../screens/Connections';
 import Donations from '../screens/Donations';
 import Home from '../screens/Home';
@@ -12,7 +13,7 @@ import NewPost from '../screens/NewPost';
 
 const Tab = createBottomTabNavigator();
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const isSmallDevice = width < 375;
 const isLargeDevice = width >= 768;
 
@@ -105,6 +106,7 @@ const tabs = [
   { name: 'NewPost', component: NewPost, icon: 'add-circle' },
   { name: 'Jobs', component: Jobs, icon: 'briefcase' },
   { name: 'Connect', component: Connections, icon: 'people' },
+  { name: 'Directory', component: AlumniDirectory, icon: 'book' },
 ];
 
 const TabNavigator = () => {

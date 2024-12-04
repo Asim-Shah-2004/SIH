@@ -45,7 +45,7 @@ const EventsPage = () => {
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : error ? (
-        <Text className="text-red-500 text-center">{error}</Text>
+        <Text className="text-center text-red-500">{error}</Text>
       ) : (
         <ScrollView>
           {eventsData.map((event) => (

@@ -1,4 +1,3 @@
-
 export const posts = [
   {
     userId: '60fbbf8c61bcd043c4f9b431', // Example user ID
