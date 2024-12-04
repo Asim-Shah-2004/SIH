@@ -49,7 +49,7 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
 
   const handleSelect = (option) => {
     const newSelected = selected.includes(option)
-      ? selected.filter(item => item !== option)
+      ? selected.filter((item) => item !== option)
       : [...selected, option];
     onSelect(newSelected);
   };
@@ -119,7 +119,7 @@ const AlumniDirectory = () => {
   const filters = useMemo(() => getAlumniFilters(alumniRecommendations), []);
 
   const updateFilters = useCallback((key, values) => {
-    setActiveFilters(prev => {
+    setActiveFilters((prev) => {
       const newFilters = { ...prev };
       if (!values || values.length === 0) {
         delete newFilters[key];
@@ -156,13 +156,13 @@ const AlumniDirectory = () => {
           case 'Graduation Year':
             return values.includes(alumni.batch.graduation);
           case 'Location':
-            return values.some(value => alumni.location.includes(value));
+            return values.some((value) => alumni.location.includes(value));
           case 'Industry':
             return values.includes(alumni.industry);
           case 'Department':
             return values.includes(alumni.department);
           case 'Skills':
-            return values.some(value => alumni.skills.includes(value));
+            return values.some((value) => alumni.skills.includes(value));
           default:
             return true;
         }

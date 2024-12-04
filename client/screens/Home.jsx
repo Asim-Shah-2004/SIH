@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
+
 import NewPost from '../components/home/NewPost';
 import Post from '../components/home/Post';
 import { posts } from '../constants/posts/postData';

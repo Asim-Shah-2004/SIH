@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
-import { 
-  View, 
-  Text, 
-  TextInput, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Image, 
-  ScrollView 
-} from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ScrollView,
+} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const NewPost = ({ onSubmitPost, user }) => {
@@ -21,7 +21,7 @@ const NewPost = ({ onSubmitPost, user }) => {
     if (newPost.trim() || media.length > 0) {
       onSubmitPost({
         text: newPost,
-        media: media
+        media,
       });
       setNewPost('');
       setMedia([]);
@@ -36,7 +36,7 @@ const NewPost = ({ onSubmitPost, user }) => {
       return;
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsMultipleSelection: true,
       quality: 1,
@@ -51,39 +51,39 @@ const NewPost = ({ onSubmitPost, user }) => {
               const { uri } = await VideoThumbnails.getThumbnailAsync(asset.uri, {
                 time: 1000,
               });
-              return { 
-                type: 'video', 
-                uri: asset.uri, 
-                thumbnail: uri 
+              return {
+                type: 'video',
+                uri: asset.uri,
+                thumbnail: uri,
               };
             } catch (e) {
               console.error('Error generating video thumbnail', e);
-              return { 
-                type: 'video', 
-                uri: asset.uri 
+              return {
+                type: 'video',
+                uri: asset.uri,
               };
             }
           }
-          return { 
-            type: 'image', 
-            uri: asset.uri 
+          return {
+            type: 'image',
+            uri: asset.uri,
           };
         })
       );
 
-      setMedia(prevMedia => [...prevMedia, ...newMedia]);
+      setMedia((prevMedia) => [...prevMedia, ...newMedia]);
     }
   };
 
   const removeMedia = (index) => {
-    setMedia(prevMedia => prevMedia.filter((_, i) => i !== index));
+    setMedia((prevMedia) => prevMedia.filter((_, i) => i !== index));
   };
 
   const generateAISuggestions = async () => {
     const suggestions = [
-      "Make this more professional",
-      "Add a touch of humor",
-      "Simplify the language"
+      'Make this more professional',
+      'Add a touch of humor',
+      'Simplify the language',
     ];
     setAiSuggestions(suggestions);
   };
@@ -94,28 +94,15 @@ const NewPost = ({ onSubmitPost, user }) => {
 
   const renderMediaPreview = () => {
     return (
-      <ScrollView 
-        horizontal 
-        showsHorizontalScrollIndicator={false} 
-        style={styles.mediaContainer}
-      >
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaContainer}>
         {media.map((item, index) => (
           <View key={index} style={styles.mediaItem}>
             {item.type === 'image' ? (
-              <Image 
-                source={{ uri: item.uri }} 
-                style={styles.mediaPreview} 
-              />
+              <Image source={{ uri: item.uri }} style={styles.mediaPreview} />
             ) : (
-              <Image 
-                source={{ uri: item.thumbnail || item.uri }} 
-                style={styles.mediaPreview} 
-              />
+              <Image source={{ uri: item.thumbnail || item.uri }} style={styles.mediaPreview} />
             )}
-            <TouchableOpacity 
-              style={styles.removeMediaButton} 
-              onPress={() => removeMedia(index)}
-            >
+            <TouchableOpacity style={styles.removeMediaButton} onPress={() => removeMedia(index)}>
               <Icon name="close-circle" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -127,9 +114,9 @@ const NewPost = ({ onSubmitPost, user }) => {
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
-        <Image 
-          source={{ uri: user?.avatar || 'https://via.placeholder.com/40' }} 
-          style={styles.avatar} 
+        <Image
+          source={{ uri: user?.avatar || 'https://via.placeholder.com/40' }}
+          style={styles.avatar}
         />
         <TextInput
           style={styles.postInput}
@@ -149,41 +136,35 @@ const NewPost = ({ onSubmitPost, user }) => {
             <Icon name="image-outline" size={24} color="#4a4a4a" />
             <Text style={styles.actionButtonText}>Media</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.actionButton} 
-            onPress={generateAISuggestions}
-          >
+
+          <TouchableOpacity style={styles.actionButton} onPress={generateAISuggestions}>
             <Icon name="sparkles-outline" size={24} color="#4a4a4a" />
             <Text style={styles.actionButtonText}>AI Helper</Text>
           </TouchableOpacity>
         </View>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={[
-            styles.submitButton, 
-            (!newPost.trim() && media.length === 0) && styles.submitButtonDisabled
+            styles.submitButton,
+            !newPost.trim() && media.length === 0 && styles.submitButtonDisabled,
           ]}
           onPress={handleSubmit}
-          disabled={!newPost.trim() && media.length === 0}
-        >
+          disabled={!newPost.trim() && media.length === 0}>
           <Text style={styles.submitButtonText}>Post</Text>
         </TouchableOpacity>
       </View>
 
       {aiSuggestions.length > 0 && (
-        <ScrollView 
-          horizontal 
+        <ScrollView
+          horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.aiSuggestionsContainer}
-          contentContainerStyle={styles.aiSuggestionsContent}
-        >
+          contentContainerStyle={styles.aiSuggestionsContent}>
           {aiSuggestions.map((suggestion, index) => (
-            <TouchableOpacity 
-              key={index} 
+            <TouchableOpacity
+              key={index}
               style={styles.aiSuggestionChip}
-              onPress={() => applyAISuggestion(suggestion)}
-            >
+              onPress={() => applyAISuggestion(suggestion)}>
               <Text style={styles.aiSuggestionText}>{suggestion}</Text>
             </TouchableOpacity>
           ))}

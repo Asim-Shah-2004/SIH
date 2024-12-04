@@ -7,9 +7,9 @@ import MainHeader from './components/MainHeader';
 import AlumniDirectory from '../screens/AlumniDirectory';
 import Connections from '../screens/Connections';
 import Donations from '../screens/Donations';
+import HallofFame from '../screens/HallofFame';
 import Home from '../screens/Home';
 import Jobs from '../screens/Jobs';
-import HallofFame from '../screens/HallofFame';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +34,7 @@ const tabConfig = {
       shadowRadius: 4,
       borderTopWidth: 0,
       paddingHorizontal: 10,
-      paddingBottom: Platform.OS === 'ios' ? 20 : 0, 
+      paddingBottom: Platform.OS === 'ios' ? 20 : 0,
     },
     tabBarActiveTintColor: '#fff',
     tabBarInactiveTintColor: '#7A7A7A',
