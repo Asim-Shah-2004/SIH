@@ -14,7 +14,7 @@ import {
 import React, { useState } from 'react';
 import { Image, Pressable, ScrollView, Text, View, FlatList } from 'react-native';
 
-import Post from '../components/Post';
+import Post from '../components/home/Post';
 import Badge from '../components/profile/Badge';
 import Card from '../components/profile/Card';
 import LinkText from '../components/profile/LinkText';

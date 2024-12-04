@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
-
-import Post from '../components/Post'; // Adjust the import based on your project structure
-import { posts } from '../constants/posts/postData'; // Adjust the import for posts data
+import NewPost from '../components/home/NewPost';
+import Post from '../components/home/Post';
+import { posts } from '../constants/posts/postData';
 
 const Home = () => {
   const [postData, setPostData] = useState([]);
 
   useEffect(() => {
-    // Simulating fetching data
     setPostData(posts);
   }, []);
 
+  const handleSubmitPost = (content) => {
+    const post = {
+      userId: Date.now(),
+      content,
+      timestamp: new Date().toISOString(),
+    };
+    setPostData([post, ...postData]);
+  };
+
   return (
     <FlatList
+      ListHeaderComponent={<NewPost onSubmitPost={handleSubmitPost} />}
       data={postData}
       renderItem={({ item }) => <Post key={item.userId} postData={item} />}
       keyExtractor={(item) => item.userId.toString()}
@@ -24,7 +33,7 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
+    padding: 6,
   },
 });
 

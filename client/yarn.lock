@@ -3897,6 +3897,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cliui@npm:^7.0.2":
+  version: 7.0.4
+  resolution: "cliui@npm:7.0.4"
+  dependencies:
+    string-width: "npm:^4.2.0"
+    strip-ansi: "npm:^6.0.0"
+    wrap-ansi: "npm:^7.0.0"
+  checksum: 10/db858c49af9d59a32d603987e6fddaca2ce716cd4602ba5a2bb3a5af1351eebe82aba8dff3ef3e1b331f7fa9d40ca66e67bdf8e7c327ce0ea959747ead65c0ef
+  languageName: node
+  linkType: hard
+
 "cliui@npm:^8.0.1":
   version: 8.0.1
   resolution: "cliui@npm:8.0.1"
@@ -5463,6 +5474,15 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10/c965a617a67831f76645997ac3129061a2a906c7c19d60242fd3a21a63441d9d939e62686b949b57f77d6065643d508e6a5faefec3edc4f29cb8232571934c8a
+  languageName: node
+  linkType: hard
+
+"expo-video-thumbnails@npm:^9.0.2":
+  version: 9.0.2
+  resolution: "expo-video-thumbnails@npm:9.0.2"
+  peerDependencies:
+    expo: "*"
+  checksum: 10/8b238a30522fba09271e0a1588208abcfbb8c0efa18d965d285158987d20593aa6d6e30135dae5ef7b12c6595a979cf9aeb255815daaa814a827ca0306f5449d
   languageName: node
   linkType: hard
 
@@ -9477,6 +9497,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-vector-icons@npm:^10.2.0":
+  version: 10.2.0
+  resolution: "react-native-vector-icons@npm:10.2.0"
+  dependencies:
+    prop-types: "npm:^15.7.2"
+    yargs: "npm:^16.1.1"
+  bin:
+    fa-upgrade.sh: bin/fa-upgrade.sh
+    fa5-upgrade: bin/fa5-upgrade.sh
+    fa6-upgrade: bin/fa6-upgrade.sh
+    generate-icon: bin/generate-icon.js
+  checksum: 10/ac3b05bb353807d0ed94256bd6de4291e8261afb320ce69c06270fba3be2ed3c7b3a81ecbda29191cfe906e89bf853d4b4f016465b6b56a428315c7b6630eff1
+  languageName: node
+  linkType: hard
+
 "react-native-web@npm:~0.19.13":
   version: 0.19.13
   resolution: "react-native-web@npm:0.19.13"
@@ -11335,6 +11370,7 @@ __metadata:
     expo-router: "npm:~4.0.9"
     expo-sharing: "npm:^13.0.0"
     expo-status-bar: "npm:~2.0.0"
+    expo-video-thumbnails: "npm:^9.0.2"
     expo-web-browser: "npm:^14.0.1"
     i18next: "npm:^24.0.2"
     lucide-react-native: "npm:^0.462.0"
@@ -11356,6 +11392,7 @@ __metadata:
     react-native-safe-area-context: "npm:4.12.0"
     react-native-screens: "npm:~4.1.0"
     react-native-svg: "npm:15.8.0"
+    react-native-vector-icons: "npm:^10.2.0"
     react-native-web: "npm:~0.19.13"
     rn-emoji-keyboard: "npm:^1.7.0"
     tailwindcss: "npm:^3.4.15"
@@ -11737,10 +11774,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"yargs-parser@npm:^20.2.2":
+  version: 20.2.9
+  resolution: "yargs-parser@npm:20.2.9"
+  checksum: 10/0188f430a0f496551d09df6719a9132a3469e47fe2747208b1dd0ab2bb0c512a95d0b081628bbca5400fb20dbf2fabe63d22badb346cecadffdd948b049f3fcc
+  languageName: node
+  linkType: hard
+
 "yargs-parser@npm:^21.1.1":
   version: 21.1.1
   resolution: "yargs-parser@npm:21.1.1"
   checksum: 10/9dc2c217ea3bf8d858041252d43e074f7166b53f3d010a8c711275e09cd3d62a002969a39858b92bbda2a6a63a585c7127014534a560b9c69ed2d923d113406e
+  languageName: node
+  linkType: hard
+
+"yargs@npm:^16.1.1":
+  version: 16.2.0
+  resolution: "yargs@npm:16.2.0"
+  dependencies:
+    cliui: "npm:^7.0.2"
+    escalade: "npm:^3.1.1"
+    get-caller-file: "npm:^2.0.5"
+    require-directory: "npm:^2.1.1"
+    string-width: "npm:^4.2.0"
+    y18n: "npm:^5.0.5"
+    yargs-parser: "npm:^20.2.2"
+  checksum: 10/807fa21211d2117135d557f95fcd3c3d390530cda2eca0c840f1d95f0f40209dcfeb5ec18c785a1f3425896e623e3b2681e8bb7b6600060eda1c3f4804e7957e
   languageName: node
   linkType: hard
 

@@ -9,7 +9,7 @@ import Connections from '../screens/Connections';
 import Donations from '../screens/Donations';
 import Home from '../screens/Home';
 import Jobs from '../screens/Jobs';
-import NewPost from '../screens/NewPost';
+import HallofFame from '../screens/HallofFame';
 
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +34,7 @@ const tabConfig = {
       shadowRadius: 4,
       borderTopWidth: 0,
       paddingHorizontal: 10,
-      paddingBottom: Platform.OS === 'ios' ? 20 : 0, // Account for iOS home indicator
+      paddingBottom: Platform.OS === 'ios' ? 20 : 0, 
     },
     tabBarActiveTintColor: '#fff',
     tabBarInactiveTintColor: '#7A7A7A',
@@ -103,10 +103,10 @@ const styles = StyleSheet.create({
 const tabs = [
   { name: 'Home', component: Home, icon: 'home' },
   { name: 'Donations', component: Donations, icon: 'gift' },
-  { name: 'NewPost', component: NewPost, icon: 'add-circle' },
   { name: 'Jobs', component: Jobs, icon: 'briefcase' },
   { name: 'Connect', component: Connections, icon: 'people' },
   { name: 'Directory', component: AlumniDirectory, icon: 'book' },
+  { name: 'HallofFame', component: HallofFame, icon: 'trophy' },
 ];
 
 const TabNavigator = () => {
