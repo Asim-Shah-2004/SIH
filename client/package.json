@@ -12,8 +12,8 @@
     "ios": "expo start --ios",
     "start": "expo start",
     "prebuild": "expo prebuild",
-    "lint": "eslint \"{App,components,constants,navigation,screens,utils,i18n}/**/*.{js,jsx,ts,tsx}\" && prettier -c \"{App,components,constants,navigation,screens,utils}/**/*.{js,jsx,ts,tsx,json}\"",
-    "format": "eslint \"{App,components,constants,navigation,screens,utils,i18n}/**/*.{js,jsx,ts,tsx}\" --fix && prettier \"{App,components,constants,navigation,screens,utils}/**/*.{js,jsx,ts,tsx,json}\" --write"
+    "lint": "eslint \"{App,components,constants,navigation,screens,utils,providers,i18n}/**/*.{js,jsx,ts,tsx}\" && prettier -c \"{App,components,constants,navigation,screens,utils,providers,i18n}/**/*.{js,jsx,ts,tsx,json}\"",
+    "format": "eslint \"{App,components,constants,navigation,screens,utils,providers,i18n}/**/*.{js,jsx,ts,tsx}\" --fix && prettier \"{App,components,constants,navigation,screens,utils,providers,i18n}/**/*.{js,jsx,ts,tsx,json}\" --write"
   },
   "dependencies": {
     "@expo/metro-runtime": "~4.0.0",

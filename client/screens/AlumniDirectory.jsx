@@ -16,16 +16,16 @@ import { alumniRecommendations, getAlumniFilters } from '../constants/alumniData
 const AlumniCard = ({ alumni, onConnect }) => (
   <View className="m-2 flex-1 rounded-xl bg-white p-4 shadow-md">
     <View className="mb-2 flex-row items-center justify-end">
-      <View className="rounded-full bg-primary/10 px-2 py-1">
+      <View className="bg-primary/10 rounded-full px-2 py-1">
         <Text className="text-xs text-primary">{alumni.department}</Text>
       </View>
     </View>
     <Image
       source={alumni.photo}
-      className="h-24 w-24 self-center rounded-full border-2 border-primary/20"
+      className="border-primary/20 h-24 w-24 self-center rounded-full border-2"
     />
     <Text className="mt-3 text-center text-lg font-bold text-gray-800">{alumni.name}</Text>
-    <Text className="text-center text-primary/80">{alumni.position}</Text>
+    <Text className="text-primary/80 text-center">{alumni.position}</Text>
     <Text className="text-center text-gray-500">{alumni.company}</Text>
     <Text className="text-center text-gray-400">
       Batch {alumni.batch.joining} - {alumni.batch.graduation}

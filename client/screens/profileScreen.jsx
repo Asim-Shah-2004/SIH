@@ -118,7 +118,7 @@ const ProfileScreen = ({ route = {} }) => {
             className="h-20 w-20 rounded-full border-2 border-background"
           />
           <Text className="mt-2 text-lg font-bold text-text">{data.name}</Text>
-          <ReadMore numberOfLines={3} className="mb-4 text-sm text-text/90">
+          <ReadMore numberOfLines={3} className="text-text/90 mb-4 text-sm">
             <LinkText text={data.bio} className="text-text/90" />
           </ReadMore>
 

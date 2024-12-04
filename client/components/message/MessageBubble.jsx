@@ -126,7 +126,7 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
       <View
         className={`mb-2 max-w-[80%] ${
           sender === 'me' ? 'self-end bg-primary' : 'self-start bg-white'
-        } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border border-accent/10'}`}>
+        } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border-accent/10 border'}`}>
         {type === 'text' && (
           <Text className={`${sender === 'me' ? 'text-white' : 'text-text'} text-[15px]`}>
             {text}
@@ -168,7 +168,7 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
             <TouchableOpacity
               onPress={handleAudioPlayback}
               disabled={isLoading}
-              className="rounded-full bg-accent/10 p-2">
+              className="bg-accent/10 rounded-full p-2">
               {isLoading ? (
                 <View className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-primary" />
               ) : (

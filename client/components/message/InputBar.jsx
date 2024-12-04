@@ -20,7 +20,7 @@ const InputBar = ({
   };
 
   return (
-    <View className="border-t border-accent/10 bg-white">
+    <View className="border-accent/10 border-t bg-white">
       <EmojiKeyboard
         open={isEmojiPickerOpen}
         onClose={() => setIsEmojiPickerOpen(false)}
@@ -31,7 +31,7 @@ const InputBar = ({
       />
 
       <View className="flex-row items-center gap-2 p-2.5">
-        <View className="flex-1 flex-row items-center gap-3 rounded-2xl bg-accent/5 px-4 py-2">
+        <View className="bg-accent/5 flex-1 flex-row items-center gap-3 rounded-2xl px-4 py-2">
           <TouchableOpacity onPress={() => setIsEmojiPickerOpen(true)}>
             <Ionicons name="happy-outline" size={22} className="text-text" />
           </TouchableOpacity>
@@ -56,12 +56,12 @@ const InputBar = ({
         ) : (
           <View className="flex-row gap-2">
             <TouchableOpacity
-              className="rounded-full bg-accent/5 p-3"
+              className="bg-accent/5 rounded-full p-3"
               onPress={() => handleImagePicker(true)}>
               <Ionicons name="camera" size={20} className="text-text" />
             </TouchableOpacity>
             <TouchableOpacity
-              className="rounded-full bg-accent/5 p-3"
+              className="bg-accent/5 rounded-full p-3"
               onPressIn={startRecording}
               onPressOut={stopRecording}>
               <Ionicons

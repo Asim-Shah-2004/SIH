@@ -68,7 +68,7 @@ export default function HomePage({ navigation }) {
       </View>
 
       <View className="p-4">
-        <TouchableOpacity onPress={handleNext} className="text-dark rounded-full  bg-primary p-4">
+        <TouchableOpacity onPress={handleNext} className="rounded-full bg-primary  p-4 text-dark">
           <Text className="text-center text-lg font-semibold text-white">
             {currentStep === onboardingData.length - 1 ? 'Get Started' : 'Next'}
           </Text>

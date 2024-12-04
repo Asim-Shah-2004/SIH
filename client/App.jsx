@@ -1,20 +1,21 @@
 import './global.css';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationContainer } from '@react-navigation/native';
-import React, { useEffect } from 'react';
-import { I18nextProvider } from 'react-i18next';
+import { useColorScheme } from 'nativewind';
+import { useState, useEffect } from 'react';
 import { StatusBar, SafeAreaView, Text, ActivityIndicator } from 'react-native';
 
-import i18n from './i18n/i18n';
 import AppNavigator from './navigation/AppNavigator';
+import { Providers } from './providers/CustomProvider';
+import { themes } from './utils/colorTheme';
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(false);
-  const [loading, setLoading] = React.useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const { colorScheme } = useColorScheme();
 
   useEffect(() => {
     checkLoginStatus();
-    initializeLanguage();
   }, []);
 
   const checkLoginStatus = async () => {
@@ -28,37 +29,30 @@ export default function App() {
     }
   };
 
-  const initializeLanguage = async () => {
-    try {
-      const storedLang = await AsyncStorage.getItem('user-language');
-      if (storedLang) {
-        i18n.changeLanguage(storedLang);
-      }
-    } catch (error) {
-      console.error('Error initializing language:', error);
-    }
-  };
-
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
-        <ActivityIndicator size="large" color="rgb(var(--color-primary))" />
-        <Text className="mt-2.5 text-base font-medium text-text/60">
-          Please wait, loading your experience...
-        </Text>
-      </SafeAreaView>
+      <Providers>
+        <SafeAreaView
+          className="flex-1 items-center justify-center bg-background"
+          style={themes['light']}>
+          <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
+          <ActivityIndicator size="large" color="rgb(var(--color-primary))" />
+          <Text className="text-text/60 mt-2.5 text-base font-medium">
+            Please wait, loading your experience...
+          </Text>
+        </SafeAreaView>
+      </Providers>
     );
   }
 
   return (
-    <I18nextProvider i18n={i18n}>
+    <Providers>
       <NavigationContainer>
-        <SafeAreaView className="flex-1 bg-background">
+        <SafeAreaView className="flex-1 bg-background" style={themes['light']}>
           <StatusBar barStyle="dark-content" backgroundColor="#ffffff" />
           <AppNavigator isLoggedIn={true} />
         </SafeAreaView>
       </NavigationContainer>
-    </I18nextProvider>
+    </Providers>
   );
 }
