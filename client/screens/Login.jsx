@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
-import { changeLanguage } from '../i18n/i18n';
+import { LANGUAGES, changeLanguage } from '../i18n/i18n';
 
 const LoginScreen = ({ navigation }) => {
   const { t, i18n } = useTranslation();
@@ -50,43 +50,51 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1 justify-center bg-white p-6">
-      <Text className="mb-8 text-center text-3xl font-bold text-gray-800">{t('common.login')}</Text>
-      <TextInput
-        className="mb-4 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
-        placeholder={t('common.email')}
-        value={email}
-        onChangeText={setEmail}
-      />
-      <TextInput
-        className="mb-6 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
-        placeholder={t('common.password')}
-        value={password}
-        secureTextEntry
-        onChangeText={setPassword}
-      />
+    <View className="flex-1 bg-white">
+      <View className="flex-1 justify-center p-6">
+        <Text className="mb-8 text-center text-3xl font-bold text-gray-800">{t('auth.login')}</Text>
 
-      {/* Language switcher dropdown */}
-      <View className="mb-4">
-        <Picker
-          selectedValue={selectedLanguage}
-          onValueChange={(itemValue) => handleLanguageChange(itemValue)}
-          className="rounded-xl bg-gray-50">
-          <Picker.Item label="English" value="en" />
-          <Picker.Item label="हिंदी" value="hi" />
-        </Picker>
+        {/* Consistent input styling */}
+        <TextInput
+          className="mb-4 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
+          placeholder={t('auth.email')}
+          value={email}
+          onChangeText={setEmail}
+        />
+        <TextInput
+          className="mb-6 w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3"
+          placeholder={t('auth.password')}
+          value={password}
+          secureTextEntry
+          onChangeText={setPassword}
+        />
+
+        <TouchableOpacity
+          className="mb-4 w-full rounded-xl bg-blue-500 px-4 py-4"
+          onPress={handleLogin}>
+          <Text className="text-center text-lg font-bold text-white">{t('auth.loginButton')}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="w-full rounded-xl px-4 py-4"
+          onPress={() => navigation.navigate('Register')}>
+          <Text className="text-center font-semibold text-blue-500">{t('auth.noAccount')}</Text>
+        </TouchableOpacity>
       </View>
 
-      <TouchableOpacity
-        className="text-dark mb-4 w-full rounded-xl bg-primary px-4 py-4"
-        onPress={handleLogin}>
-        <Text className="text-center text-lg font-bold text-white">{t('common.login')}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        className="w-full rounded-xl px-4 py-4"
-        onPress={() => navigation.navigate('Register')}>
-        <Text className="text-center font-semibold text-blue-500">{t('common.noAccount')}</Text>
-      </TouchableOpacity>
+      {/* Compact language picker */}
+      <View className="border-t border-gray-200 p-4">
+        <View className="mx-auto w-40">
+          <Picker
+            selectedValue={selectedLanguage}
+            onValueChange={handleLanguageChange}
+            className="rounded-xl bg-gray-50">
+            {LANGUAGES.map((lang) => (
+              <Picker.Item key={lang.code} label={lang.label} value={lang.code} />
+            ))}
+          </Picker>
+        </View>
+      </View>
     </View>
   );
 };

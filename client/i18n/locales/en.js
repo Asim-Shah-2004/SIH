@@ -1,11 +1,17 @@
 export default {
   common: {
+    search: 'Search...',
+  },
+  auth: {
     login: 'Login',
     register: 'Register',
     email: 'Email',
     password: 'Password',
-    search: 'Search...',
+    name: 'Name',
     noAccount: "Don't have an account? Register",
+    haveAccount: 'Already have an account? Login',
+    registerButton: 'Register',
+    loginButton: 'Login',
   },
   home: {
     welcome: 'Welcome to Alumni Connect',

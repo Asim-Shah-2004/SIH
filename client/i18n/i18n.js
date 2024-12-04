@@ -5,6 +5,11 @@ import { initReactI18next } from 'react-i18next';
 import en from './locales/en';
 import hi from './locales/hi';
 
+export const LANGUAGES = [
+  { code: 'en', label: 'English' },
+  { code: 'hi', label: 'हिंदी' },
+];
+
 i18.use(initReactI18next).init({
   compatibilityJSON: 'v3',
   resources: {

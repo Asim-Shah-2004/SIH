@@ -1,8 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Picker } from '@react-native-picker/picker';
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItemList,
+} from '@react-navigation/drawer';
 import { useNavigation } from '@react-navigation/native';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { View } from 'react-native';
 
 import TabNavigator from './TabNavigator';
+import { LANGUAGES } from '../i18n/i18n';
 import Events from '../screens/Events';
 import Settings from '../screens/Settings';
 import ProfileScreen from '../screens/profileScreen';
@@ -66,8 +76,56 @@ const getDrawerIcon =
 
 export default function DrawerNavigator() {
   const navigation = useNavigation();
+  const { i18n } = useTranslation();
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+
+  useEffect(() => {
+    loadStoredLanguage();
+  }, []);
+
+  const loadStoredLanguage = async () => {
+    try {
+      const storedLang = await AsyncStorage.getItem('user-language');
+      if (storedLang) {
+        setSelectedLanguage(storedLang);
+      }
+    } catch (error) {
+      console.error('Error loading language:', error);
+    }
+  };
+
+  const handleLanguageChange = async (lang) => {
+    try {
+      await AsyncStorage.setItem('user-language', lang);
+      setSelectedLanguage(lang);
+      await i18n.changeLanguage(lang);
+    } catch (error) {
+      console.error('Error changing language:', error);
+    }
+  };
+
   return (
-    <Drawer.Navigator screenOptions={drawerConfig.screenOptions}>
+    <Drawer.Navigator
+      screenOptions={drawerConfig.screenOptions}
+      drawerContent={(props) => (
+        <View style={{ flex: 1 }}>
+          <DrawerContentScrollView {...props}>
+            <DrawerItemList {...props} />
+          </DrawerContentScrollView>
+
+          {/* Language Selector at bottom */}
+          <View className="border-t border-gray-200 p-4">
+            <Picker
+              selectedValue={selectedLanguage}
+              onValueChange={handleLanguageChange}
+              className="rounded-xl bg-gray-50">
+              {LANGUAGES.map((lang) => (
+                <Picker.Item key={lang.code} label={lang.label} value={lang.code} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+      )}>
       <Drawer.Screen
         name="MainTabs"
         component={TabNavigator}
