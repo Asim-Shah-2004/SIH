@@ -1,10 +1,17 @@
-import React, { useState, useRef } from 'react';
-import { 
-  View, Text, StyleSheet, FlatList, Image, 
-  TouchableOpacity, Dimensions, TextInput, Animated, ScrollView 
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useState, useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  TextInput,
+  Animated,
+} from 'react-native';
 import Timeline from 'react-native-timeline-flatlist';
 
 const { width, height } = Dimensions.get('window');
@@ -25,21 +32,21 @@ const ALUMNI_DATA = [
         year: 2020,
         title: 'Graduated College',
         description: 'Completed B.Tech with honors',
-        icon: 'school'
+        icon: 'school',
       },
       {
         year: 2022,
         title: 'Started Tech Company',
         description: 'Founded InnovateTech Solutions',
-        icon: 'business'
+        icon: 'business',
       },
       {
         year: 2024,
         title: 'Global Recognition',
         description: 'Featured in Forbes 30 under 30',
-        icon: 'stars'
-      }
-    ]
+        icon: 'stars',
+      },
+    ],
   },
   {
     id: '2',
@@ -53,21 +60,21 @@ const ALUMNI_DATA = [
         year: 2012,
         title: 'University Graduation',
         description: 'Graduated with Masters in Social Sciences',
-        icon: 'school'
+        icon: 'school',
       },
       {
         year: 2015,
         title: 'NGO Foundation',
         description: 'Started GlobalChange Initiative',
-        icon: 'people'
+        icon: 'people',
       },
       {
         year: 2020,
         title: 'UN Recognition',
         description: 'Received UN Social Impact Award',
-        icon: 'military-tech'
-      }
-    ]
+        icon: 'military-tech',
+      },
+    ],
   },
   {
     id: '3',
@@ -81,21 +88,21 @@ const ALUMNI_DATA = [
         year: 2015,
         title: 'Graduated College',
         description: 'Completed BBA with honors',
-        icon: 'school'
+        icon: 'school',
       },
       {
         year: 2017,
         title: 'Founded Startup',
         description: 'Started TechSavvy Inc.',
-        icon: 'business'
+        icon: 'business',
       },
       {
         year: 2021,
         title: 'Series A Funding',
         description: 'Raised $10M in Series A',
-        icon: 'attach-money'
-      }
-    ]
+        icon: 'attach-money',
+      },
+    ],
   },
   {
     id: '4',
@@ -109,21 +116,21 @@ const ALUMNI_DATA = [
         year: 2008,
         title: 'Graduated College',
         description: 'Completed Environmental Science degree',
-        icon: 'school'
+        icon: 'school',
       },
       {
         year: 2010,
         title: 'Joined Green Earth',
         description: 'Started working at Green Earth Organization',
-        icon: 'nature'
+        icon: 'nature',
       },
       {
         year: 2018,
         title: 'Published Research',
         description: 'Published research on climate change',
-        icon: 'book'
-      }
-    ]
+        icon: 'book',
+      },
+    ],
   },
   {
     id: '5',
@@ -137,34 +144,35 @@ const ALUMNI_DATA = [
         year: 2018,
         title: 'Graduated College',
         description: 'Completed Computer Science degree',
-        icon: 'school'
+        icon: 'school',
       },
       {
         year: 2019,
         title: 'Joined AI Lab',
         description: 'Started working at AI Research Lab',
-        icon: 'computer'
+        icon: 'computer',
       },
       {
         year: 2022,
         title: 'Breakthrough in AI',
         description: 'Developed new AI algorithm',
-        icon: 'insights'
-      }
-    ]
-  }
+        icon: 'insights',
+      },
+    ],
+  },
 ];
 
 const HallOfFame = () => {
   const [selectedAlumni, setSelectedAlumni] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  
+
   // Filter alumni based on search and category
-  const filteredAlumni = ALUMNI_DATA.filter(alumni => 
-    (selectedCategory === 'All' || alumni.category === selectedCategory) &&
-    (alumni.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-     alumni.achievement.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredAlumni = ALUMNI_DATA.filter(
+    (alumni) =>
+      (selectedCategory === 'All' || alumni.category === selectedCategory) &&
+      (alumni.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        alumni.achievement.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const renderHeader = () => (
@@ -182,13 +190,9 @@ const HallOfFame = () => {
         data={categories}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => setSelectedCategory(item)}
-            style={[
-              styles.categoryTab,
-              selectedCategory === item && styles.categoryTabActive
-            ]}
-          >
+            style={[styles.categoryTab, selectedCategory === item && styles.categoryTabActive]}>
             <Text style={styles.categoryText}>{item}</Text>
           </TouchableOpacity>
         )}
@@ -204,44 +208,35 @@ const HallOfFame = () => {
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,
-        useNativeDriver: true
+        useNativeDriver: true,
       }).start();
     }, []);
 
-    const timelineData = alumni.timeline?.map(item => ({
-      time: item.year,
-      title: item.title,
-      description: item.description,
-      icon: (
-        <LinearGradient
-          colors={['#4A90E2', '#6A5ACD']}
-          style={styles.timelineIconGradient}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
-          <MaterialIcons name={item.icon} size={20} color="#fff" />
-        </LinearGradient>
-      )
-    })) || [];
+    const timelineData =
+      alumni.timeline?.map((item) => ({
+        time: item.year,
+        title: item.title,
+        description: item.description,
+        icon: (
+          <LinearGradient
+            colors={['#4A90E2', '#6A5ACD']}
+            style={styles.timelineIconGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}>
+            <MaterialIcons name={item.icon} size={20} color="#fff" />
+          </LinearGradient>
+        ),
+      })) || [];
 
     return (
-      <Animated.View 
-        style={[
-          styles.modalBackground, 
-          { opacity: fadeAnim }
-        ]}
-      >
+      <Animated.View style={[styles.modalBackground, { opacity: fadeAnim }]}>
         <LinearGradient
           colors={['#1E1E2E', '#2D2D44']}
           style={styles.detailModal}
           start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-        >
+          end={{ x: 1, y: 1 }}>
           <View style={styles.modalHeader}>
-            <Image 
-              source={{ uri: alumni.image }} 
-              style={styles.modalImage} 
-            />
+            <Image source={{ uri: alumni.image }} style={styles.modalImage} />
             <View style={styles.modalHeaderText}>
               <Text style={styles.modalName}>{alumni.name}</Text>
               <Text style={styles.modalAchievement}>{alumni.achievement}</Text>
@@ -262,35 +257,31 @@ const HallOfFame = () => {
               separator={false}
               detailContainerStyle={styles.timelineDetail}
               renderDetail={(rowData, sectionID, rowID) => (
-                <Animated.View 
+                <Animated.View
                   style={[
                     styles.timelineDetailContainer,
-                    { 
-                      transform: [{ 
-                        translateX: fadeAnim.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [50, 0]
-                        }) 
-                      }]
-                    }
-                  ]}
-                >
+                    {
+                      transform: [
+                        {
+                          translateX: fadeAnim.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [50, 0],
+                          }),
+                        },
+                      ],
+                    },
+                  ]}>
                   <View style={styles.timelineDetailContent}>
                     <Text style={styles.timelineYear}>{rowData.time}</Text>
                     <Text style={styles.timelineTitle}>{rowData.title}</Text>
-                    <Text style={styles.timelineDescription}>
-                      {rowData.description}
-                    </Text>
+                    <Text style={styles.timelineDescription}>{rowData.description}</Text>
                   </View>
                 </Animated.View>
               )}
             />
           </View>
 
-          <TouchableOpacity 
-            style={styles.closeButton}
-            onPress={onClose}
-          >
+          <TouchableOpacity style={styles.closeButton} onPress={onClose}>
             <MaterialIcons name="close" size={24} color="#fff" />
           </TouchableOpacity>
         </LinearGradient>
@@ -299,20 +290,13 @@ const HallOfFame = () => {
   };
 
   const renderAlumni = ({ item }) => (
-    <TouchableOpacity 
-      style={styles.gridCard}
-      onPress={() => setSelectedAlumni(item)}
-    >
+    <TouchableOpacity style={styles.gridCard} onPress={() => setSelectedAlumni(item)}>
       <LinearGradient
         colors={['#2A2D3E', '#1F1F2C']}
         style={styles.cardContent}
         start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
-        <Image 
-          source={{ uri: item.image }} 
-          style={styles.gridImage} 
-        />
+        end={{ x: 1, y: 1 }}>
+        <Image source={{ uri: item.image }} style={styles.gridImage} />
         <Text style={styles.gridName}>{item.name}</Text>
         <Text style={styles.gridYear}>{item.graduationYear}</Text>
       </LinearGradient>
@@ -322,7 +306,7 @@ const HallOfFame = () => {
   return (
     <View style={styles.container}>
       {renderHeader()}
-      
+
       <FlatList
         data={filteredAlumni}
         renderItem={renderAlumni}
@@ -337,12 +321,7 @@ const HallOfFame = () => {
         )}
       />
 
-      {selectedAlumni && (
-        <Modal 
-          alumni={selectedAlumni}
-          onClose={() => setSelectedAlumni(null)}
-        />
-      )}
+      {selectedAlumni && <Modal alumni={selectedAlumni} onClose={() => setSelectedAlumni(null)} />}
     </View>
   );
 };
@@ -391,7 +370,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   gridCard: {
-    flex: 1/numColumns,
+    flex: 1 / numColumns,
     margin: 8,
     height: 200,
     borderRadius: 15,
@@ -521,7 +500,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderRadius: 20,
     padding: 10,
-  }
+  },
 });
 
 export default HallOfFame;

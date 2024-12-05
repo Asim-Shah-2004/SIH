@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, Text, TouchableOpacity } from 'react-native';
+
 import { AuthContext } from '../providers/CustomProvider';
 
 const Notifications = () => {

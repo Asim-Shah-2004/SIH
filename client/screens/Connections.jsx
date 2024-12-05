@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 
-import { alumniRecommendations } from '../constants/alumniData';
+import { alumniRecommendations } from '../constants/alumni/alumniRecommendations';
 import UserCard from '../utils/UserCard'; // Importing the UserCard component
 
 const AlumniRecommendations = ({ navigation }) => {
@@ -20,7 +20,7 @@ const AlumniRecommendations = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={{ paddingBottom: 16 }} className="bg-gray-100 p-4">
       {/* Alumni Map Button */}
-      <View className='flex-row justify-evenly'>
+      <View className="flex-row justify-evenly">
         <View className="mb-4 flex-row justify-between">
           <TouchableOpacity
             className="rounded-md bg-blue-700 px-4 py-2"

@@ -14,7 +14,7 @@ import TabNavigator from './TabNavigator';
 import { LANGUAGES } from '../i18n/i18n';
 import Events from '../screens/Events';
 import Settings from '../screens/Settings';
-import ProfileScreen from '../screens/profileScreen';
+import ProfileScreen from '../screens/ProfileScreen';
 
 const Drawer = createDrawerNavigator();
 

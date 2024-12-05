@@ -5,19 +5,20 @@ module.exports = {
     './components/**/*.{js,jsx,ts,tsx}',
     './screens/**/*.{js,jsx,ts,tsx}',
     './navigation/**/*.{js,jsx,ts,tsx}',
+    './providers/**/*.{js,jsx,ts,tsx}',
+    './utils/**/*.{js,jsx,ts,tsx}',
   ],
 
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
       colors: {
-        //   primary: '#F05454',
-        //   secondary: '#CBD77E',
-        //   dark: '#282828',
-        //   background: '#DDDDDD',
+        // primary: '#F05454',
+        // secondary: '#CBD77E',
+        // dark: '#282828',
+        // background: '#DDDDDD',
 
         // primary: '#A7A0D3',
-        // primary: '#F05454',
         // secondary: '#CBD77E',
         // dark: '#282828',
         // background: '#DDDDDD',

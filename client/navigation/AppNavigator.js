@@ -1,18 +1,17 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AuthContext } from '../providers/CustomProvider';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
 import NewJob from '../components/jobs/NewJob';
+import { AuthContext } from '../providers/CustomProvider';
+import AlumniDirectory from '../screens/AlumniDirectory';
 import Chat from '../screens/Chat';
 import Message from '../screens/Message';
 import Notifications from '../screens/Notifications';
 import MessageHeader from './components/MessageHeader';
 // import Map from '../screens/Map';
-import AlumniDirectory from '../screens/AlumniDirectory';
-
 
 const Stack = createNativeStackNavigator();
 

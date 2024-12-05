@@ -1,18 +1,24 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import {
-  Award,
   Briefcase,
   Github,
   Globe,
-  GraduationCap,
   Link2,
   Linkedin,
   Twitter,
-  Trophy,
-  MessageCircle,
+  Calendar,
+  Mail,
+  Phone,
+  Settings,
+  User,
+  Bookmark,
+  Share,
+  Heart,
+  Eye,
+  Medal,
+  Send,
 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Image, Pressable, ScrollView, Text, View, FlatList } from 'react-native';
+import { Image, Pressable, Text, View, FlatList, Linking } from 'react-native';
 
 import Post from '../components/home/Post';
 import Badge from '../components/profile/Badge';
@@ -22,10 +28,6 @@ import ReadMore from '../components/profile/ReadMore';
 import StatItem from '../components/profile/StatItem';
 import { myPost } from '../constants/posts/myPost';
 import { DEFAULT_ALUMNI_DATA } from '../constants/profileData';
-
-const SectionTitle = ({ children }) => (
-  <Text className="mb-2 text-base font-bold text-gray-800">{children}</Text>
-);
 
 const getSocialIcon = (platform) => {
   const iconSize = 20;
@@ -46,128 +48,191 @@ const getSocialIcon = (platform) => {
 
 const PostsSection = ({ myPost }) => {
   const [showAllPosts, setShowAllPosts] = useState(false);
-  const [editingPostId, setEditingPostId] = useState(null); // to track which post is being edited
+  const [editingPostId, setEditingPostId] = useState(null);
 
   const handleEdit = (postId) => {
     setEditingPostId(postId);
-    // You can handle editing logic here (open modal, navigate to edit screen, etc.)
+    // Add your edit logic here
   };
 
   const handleDelete = (postId) => {
-    // Handle delete logic here
-    console.log(`Deleting post with id ${postId}`);
+    // Add your delete logic here
+    console.log('Deleting post:', postId);
   };
 
-  // Limit the number of posts shown initially
-  const postsToShow = showAllPosts ? myPost : myPost.slice(0, 1); // Show first post initially, all if 'See All' clicked
+  const postsToShow = showAllPosts ? myPost : myPost.slice(0, 1);
+
+  const renderItem = ({ item }) => (
+    <View className="mb-4 rounded-lg bg-white p-4 shadow-md">
+      <Post key={item.userId} postData={item} />
+      {editingPostId === item.userId && (
+        <Text className="mt-2 text-sm text-gray-600">Edit Mode for Post {item.userId}</Text>
+      )}
+      <View className="mt-4 flex-row items-center justify-between">
+        <Pressable
+          onPress={() => handleEdit(item.userId)}
+          className="mr-2 flex-1 rounded-md bg-blue-500 py-2">
+          <Text className="text-center text-white">Edit</Text>
+        </Pressable>
+        <Pressable
+          onPress={() => handleDelete(item.userId)}
+          className="ml-2 flex-1 rounded-md bg-red-500 py-2">
+          <Text className="text-center text-white">Delete</Text>
+        </Pressable>
+      </View>
+    </View>
+  );
+
+  const ListFooterComponent = () =>
+    !showAllPosts && (
+      <Pressable onPress={() => setShowAllPosts(true)} className="mt-4 rounded-md bg-gray-200 p-2">
+        <Text className="text-center text-blue-500">See All Posts</Text>
+      </Pressable>
+    );
 
   return (
-    <View className="space-y-4">
-      <FlatList
-        data={postsToShow}
-        renderItem={({ item }) => (
-          <View className="mb-4 rounded-lg bg-white p-4 shadow-md">
-            <Post key={item.userId} postData={item} />
-            {editingPostId === item.userId && (
-              <Text className="mt-2 text-sm text-gray-600">Edit Mode for Post {item.userId}</Text>
-            )}
-
-            {/* Edit and Delete buttons */}
-            <View className="mt-4 flex-row items-center justify-between">
-              <Pressable
-                onPress={() => handleEdit(item.userId)}
-                className="mr-2 flex-1 rounded-md bg-blue-500 py-2">
-                <Text className="text-center text-white">Edit</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => handleDelete(item.userId)}
-                className="ml-2 flex-1 rounded-md bg-red-500 py-2">
-                <Text className="text-center text-white">Delete</Text>
-              </Pressable>
-            </View>
-          </View>
-        )}
-        keyExtractor={(item) => item.userId.toString()}
-      />
-
-      {/* Show "See All Posts" button if not showing all posts */}
-      {!showAllPosts && (
-        <Pressable
-          onPress={() => setShowAllPosts(true)}
-          className="mt-4 rounded-md bg-gray-200 p-2">
-          <Text className="text-center text-blue-500">See All Posts</Text>
-        </Pressable>
-      )}
-    </View>
+    <FlatList
+      data={postsToShow}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.userId.toString()}
+      ListFooterComponent={ListFooterComponent}
+    />
   );
 };
 
 const ProfileScreen = ({ route = {} }) => {
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [activeSection, setActiveSection] = useState('about');
   const data = { ...DEFAULT_ALUMNI_DATA, ...(route.params?.alumni || {}) };
 
-  return (
-    <ScrollView contentContainerStyle={{ paddingBottom: 16 }}>
-      {/* Header Section */}
-      <LinearGradient
-        colors={['#2C3E8D', '#3498DB']} // Using actual color values
-        className="bg-gradient-to-r from-primary to-secondary pb-4">
-        <View className="items-center px-4 pt-6">
-          <Image
-            source={{ uri: data.profilePicture }}
-            className="h-20 w-20 rounded-full border-2 border-background"
-          />
-          <Text className="mt-2 text-lg font-bold text-text">{data.name}</Text>
-          <ReadMore numberOfLines={3} className="text-text/90 mb-4 text-sm">
-            <LinkText text={data.bio} className="text-text/90" />
-          </ReadMore>
+  const renderHeader = () => (
+    <>
+      {/* Cover Section */}
+      <View className="relative h-40">
+        <Image
+          source={{ uri: data.coverPhoto }}
+          className="h-full w-full bg-gray-100"
+          style={{ opacity: 0.95 }}
+        />
+        <View className="absolute right-4 top-6 flex-row space-x-3">
+          <Pressable className="rounded-full bg-white/90 p-3 shadow">
+            <Share size={20} className="text-text" />
+          </Pressable>
+          <Pressable className="rounded-full bg-white/90 p-3 shadow">
+            <Settings size={20} className="text-text" />
+          </Pressable>
+        </View>
+      </View>
 
-          <View className="flex-row justify-center space-x-6">
+      {/* Profile Info Card */}
+      <View className="mx-4 -mt-20 rounded-xl bg-background p-5 shadow-lg">
+        <Image
+          source={{ uri: data.profilePicture }}
+          className="h-28 w-28 rounded-xl border-4 border-background shadow-sm"
+        />
+
+        <View className="mt-3 space-y-1">
+          <Text className="text-2xl font-bold text-text">{data.name}</Text>
+          <Text className="text-text/60 text-base">{data.position}</Text>
+          <Text className="text-text/60 text-sm">{`${data.location.city}, ${data.location.country}`}</Text>
+        </View>
+
+        <View className="mt-6 flex-row justify-between">
+          <StatItem icon={Eye} count={data.stats.followers} label="Followers" />
+          <StatItem icon={Heart} count={data.stats.following} label="Following" />
+          <StatItem icon={Bookmark} count={data.stats.posts} label="Posts" />
+        </View>
+
+        <View className="mt-6 flex-row gap-3">
+          <Pressable className="flex-1 flex-row items-center justify-center space-x-2 rounded-lg bg-primary p-3">
+            <User size={16} className="text-white" />
+            <Text className="text-base font-medium text-white">Connect</Text>
+          </Pressable>
+          <Pressable className="flex-row items-center justify-center space-x-2 rounded-lg border-2 border-primary p-3">
+            <Send size={16} className="text-primary" />
+            <Text className="text-base font-medium text-primary">Message</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      {/* Sections */}
+      <View className="mt-4 px-4">
+        <View className="flex-row flex-wrap gap-2">
+          {['About', 'Experience', 'Posts', 'Skills'].map((section) => (
+            <Pressable
+              key={section}
+              onPress={() => setActiveSection(section.toLowerCase())}
+              className={`rounded-full px-4 py-2 ${
+                activeSection === section.toLowerCase()
+                  ? 'bg-primary'
+                  : 'border border-gray-200 bg-white'
+              }`}>
+              <Text
+                className={`text-base font-medium ${
+                  activeSection === section.toLowerCase() ? 'text-white' : 'text-text/60'
+                }`}>
+                {section}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    </>
+  );
+
+  const renderContent = () => (
+    <View className="p-4">
+      {activeSection === 'about' && (
+        <View className="space-y-6">
+          <View>
+            <Text className="mb-2 text-lg font-semibold text-text">About</Text>
+            <ReadMore numberOfLines={3} className="text-text/80 text-base leading-relaxed">
+              <LinkText text={data.bio} />
+            </ReadMore>
+          </View>
+
+          <View className="rounded-xl bg-white p-4 shadow">
+            <Text className="mb-4 text-lg font-semibold text-text">Contact Information</Text>
             {[
-              ['Posts', data.posts],
-              ['Followers', data.followers],
-              ['Following', data.following],
-            ].map(([label, value]) => (
-              <StatItem key={label} label={label} value={value} />
+              { icon: Mail, value: data.email },
+              { icon: Phone, value: data.phone },
+              { icon: Calendar, value: `Batch of ${data.batch}` },
+            ].map((item, i) => (
+              <View key={i} className="mb-3 flex-row items-center space-x-3">
+                <item.icon size={20} className="text-primary" />
+                <LinkText text={item.value} className="text-text/80 text-base" />
+              </View>
+            ))}
+          </View>
+
+          <View className="rounded-xl bg-white p-5 shadow-lg">
+            <Text className="mb-4 text-lg font-semibold text-text">Social Links</Text>
+            {Object.entries(data.socialLinks).map(([platform, url], i) => (
+              <Pressable
+                key={i}
+                onPress={() => Linking.openURL(url.startsWith('http') ? url : `https://${url}`)}
+                className="mb-4 flex-row items-center space-x-4">
+                <View className="bg-primary/10 rounded-full p-3">{getSocialIcon(platform)}</View>
+                <Text className="flex-1 text-base font-medium text-text">{platform}</Text>
+                <Link2 size={16} className="text-primary" />
+              </Pressable>
             ))}
           </View>
         </View>
-      </LinearGradient>
+      )}
 
-      {/* Main Content */}
-      <View className="space-y-6 p-4">
-        {/* Action Buttons */}
-        <View className="flex-row space-x-2">
-          <Pressable
-            onPress={() => setIsFollowing(!isFollowing)}
-            className={`flex-1 items-center rounded-lg py-2 ${isFollowing ? 'bg-accent' : 'bg-primary'}`}>
-            <Text className={isFollowing ? 'text-text' : 'text-accent'}>
-              {isFollowing ? 'Following' : 'Follow'}
-            </Text>
-          </Pressable>
-          <Pressable className="flex-1 items-center rounded-lg border border-primary py-2">
-            <Text className="text-primary">Message</Text>
-          </Pressable>
+      {activeSection === 'posts' && (
+        <View className="space-y-4">
+          <Text className="text-lg font-semibold text-text">Posts</Text>
+          <PostsSection myPost={myPost} />
         </View>
+      )}
 
-        {/* Basic Info */}
-        <View>
-          <SectionTitle>Basic Information</SectionTitle>
-          <Card
-            icon={<GraduationCap size={20} className="text-primary" />}
-            title={data.department}
-            subtitle={`Batch of ${data.batch}`}
-            meta={`Roll Number: ${data.rollNumber}`}
-          />
-        </View>
-
-        {/* Work Experience */}
-        <View>
-          <SectionTitle>Work Experience</SectionTitle>
+      {activeSection === 'experience' && (
+        <View className="space-y-4">
           {data.workExperience.map((work, index) => (
             <Card
               key={index}
-              icon={<Briefcase size={20} className="text-primary" />}
+              icon={<Briefcase size={18} className="text-primary" />}
               title={work.position}
               subtitle={work.company}
               meta={work.duration}
@@ -175,61 +240,50 @@ const ProfileScreen = ({ route = {} }) => {
             />
           ))}
         </View>
+      )}
 
-        <PostsSection myPost={myPost} />
+      {activeSection === 'skills' && (
+        <View className="space-y-6">
+          <View>
+            <Text className="mb-4 text-lg font-semibold text-text">Skills</Text>
+            <View className="flex-row flex-wrap gap-2">
+              {data.skills.map((skill, index) => (
+                <Badge key={index} className="bg-primary/10">
+                  <Text className="text-sm font-medium text-primary">{skill}</Text>
+                </Badge>
+              ))}
+            </View>
+          </View>
 
-        {/* Education */}
-        <View>
-          <SectionTitle>Education</SectionTitle>
-          {data.education.map((edu, index) => (
-            <Card
-              key={index}
-              icon={<GraduationCap size={20} className="text-primary" />}
-              title={edu.degree}
-              subtitle={edu.university}
-              meta={`Graduated ${edu.graduationYear} • GPA: ${edu.gpa}`}
-            />
-          ))}
-        </View>
-
-        {/* Skills */}
-        <View>
-          <SectionTitle>Skills</SectionTitle>
-          <View className="flex-row flex-wrap">
-            {data.skills.map((skill, index) => (
-              <Badge key={index}>{skill}</Badge>
+          <View className="rounded-xl bg-white p-5 shadow-md">
+            <Text className="mb-4 text-lg font-semibold text-text">Certifications</Text>
+            {data.certifications.map((cert, index) => (
+              <View key={index} className="mb-3 flex-row items-center justify-between">
+                <View className="flex-row items-center space-x-3">
+                  <Medal size={20} className="text-primary" />
+                  <Text className="text-base font-medium text-text">{cert.name}</Text>
+                </View>
+                <Text className="text-text/60 text-sm">{cert.year}</Text>
+              </View>
             ))}
           </View>
         </View>
+      )}
+    </View>
+  );
 
-        {/* Achievements */}
-        <View>
-          <SectionTitle>Achievements</SectionTitle>
-          {data.achievements.map((achievement, index) => (
-            <Card
-              key={index}
-              icon={<Trophy size={20} className="text-primary" />}
-              title={achievement.title}
-              subtitle={achievement.year}
-              description={achievement.description}
-            />
-          ))}
-        </View>
-
-        {/* Social Links */}
-        <View>
-          <SectionTitle>Social Links</SectionTitle>
-          {Object.entries(data.socialLinks).map(([platform, url], index) => (
-            <Card
-              key={index}
-              icon={getSocialIcon(platform)}
-              title={platform.charAt(0).toUpperCase() + platform.slice(1)}
-              subtitle={<LinkText text={url} className="text-base text-gray-600" />}
-            />
-          ))}
-        </View>
-      </View>
-    </ScrollView>
+  return (
+    <FlatList
+      className="flex-1 bg-gray-50"
+      ListHeaderComponent={() => (
+        <>
+          {renderHeader()}
+          {renderContent()}
+        </>
+      )}
+      data={[]} // Empty data array since we're only using header
+      renderItem={() => null}
+    />
   );
 };
 

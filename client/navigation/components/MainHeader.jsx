@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
+
 import { AuthContext } from '../../providers/CustomProvider';
 
 export default function MainHeader() {

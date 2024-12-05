@@ -1,14 +1,13 @@
 // screens/LoginScreen.js
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
+import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { AuthContext } from '../providers/CustomProvider';
 
 import { LANGUAGES, changeLanguage } from '../i18n/i18n';
-import { se } from 'rn-emoji-keyboard';
+import { AuthContext } from '../providers/CustomProvider';
 
 const LoginScreen = () => {
   const navigation = useNavigation();

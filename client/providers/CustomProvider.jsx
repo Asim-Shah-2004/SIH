@@ -1,7 +1,8 @@
-import React, { createContext, useState, useEffect } from 'react';
-import { SafeAreaView, ActivityIndicator, Text } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { createContext, useState, useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
+import { SafeAreaView, ActivityIndicator, Text } from 'react-native';
+
 import i18n from '../i18n/i18n';
 
 // Create the AuthContext

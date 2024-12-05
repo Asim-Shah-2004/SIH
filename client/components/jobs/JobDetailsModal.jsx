@@ -62,7 +62,7 @@ const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
 
             {/* Company Info with enhanced styling */}
             <View className="mb-8 flex-row items-start">
-              <Image source={{ uri: item.logo }} className="h-20 w-20 " />
+              <Image source={{ uri: item.logo }} className="h-20 w-20" />
               <View className="ml-4 flex-1">
                 <Text className="text-2xl font-bold tracking-tight text-gray-900">
                   {item.title}

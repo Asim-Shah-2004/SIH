@@ -1,9 +1,9 @@
 export const DEFAULT_ALUMNI_DATA = {
-  name: 'John Doe',
-  username: '@johndoe',
+  name: 'Rajesh Kumar',
+  username: '@rajeshk',
   profilePicture: 'https://picsum.photos/200',
   coverPhoto: 'https://picsum.photos/800/200',
-  bio: 'Passionate alumnus and tech enthusiast with over 5 years of experience in software development. Currently leading innovative projects at Tech Innovations Inc. Dedicated to mentoring young developers and contributing to open-source projects. Check out my work at github.com/johndoe',
+  bio: 'Passionate alumnus and tech enthusiast with over 5 years of experience in software development. Currently leading innovative projects at TCS. Dedicated to mentoring young developers and contributing to open-source projects. Check out my work at github.com/rajeshk',
   followers: 1234,
   following: 567,
   posts: 42,
@@ -14,31 +14,31 @@ export const DEFAULT_ALUMNI_DATA = {
   ],
   workExperience: [
     {
-      company: 'Tech Innovations Inc.',
+      company: 'Tata Consultancy Services',
       position: 'Senior Software Engineer',
       duration: '2020 - Present',
       description:
         'Leading a team of 12 developers working on cutting-edge cloud solutions. Implemented microservices architecture that reduced deployment time by 60%. Mentoring junior developers and establishing best practices for code quality and testing.',
     },
     {
-      company: 'Digital Solutions Ltd',
+      company: 'Infosys',
       position: 'Software Developer',
       duration: '2018 - 2020',
-      description: 'Developed mobile applications and web services',
+      description: 'Developed enterprise applications and web services',
     },
   ],
   education: [
     {
-      degree: 'Master of Computer Science',
+      degree: 'M.Tech in Computer Science',
       graduationYear: 2021,
-      university: 'Tech University',
-      gpa: '3.8/4.0',
+      university: 'Indian Institute of Technology, Delhi',
+      gpa: '9.2/10.0',
     },
     {
-      degree: 'Bachelor of Engineering',
+      degree: 'B.Tech in Computer Science',
       graduationYear: 2019,
-      university: 'Alumni University',
-      gpa: '3.9/4.0',
+      university: 'National Institute of Technology, Trichy',
+      gpa: '9.4/10.0',
     },
   ],
   skills: ['React Native', 'JavaScript', 'Python', 'AWS', 'UI/UX Design'],
@@ -46,15 +46,19 @@ export const DEFAULT_ALUMNI_DATA = {
     { name: 'AWS Certified Developer', year: 2023 },
     { name: 'Google Cloud Professional', year: 2022 },
   ],
-  location: 'San Francisco, CA',
+  location: {
+    city: 'Bangalore',
+    state: 'Karnataka',
+    country: 'India',
+  },
   joinedYear: 2018,
   batch: '2019-2023',
   department: 'Computer Science & Engineering',
   rollNumber: 'CS19B023',
   languages: [
-    { name: 'English', level: 'Native' },
-    { name: 'Spanish', level: 'Professional' },
-    { name: 'Mandarin', level: 'Intermediate' },
+    { name: 'English', level: 'Professional' },
+    { name: 'Hindi', level: 'Native' },
+    { name: 'Kannada', level: 'Intermediate' },
   ],
   achievements: [
     {
@@ -106,4 +110,19 @@ export const DEFAULT_ALUMNI_DATA = {
       description: 'Mentoring undergrad students in web development',
     },
   ],
+  position: 'Senior Software Engineer @ Tata Consultancy Services',
+  email: 'rajesh.kumar@tcs.com',
+  phone: '+91 98765 43210',
+  availability: 'Open to mentoring',
+  stats: {
+    posts: 42,
+    followers: 1234,
+    following: 567,
+    connections: 892,
+  },
+  quickLinks: {
+    resume: 'https://resume.com/johndoe',
+    portfolio: 'https://johndoe.dev',
+    calendar: 'https://cal.com/johndoe',
+  },
 };

@@ -11,33 +11,40 @@ import {
   Modal,
 } from 'react-native';
 
-import { alumniRecommendations, getAlumniFilters } from '../constants/alumniData';
+import { alumniRecommendations, getAlumniFilters } from '../constants/alumni/alumniRecommendations';
 
 const AlumniCard = ({ alumni, onConnect }) => (
-  <View className="m-2 flex-1 rounded-xl bg-white p-4 shadow-md">
+  <View className="border-overlay/20 m-1.5 flex-1 rounded-xl border bg-background p-4 shadow-md">
     <View className="mb-2 flex-row items-center justify-end">
-      <View className="bg-primary/10 rounded-full px-2 py-1">
-        <Text className="text-xs text-primary">{alumni.department}</Text>
+      <View className="bg-primary/10 rounded-full px-2 py-0.5">
+        <Text className="text-2xs text-primary">{alumni.department}</Text>
       </View>
     </View>
     <Image
-      source={alumni.photo}
-      className="border-primary/20 h-24 w-24 self-center rounded-full border-2"
+      source={{ uri: alumni.photo }}
+      className="border-primary/20 h-20 w-20 self-center rounded-full border-2"
     />
-    <Text className="mt-3 text-center text-lg font-bold text-gray-800">{alumni.name}</Text>
-    <Text className="text-primary/80 text-center">{alumni.position}</Text>
-    <Text className="text-center text-gray-500">{alumni.company}</Text>
-    <Text className="text-center text-gray-400">
-      Batch {alumni.batch.joining} - {alumni.batch.graduation}
+    <Text className="mt-2 text-center text-sm font-bold text-text" numberOfLines={1}>
+      {alumni.name}
+    </Text>
+    <Text className="text-primary/80 text-center text-xs" numberOfLines={1}>
+      {alumni.position}
+    </Text>
+    <Text className="text-text/60 text-center text-xs" numberOfLines={1}>
+      {alumni.company}
+    </Text>
+    <Text className="text-2xs text-text/40 text-center">
+      {alumni.batch.joining} - {alumni.batch.graduation}
     </Text>
     <TouchableOpacity
-      className={`mt-3 rounded-full ${
-        alumni.isConnected ? 'bg-gray-100' : 'bg-gradient-to-r from-primary to-secondary'
-      } px-4 py-2.5 shadow-sm`}
+      className={`mt-3 rounded-full px-4 py-2 shadow-sm ${
+        alumni.isConnected ? 'bg-overlay' : 'bg-gradient-to-r from-primary to-secondary'
+      }`}
       onPress={() => onConnect(alumni.id)}
-      disabled={alumni.isConnected}>
+      disabled={alumni.isConnected}
+      activeOpacity={0.7}>
       <Text
-        className={`text-center font-medium ${alumni.isConnected ? 'text-gray-600' : 'text-white'}`}>
+        className={`text-center text-xs font-medium ${alumni.isConnected ? 'text-text/60' : 'text-background'}`}>
         {alumni.isConnected ? 'Connected' : 'Connect'}
       </Text>
     </TouchableOpacity>
@@ -55,16 +62,23 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
   };
 
   return (
-    <View className="mr-4" style={{ zIndex: 10 }}>
+    <View className="z-10 mr-2">
       <TouchableOpacity
         onPress={() => setIsOpen(!isOpen)}
         className={`flex-row items-center rounded-lg px-3 py-2 ${
-          selected.length > 0 ? 'bg-primary/20' : 'bg-gray-200'
+          selected.length > 0 ? 'bg-accent/10' : 'bg-overlay'
         }`}>
-        <Text className="mr-2 font-semibold">
+        <Text
+          className={`mr-2 text-xs font-semibold ${
+            selected.length > 0 ? 'text-accent' : 'text-text/70'
+          }`}>
           {title} {selected.length > 0 && `(${selected.length})`}
         </Text>
-        <Ionicons name={isOpen ? 'chevron-up' : 'chevron-down'} size={16} />
+        <Ionicons
+          name={isOpen ? 'chevron-up' : 'chevron-down'}
+          size={14}
+          className={selected.length > 0 ? 'text-accent' : 'text-text/50'}
+        />
       </TouchableOpacity>
 
       {isOpen && (
@@ -74,35 +88,38 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
           animationType="fade"
           onRequestClose={() => setIsOpen(false)}>
           <TouchableOpacity
-            className="flex-1 bg-black/50"
+            className="bg-overlay/80 flex-1"
             activeOpacity={1}
             onPress={() => setIsOpen(false)}>
-            <View className="m-4 mt-20 rounded-lg bg-white p-4">
-              <Text className="mb-2 text-lg font-bold">{title}</Text>
+            <View className="mx-4 mt-20 rounded-2xl bg-background p-4 shadow-xl">
+              <View className="mb-4 flex-row items-center justify-between">
+                <Text className="text-lg font-bold text-text">{title}</Text>
+                {selected.length > 0 && (
+                  <TouchableOpacity
+                    className="bg-accent/10 rounded-full px-3 py-1"
+                    onPress={() => {
+                      onClear();
+                      setIsOpen(false);
+                    }}>
+                    <Text className="text-xs font-medium text-accent">Clear</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
               <ScrollView className="max-h-80">
                 {options.map((option) => (
                   <TouchableOpacity
                     key={option}
                     className={`mb-2 rounded-lg p-3 ${
-                      selected.includes(option) ? 'bg-primary' : 'bg-gray-100'
+                      selected.includes(option) ? 'bg-accent' : 'bg-overlay/5'
                     }`}
                     onPress={() => handleSelect(option)}>
-                    <Text className={selected.includes(option) ? 'text-white' : 'text-gray-800'}>
+                    <Text className={selected.includes(option) ? 'text-background' : 'text-text'}>
                       {option}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-              {selected.length > 0 && (
-                <TouchableOpacity
-                  className="mt-2 rounded-lg bg-red-100 p-3"
-                  onPress={() => {
-                    onClear();
-                    setIsOpen(false);
-                  }}>
-                  <Text className="text-center text-red-500">Clear Filter</Text>
-                </TouchableOpacity>
-              )}
             </View>
           </TouchableOpacity>
         </Modal>
@@ -110,6 +127,16 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
     </View>
   );
 };
+
+const EmptyStateMessage = () => (
+  <View className="flex-1 items-center justify-center px-6">
+    <Ionicons name="people-outline" size={68} className="text-accent/20 mb-6" />
+    <Text className="text-text/80 mb-3 text-center text-xl font-semibold">No Alumni Found</Text>
+    <Text className="text-text/50 max-w-[280px] text-center text-sm leading-5">
+      Try adjusting your filters or search terms to find more alumni
+    </Text>
+  </View>
+);
 
 const AlumniDirectory = () => {
   const [search, setSearch] = useState('');
@@ -191,35 +218,45 @@ const AlumniDirectory = () => {
 
   return (
     <View className="flex-1 bg-background">
-      <View className="space-y-4 bg-white p-4 shadow-sm">
-        <View className="shadow-inner flex-row items-center rounded-2xl bg-gray-50 px-4 py-3">
-          <Ionicons name="search" size={20} color="#4B5563" />
+      <View className="border-overlay/10 space-y-4 border-b bg-background px-4 pb-3 pt-4 shadow-sm">
+        <View className="bg-overlay/5 flex-row items-center rounded-xl px-4 py-2.5">
+          <Ionicons name="search" size={20} className="text-text/30" />
           <TextInput
-            className="ml-2 flex-1 font-medium text-gray-700"
+            className="ml-3 flex-1 text-base text-text"
             placeholder="Search alumni..."
             value={search}
             onChangeText={setSearch}
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor="text-text/40"
           />
-          {search ? (
-            <TouchableOpacity onPress={() => setSearch('')}>
-              <Ionicons name="close-circle" size={20} color="#4B5563" />
-            </TouchableOpacity>
-          ) : null}
-        </View>
-
-        <View className="flex-row items-center justify-between">
-          <Text className="text-sm font-medium text-gray-500">
-            {Object.keys(activeFilters).length} filters applied
-          </Text>
-          {Object.keys(activeFilters).length > 0 && (
-            <TouchableOpacity onPress={clearAllFilters} className="rounded-lg bg-red-50 px-3 py-1">
-              <Text className="text-sm font-medium text-red-500">Clear All</Text>
+          {search && (
+            <TouchableOpacity
+              onPress={() => setSearch('')}
+              className="bg-overlay/10 active:bg-overlay/20 rounded-full p-1.5"
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+              <Ionicons name="close-circle" size={18} className="text-text/50" />
             </TouchableOpacity>
           )}
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="space-x-2">
+        <View className="flex-row items-center justify-between px-0.5">
+          <Text className="text-text/50 text-xs font-medium">
+            {Object.keys(activeFilters).length} filters applied
+          </Text>
+          {Object.keys(activeFilters).length > 0 && (
+            <TouchableOpacity
+              onPress={clearAllFilters}
+              className="bg-accent/10 rounded-lg px-3 py-1.5"
+              activeOpacity={0.7}>
+              <Text className="text-xs font-medium text-accent">Clear All</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="-mx-1 space-x-2 py-1"
+          contentContainerStyle={{ paddingHorizontal: 1 }}>
           {Object.entries(filters).map(([key, values]) => (
             <FilterDropdown
               key={key}
@@ -238,13 +275,17 @@ const AlumniDirectory = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
         numColumns={2}
-        contentContainerStyle={{ padding: 8 }}
-        ListEmptyComponent={
-          <View className="mt-8 items-center justify-center">
-            <Text className="text-lg font-medium text-gray-500">No alumni found</Text>
-            <Text className="text-sm text-gray-400">Try adjusting your filters</Text>
-          </View>
-        }
+        contentContainerStyle={{
+          padding: 8,
+          flexGrow: 1, // This helps center the empty state
+        }}
+        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={8}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews
+        ListEmptyComponent={EmptyStateMessage}
       />
     </View>
   );
