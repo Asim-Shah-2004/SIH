@@ -1,13 +1,16 @@
 // screens/LoginScreen.js
+import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { AuthContext } from '../providers/CustomProvider';
 
 import { LANGUAGES, changeLanguage } from '../i18n/i18n';
-import { AuthContext } from '../providers/CustomProvider';
+import { se } from 'rn-emoji-keyboard';
+import axios from 'axios';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -46,17 +49,40 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
+    // try {
+    //   await AsyncStorage.setItem('isLoggedIn', 'true');
+    //   await AsyncStorage.setItem('role', selectedRole);
+    //   await AsyncStorage.setItem('user-language', selectedLanguage);
+    //   setIsLoggedIn(true);
+    //   setRole(selectedRole);
+    //   console.log('Data saved');
+    // } catch (e) {
+    //   console.error('Error saving data', e);
+    // }
+    // // navigation.navigate('MainDrawer');
+
     try {
-      await AsyncStorage.setItem('isLoggedIn', 'true');
-      await AsyncStorage.setItem('role', selectedRole);
-      await AsyncStorage.setItem('user-language', selectedLanguage);
-      setIsLoggedIn(true);
-      setRole(selectedRole);
-      console.log('Data saved');
-    } catch (e) {
-      console.error('Error saving data', e);
+      const response = await axios.post(`${SERVER_URL}/auth/login`, {
+        email,
+        password,
+        role: selectedRole,
+      });
+      console.log('Login response:', response.data);
+      try {
+        await AsyncStorage.setItem('isLoggedIn', 'true');
+        await AsyncStorage.setItem('role', selectedRole);
+        await AsyncStorage.setItem('user-language', selectedLanguage);
+        await AsyncStorage.setItem('token', response.data.token);
+        setIsLoggedIn(true);
+        setRole(selectedRole);
+        console.log('Data saved');
+      } catch (e) {
+        console.error('Error saving data', e);
+      }
     }
-    // navigation.navigate('MainDrawer');
+    catch (error) {
+      console.error('Error logging in:', error);
+    }
   };
 
   const handleLanguageChange = async (lang) => {

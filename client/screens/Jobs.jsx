@@ -2,6 +2,7 @@ import { SERVER_URL } from '@env';
 import axios from 'axios';
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import JobCard from '../components/jobs/JobCard';
 // import { jobsData } from '../constants/jobs/jobData';
@@ -15,8 +16,18 @@ const JobPortal = ({ navigation }) => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
+        const token = await AsyncStorage.getItem('token');
+
+        if (!token) {
+          throw new Error('Token not found');
+        }
+
         setLoading(true);
-        const response = await axios.get(`${SERVER_URL}/jobs`); // Use this if testing on physical device
+        const response = await axios.get(`${SERVER_URL}/jobs`, {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add the token here
+          },
+        }); // Use this if testing on physical device
         setJobsData(response.data); // Assuming the backend returns an array of jobs
         setLoading(false);
       } catch (error) {

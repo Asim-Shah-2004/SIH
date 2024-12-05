@@ -4,8 +4,8 @@ import morgan from 'morgan';
 import logger from './utils/logger.js';
 import cors from 'cors';
 
-import {connectMongoDB} from "./services/index.js"
-import {eventRouter,jobRouter,donationRouter,authRouter,connectionRouter} from "./routers/index.js"
+import { connectMongoDB } from "./services/index.js"
+import { eventRouter, jobRouter, donationRouter, authRouter, connectionRouter } from "./routers/index.js"
 import { authenticateToken } from './middleware/authenticateToken.js';
 
 const app = express();
@@ -18,20 +18,20 @@ app.use(morgan('dev'));
 
 app.use(cors({
   origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], 
-  allowedHeaders: ['Content-Type', 'Authorization'], 
-  credentials: true 
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
 
 
-app.use('/auth',authRouter)
+app.use('/auth', authRouter)
 
 app.use(authenticateToken)
 
 app.use('/events', eventRouter);
 app.use('/jobs', jobRouter);
 app.use('/donations', donationRouter);
-app.use('/connections',connectionRouter)
+app.use('/connections', connectionRouter)
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>');

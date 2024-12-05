@@ -10,9 +10,9 @@ export const authenticateToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    if (decoded.userAgent !== req.headers["user-agent"] || decoded.ip !== req.ip) {
-      return res.status(401).json({ message: "Token invalid due to device change" });
-    }
+    // if (decoded.userAgent !== req.headers["user-agent"] || decoded.ip !== req.ip) {
+    //   return res.status(401).json({ message: "Token invalid due to device change" });
+    // }
     req.user = decoded;
     next();
   } catch (error) {

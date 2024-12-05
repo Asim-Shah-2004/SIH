@@ -2,6 +2,7 @@ import { SERVER_URL } from '@env';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import EventCard from '../components/events/EventCard';
 import EventModal from '../components/events/EventModal';
@@ -15,8 +16,17 @@ const EventsPage = () => {
 
   const fetchEvents = async () => {
     try {
+      const token = await AsyncStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('Token not found');
+      }
       setLoading(true);
-      const response = await axios.get(`${SERVER_URL}/events`);
+      const response = await axios.get(`${SERVER_URL}/events`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the token here
+        },
+      });
       setEventsData(response.data); // Assuming the response has the correct structure
       console.log('Data received');
     } catch (err) {

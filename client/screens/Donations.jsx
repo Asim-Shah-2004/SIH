@@ -2,6 +2,7 @@ import { SERVER_URL } from '@env';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -36,7 +37,15 @@ const DonationPortal = ({ navigation }) => {
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const response = await axios.get(`${SERVER_URL}/donations`); // Use this if testing on physical device
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+          throw new Error('Token not found');
+        }
+        const response = await axios.get(`${SERVER_URL}/donations`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }); // Use this if testing on physical device
         setCampaigns(response.data); // Update campaigns with fetched data
         setSelectedCause(response.data[0]); // Set the first cause as selected
       } catch (error) {
