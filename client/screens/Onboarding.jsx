@@ -20,7 +20,7 @@ const onboardingData = [
   },
 ];
 
-export default function HomePage({ navigation }) {
+export default function OnboardingPage({ navigation }) {
   const [currentStep, setCurrentStep] = useState(0);
   console.log('Image source:', onboardingData[currentStep].image);
 
