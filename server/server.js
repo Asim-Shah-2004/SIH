@@ -5,7 +5,8 @@ import logger from './utils/logger.js';
 import cors from 'cors';
 
 import {connectMongoDB} from "./services/index.js"
-import {eventRouter,jobRouter,donationRouter} from "./routers/index.js"
+import {eventRouter,jobRouter,donationRouter,authRouter} from "./routers/index.js"
+import { authenticateToken } from './middleware/authenticateToken.js';
 
 const app = express();
 const PORT = 3000;
@@ -21,6 +22,11 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'], 
   credentials: true 
 }));
+
+
+app.use('/auth',authRouter)
+
+app.use(authenticateToken)
 
 app.use('/events', eventRouter);
 app.use('/jobs', jobRouter);
