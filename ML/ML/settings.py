@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'meme_generator',
     'spam',
     'post_analysis',
-    'resume_autofill'
+    'resume_autofill',
+    'rewriteAI'
 ]
 
 MIDDLEWARE = [
