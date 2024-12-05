@@ -1,17 +1,20 @@
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthContext } from '../providers/CustomProvider';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
 import NewJob from '../components/jobs/NewJob';
-import { AuthContext } from '../providers/CustomProvider';
+
 import AlumniDirectory from '../screens/AlumniDirectory';
 import Chat from '../screens/Chat';
 import Message from '../screens/Message';
 import Notifications from '../screens/Notifications';
 import MessageHeader from './components/MessageHeader';
+import All from '../screens/All';
 // import Map from '../screens/Map';
+import LoadingScreen from '../screens/LoadingScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +49,7 @@ const screenConfig = {
 
 export default function AppNavigator() {
   const { isLoggedIn } = React.useContext(AuthContext);
+  const [loading, setLoading] = React.useState(true);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -54,42 +58,48 @@ export default function AppNavigator() {
           <Stack.Screen name="Auth" component={AuthNavigator} />
         ) : (
           <>
-            <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
-            <Stack.Screen name="Chat" component={Chat} options={screenConfig.headerScreens} />
-            <Stack.Screen name="Message" component={Message} options={screenConfig.messageScreen} />
-            <Stack.Screen
-              name="Alerts"
-              component={Notifications}
-              options={screenConfig.headerScreens}
-            />
-            {/* <Stack.Screen name="Map" component={Map} options={screenConfig.headerScreens} /> */}
-            <Stack.Screen
-              name="NewJob"
-              component={NewJob}
-              options={{
-                ...screenConfig.headerScreens,
-                title: 'Post a New Job',
-              }}
-            />
-            {/* <Stack.Screen
-              name="Map"
-              component={Map}
-              options={{
-                ...screenConfig.headerScreens,
-                title: 'Alumni Map',
-              }}
-            /> */}
-            <Stack.Screen
-              name="Directory"
-              component={AlumniDirectory}
-              options={{
-                ...screenConfig.headerScreens,
-                title: 'Alumni Directory',
-              }}
-            />
+            {loading ? (
+              <Stack.Screen name="Loading" children={() => <LoadingScreen loading={loading} setLoading={setLoading} />} />
+            ) : (
+              <>
+                <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
+                <Stack.Screen name="Chat" component={Chat} options={screenConfig.headerScreens} />
+                <Stack.Screen name="Message" component={Message} options={screenConfig.messageScreen} />
+                <Stack.Screen
+                  name="Alerts"
+                  component={Notifications}
+                  options={screenConfig.headerScreens}
+                />
+                <Stack.Screen
+                  name="NewJob"
+                  component={NewJob}
+                  options={{
+                    ...screenConfig.headerScreens,
+                    title: 'Post a New Job',
+                  }}
+                />
+                <Stack.Screen
+                  name="Directory"
+                  component={AlumniDirectory}
+                  options={{
+                    ...screenConfig.headerScreens,
+                    title: 'Alumni Directory',
+                  }}
+                />
+                <Stack.Screen
+                  name="All"
+                  component={All}
+                  options={{
+                    ...screenConfig.headerScreens,
+                    title: 'All',
+                  }}
+                />
+              </>
+            )}
           </>
         )}
       </Stack.Navigator>
+
     </GestureHandlerRootView>
   );
 }

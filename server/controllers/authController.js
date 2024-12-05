@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import {User,College} from "../models/index.js"
+import { User, College } from "../models/index.js"
 
 export const register = async (req, res) => {
   try {
     const { email, password, role, ...otherData } = req.body;
 
-    const existingUser = role === 'college' 
+    const existingUser = role === 'college'
       ? await College.findOne({ email })
       : await User.findOne({ email });
 
@@ -29,7 +29,7 @@ export const register = async (req, res) => {
       : await User.create(userData);
 
     const token = jwt.sign(
-      { 
+      {
         id: newUser._id,
         email: newUser.email,
         role,
@@ -81,9 +81,6 @@ export const login = async (req, res) => {
       {
         id: user._id,
         email: user.email,
-        role,
-        userAgent: req.headers['user-agent'],
-        ip: req.ip
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -91,13 +88,7 @@ export const login = async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        email: user.email,
-        role,
-        fullName: user.fullName
-      }
+      token
     });
 
   } catch (error) {

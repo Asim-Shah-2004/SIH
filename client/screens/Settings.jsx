@@ -1,11 +1,32 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
+import { AuthContext } from '../providers/CustomProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { se } from 'rn-emoji-keyboard';
 
-const Settings = () => {
+const Settings = ({ navigation }) => {
   const [notifications, setNotifications] = useState(true);
   const [emailUpdates, setEmailUpdates] = useState(true);
   const [privateProfile, setPrivateProfile] = useState(false);
+  const { setRole, setIsLoggedIn } = React.useContext(AuthContext);
+
+  const handleLogout = async () => {
+    console.log('Logging out...');
+
+    const clearStorage = async () => {
+      try {
+        await AsyncStorage.clear();
+        setRole(null);
+        setIsLoggedIn(false);
+        console.log('AsyncStorage cleared');
+      } catch (e) {
+        console.error('Failed to clear AsyncStorage', e);
+      }
+    };
+
+    await clearStorage();
+  }
 
   const SettingItem = ({ icon, title, value, onPress, isSwitch }) => (
     <TouchableOpacity style={styles.settingItem} onPress={isSwitch ? null : onPress}>
@@ -25,8 +46,8 @@ const Settings = () => {
     <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Profile</Text>
-        <SettingItem icon="person-outline" title="Edit Profile" onPress={() => {}} />
-        <SettingItem icon="key-outline" title="Change Password" onPress={() => {}} />
+        <SettingItem icon="person-outline" title="Edit Profile" onPress={() => { }} />
+        <SettingItem icon="key-outline" title="Change Password" onPress={() => { }} />
       </View>
 
       <View style={styles.section}>
@@ -60,12 +81,12 @@ const Settings = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>General</Text>
-        <SettingItem icon="document-outline" title="Terms of Service" onPress={() => {}} />
-        <SettingItem icon="shield-outline" title="Privacy Policy" onPress={() => {}} />
-        <SettingItem icon="information-circle-outline" title="About" onPress={() => {}} />
+        <SettingItem icon="document-outline" title="Terms of Service" onPress={() => { }} />
+        <SettingItem icon="shield-outline" title="Privacy Policy" onPress={() => { }} />
+        <SettingItem icon="information-circle-outline" title="About" onPress={() => { }} />
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>
     </ScrollView>

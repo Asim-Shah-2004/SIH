@@ -10,32 +10,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { View, Text } from 'react-native';
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const clearStorage = async () => {
-      try {
-        await AsyncStorage.clear();
-        console.log('AsyncStorage cleared');
-      } catch (e) {
-        console.error('Failed to clear AsyncStorage', e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    clearStorage();
-  }, []);
-
-  if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <Text className="text-text/60 mt-2.5 text-base font-medium">
-          Please wait, loading your experience...
-        </Text>
-      </View>
-    );
-  }
   return (
     <Providers>
       <NavigationContainer>

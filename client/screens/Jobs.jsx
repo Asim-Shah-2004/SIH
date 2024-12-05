@@ -2,8 +2,8 @@ import { SERVER_URL } from '@env';
 import axios from 'axios';
 import React, { useState, useMemo, useEffect } from 'react';
 import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { AuthContext } from '../providers/CustomProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import JobCard from '../components/jobs/JobCard';
 // import { jobsData } from '../constants/jobs/jobData';
 import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';
@@ -12,8 +12,10 @@ const JobPortal = ({ navigation }) => {
   const [skills, setSkills] = useState(profileData.skills);
   const [jobsData, setJobsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = React.useContext(AuthContext);
 
   useEffect(() => {
+    console.log(user)
     const fetchJobs = async () => {
       try {
         const token = await AsyncStorage.getItem('token');

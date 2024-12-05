@@ -35,6 +35,13 @@ const AlumniRecommendations = ({ navigation }) => {
             <Text className="text-base font-semibold text-white">Alumni Directory</Text>
           </TouchableOpacity>
         </View>
+        <View className="mb-4 flex-row justify-between">
+          <TouchableOpacity
+            className="rounded-md bg-blue-700 px-4 py-2"
+            onPress={() => navigation.navigate('All')}>
+            <Text className="text-base font-semibold text-white">All</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Alumni Recommendations based on different categories */}

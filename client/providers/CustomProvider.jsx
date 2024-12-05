@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useState, useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { SafeAreaView, ActivityIndicator, Text } from 'react-native';
+import { View, SafeAreaView, ActivityIndicator, Text } from 'react-native';
 
 import i18n from '../i18n/i18n';
 
@@ -12,6 +12,7 @@ export const Providers = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const initializeLanguage = async () => {
@@ -31,10 +32,9 @@ export const Providers = ({ children }) => {
         const roleValue = await AsyncStorage.getItem('role');
         setIsLoggedIn(loggedInValue === 'true');
         setRole(roleValue || null);
+        setLoading(false);
       } catch (e) {
         console.error('Error reading AsyncStorage:', e);
-      } finally {
-        setTimeout(() => setLoading(false), 1000); // Simulate loading delay
       }
     };
 
@@ -43,18 +43,14 @@ export const Providers = ({ children }) => {
   }, []);
 
   if (loading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" color="rgb(var(--color-primary))" />
-        <Text className="text-text/60 mt-2.5 text-base font-medium">
-          Please wait, loading your experience...
-        </Text>
-      </SafeAreaView>
-    );
+    <View className='h-full w-full bg-white'>
+      <ActivityIndicator size='large' color='#0000ff' />
+      <Text>Loading .....</Text>
+    </View>
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, role, setIsLoggedIn, setRole }}>
+    <AuthContext.Provider value={{ isLoggedIn, role, setIsLoggedIn, setRole, user, setUser }}>
       <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
     </AuthContext.Provider>
   );

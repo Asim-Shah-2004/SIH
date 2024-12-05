@@ -9,7 +9,6 @@ import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 import { AuthContext } from '../providers/CustomProvider';
 
 import { LANGUAGES, changeLanguage } from '../i18n/i18n';
-import { se } from 'rn-emoji-keyboard';
 import axios from 'axios';
 
 const LoginScreen = () => {
@@ -22,8 +21,8 @@ const LoginScreen = () => {
   const { setRole, setIsLoggedIn } = React.useContext(AuthContext);
 
   const ROLES = [
-    { label: 'College', value: 'college' },
     { label: 'Alumni', value: 'alumni' },
+    { label: 'College', value: 'college' },
   ];
 
   const handleRoleChange = (role) => {
@@ -49,18 +48,6 @@ const LoginScreen = () => {
   };
 
   const handleLogin = async () => {
-    // try {
-    //   await AsyncStorage.setItem('isLoggedIn', 'true');
-    //   await AsyncStorage.setItem('role', selectedRole);
-    //   await AsyncStorage.setItem('user-language', selectedLanguage);
-    //   setIsLoggedIn(true);
-    //   setRole(selectedRole);
-    //   console.log('Data saved');
-    // } catch (e) {
-    //   console.error('Error saving data', e);
-    // }
-    // // navigation.navigate('MainDrawer');
-
     try {
       const response = await axios.post(`${SERVER_URL}/auth/login`, {
         email,
