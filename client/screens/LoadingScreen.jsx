@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, Text } from 'react-native';
 import { decode } from 'base-64'
 import axios from 'axios';
 import { AuthContext } from '../providers/CustomProvider'; // Assume AuthContext is properly set up
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SERVER_URL } from '@env';
-import { useNavigation } from '@react-navigation/native';
+
+
+import LoadingComponent from '../components/LoadingComponent';
 
 const LoadingScreen = ({ loading, setLoading }) => {
     const { setUser } = React.useContext(AuthContext); // Assuming you have a setUser function in AuthContext
@@ -29,7 +30,7 @@ const LoadingScreen = ({ loading, setLoading }) => {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUser(response.data);
-            setLoading(false);
+            setTimeout(() => setLoading(false), 1500);
         } catch (err) {
             console.error('Error fetching user data:', err);
         }
@@ -39,11 +40,7 @@ const LoadingScreen = ({ loading, setLoading }) => {
         fetchUserData();
     }, []);
 
-    return (
-        <View>
-            <Text>Loading...</Text>
-        </View>
-    );
+    return <LoadingComponent />;
 };
 
 export default LoadingScreen;
