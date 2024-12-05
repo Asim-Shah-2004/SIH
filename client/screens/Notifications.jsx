@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from 'react';
 import { View, FlatList, Text, TouchableOpacity } from 'react-native';
+import { AuthContext } from '../providers/CustomProvider';
 
-const ChatScreen = () => {
+const Notifications = () => {
   // State to manage active tab (either 'invitations' or 'notifications')
   const [activeTab, setActiveTab] = useState(true);
   const [isPressed, setIsPressed] = useState(false); // Prevent multiple rapid clicks
+  const { role } = React.useContext(AuthContext);
 
   // Sample data
   const invitations = [
@@ -178,4 +180,4 @@ const ChatScreen = () => {
   );
 };
 
-export default ChatScreen;
+export default Notifications;

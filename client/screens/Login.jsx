@@ -4,14 +4,31 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { AuthContext } from '../providers/CustomProvider';
 
 import { LANGUAGES, changeLanguage } from '../i18n/i18n';
+import { se } from 'rn-emoji-keyboard';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
+  const navigation = useNavigation();
   const { t, i18n } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [selectedRole, setSelectedRole] = useState('alumni');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const { setRole, setIsLoggedIn } = React.useContext(AuthContext);
+
+  const ROLES = [
+    { label: 'College', value: 'college' },
+    { label: 'Alumni', value: 'alumni' },
+  ];
+
+  const handleRoleChange = (role) => {
+    setSelectedRole(role);
+    // You can persist the role in AsyncStorage or update the context here if needed
+    console.log('Selected Role:', role);
+  };
 
   useEffect(() => {
     loadStoredLanguage();
@@ -32,11 +49,15 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = async () => {
     try {
       await AsyncStorage.setItem('isLoggedIn', 'true');
+      await AsyncStorage.setItem('role', selectedRole);
+      await AsyncStorage.setItem('user-language', selectedLanguage);
+      setIsLoggedIn(true);
+      setRole(selectedRole);
       console.log('Data saved');
     } catch (e) {
       console.error('Error saving data', e);
     }
-    navigation.navigate('MainDrawer');
+    // navigation.navigate('MainDrawer');
   };
 
   const handleLanguageChange = async (lang) => {
@@ -91,6 +112,18 @@ const LoginScreen = ({ navigation }) => {
             className="rounded-xl bg-gray-50">
             {LANGUAGES.map((lang) => (
               <Picker.Item key={lang.code} label={lang.label} value={lang.code} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+      <View className="border-t border-gray-200 p-4">
+        <View className="mx-auto w-40">
+          <Picker
+            selectedValue={selectedRole}
+            onValueChange={handleRoleChange}
+            className="rounded-xl bg-gray-50">
+            {ROLES.map((role) => (
+              <Picker.Item key={role.value} label={role.label} value={role.value} />
             ))}
           </Picker>
         </View>

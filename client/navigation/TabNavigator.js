@@ -4,7 +4,6 @@ import * as Haptics from 'expo-haptics';
 import { TouchableOpacity, StyleSheet, Platform, Dimensions } from 'react-native';
 
 import MainHeader from './components/MainHeader';
-import AlumniDirectory from '../screens/AlumniDirectory';
 import Connections from '../screens/Connections';
 import Donations from '../screens/Donations';
 import HallofFame from '../screens/HallofFame';
@@ -72,17 +71,17 @@ const tabConfig = {
 
 const getTabIcon =
   (name) =>
-  ({ focused, color, size }) => {
-    const iconSize = isSmallDevice ? size : isLargeDevice ? size * 1.3 : size + 4;
-    return (
-      <Ionicons
-        name={focused ? name : `${name}-outline`}
-        size={focused ? iconSize + 6 : iconSize + 2}
-        color={color}
-        style={[styles.icon, focused && styles.activeIcon]}
-      />
-    );
-  };
+    ({ focused, color, size }) => {
+      const iconSize = isSmallDevice ? size : isLargeDevice ? size * 1.3 : size + 4;
+      return (
+        <Ionicons
+          name={focused ? name : `${name}-outline`}
+          size={focused ? iconSize + 6 : iconSize + 2}
+          color={color}
+          style={[styles.icon, focused && styles.activeIcon]}
+        />
+      );
+    };
 
 const styles = StyleSheet.create({
   tabButton: {
@@ -105,7 +104,6 @@ const tabs = [
   { name: 'Donations', component: Donations, icon: 'gift' },
   { name: 'Jobs', component: Jobs, icon: 'briefcase' },
   { name: 'Connect', component: Connections, icon: 'people' },
-  { name: 'Directory', component: AlumniDirectory, icon: 'book' },
   { name: 'HallofFame', component: HallofFame, icon: 'trophy' },
 ];
 

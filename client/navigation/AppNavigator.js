@@ -1,6 +1,7 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { AuthContext } from '../providers/CustomProvider';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
@@ -10,6 +11,8 @@ import Message from '../screens/Message';
 import Notifications from '../screens/Notifications';
 import MessageHeader from './components/MessageHeader';
 // import Map from '../screens/Map';
+import AlumniDirectory from '../screens/AlumniDirectory';
+
 
 const Stack = createNativeStackNavigator();
 
@@ -42,7 +45,9 @@ const screenConfig = {
   },
 };
 
-export default function AppNavigator({ isLoggedIn }) {
+export default function AppNavigator() {
+  const { isLoggedIn } = React.useContext(AuthContext);
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack.Navigator screenOptions={screenConfig.headerlessScreens}>
@@ -65,6 +70,22 @@ export default function AppNavigator({ isLoggedIn }) {
               options={{
                 ...screenConfig.headerScreens,
                 title: 'Post a New Job',
+              }}
+            />
+            {/* <Stack.Screen
+              name="Map"
+              component={Map}
+              options={{
+                ...screenConfig.headerScreens,
+                title: 'Alumni Map',
+              }}
+            /> */}
+            <Stack.Screen
+              name="Directory"
+              component={AlumniDirectory}
+              options={{
+                ...screenConfig.headerScreens,
+                title: 'Alumni Directory',
               }}
             />
           </>

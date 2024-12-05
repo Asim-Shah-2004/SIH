@@ -2,8 +2,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
+import { AuthContext } from '../../providers/CustomProvider';
 
 export default function MainHeader() {
+  const { role } = React.useContext(AuthContext);
   const navigation = useNavigation();
 
   const handleChatPress = () => navigation.navigate('Chat');
@@ -25,9 +27,11 @@ export default function MainHeader() {
       </View>
 
       <View className="flex-row items-center space-x-3">
-        <TouchableOpacity onPress={handleChatPress} className="p-1">
-          <Ionicons name="chatbubbles-outline" size={24} color="rgb(var(--color-text))" />
-        </TouchableOpacity>
+        {role === 'alumni' && (
+          <TouchableOpacity onPress={handleChatPress} className="p-1">
+            <Ionicons name="chatbubbles-outline" size={24} color="rgb(var(--color-text))" />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity onPress={handleNotificationsPress} className="p-1">
           <Ionicons name="notifications-outline" size={24} color="rgb(var(--color-text))" />
         </TouchableOpacity>
