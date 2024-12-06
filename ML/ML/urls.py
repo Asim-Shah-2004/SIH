@@ -25,5 +25,6 @@ urlpatterns = [
    path('api/',include('post_analysis.urls')),
    path('api/',include('resume_autofill.urls')),
    path('api/',include('rewriteAI.urls')),
+   path('api/',include('recommendation.urls')),
    
 ]

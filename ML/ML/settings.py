@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'spam',
     'post_analysis',
     'resume_autofill',
-    'rewriteAI'
+    'rewriteAI',
+    'recommendation'
 ]
 
 MIDDLEWARE = [
