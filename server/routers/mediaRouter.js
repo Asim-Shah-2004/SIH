@@ -1,5 +1,5 @@
 import express from 'express';
-import { getMedia } from '../controllers/mediaController.js';
+import { getMedia, putMedia } from '../controllers/mediaController.js';
 
 const mediaGetRouter = express.Router();
 const mediaUploadRouter = express.Router();

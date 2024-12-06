@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const mediaSchema = new mongoose.Schema({
   type: {
     type: String,
-    enum: ['audio', 'video'],
+    enum: ['image', 'audio', 'video', 'document'],
     required: true,
   },
   buffer: {

@@ -52,6 +52,12 @@ const userSchema = new mongoose.Schema({
   bio: { type: String },
   interests: [String],
   website: { type: String },
+  chats: [
+    {
+      chatId: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
+      otherParticipant: { type: String },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 

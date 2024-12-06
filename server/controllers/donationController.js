@@ -26,12 +26,10 @@ export const addDonationCampaign = async (req, res) => {
     const savedCampaign = await newCampaign.save();
     res.status(201).json(savedCampaign);
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        error: 'Failed to create donation campaign',
-        details: error.message,
-      });
+    res.status(400).json({
+      error: 'Failed to create donation campaign',
+      details: error.message,
+    });
   }
 };
 
@@ -50,12 +48,10 @@ export const updateDonationCampaign = async (req, res) => {
       return res.status(404).json({ error: 'Campaign not found' });
     res.status(200).json(updatedCampaign);
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        error: 'Invalid campaign ID or failed to update campaign',
-        details: error.message,
-      });
+    res.status(400).json({
+      error: 'Invalid campaign ID or failed to update campaign',
+      details: error.message,
+    });
   }
 };
 

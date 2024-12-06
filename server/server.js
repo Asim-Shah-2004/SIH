@@ -15,6 +15,7 @@ import {
   userRouter,
   mediaGetRouter,
   mediaUploadRouter,
+  chatRouter,
 } from './routers/index.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
 
@@ -55,6 +56,7 @@ app.use('/jobs', jobRouter);
 app.use('/donations', donationRouter);
 app.use('/connections', connectionRouter);
 app.use('/users', userRouter);
+app.use('/chat', chatRouter);
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>');

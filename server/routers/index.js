@@ -5,6 +5,7 @@ import authRouter from './authRouter.js';
 import connectionRouter from './connectionRouter.js';
 import userRouter from './userRouter.js';
 import { mediaGetRouter, mediaUploadRouter } from './mediaRouter.js';
+import chatRouter from './chatRouter.js';
 
 export {
   eventRouter,
@@ -15,4 +16,5 @@ export {
   userRouter,
   mediaGetRouter,
   mediaUploadRouter,
+  chatRouter,
 };

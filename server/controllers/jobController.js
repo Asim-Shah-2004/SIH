@@ -42,12 +42,10 @@ export const updateJob = async (req, res) => {
     if (!updatedJob) return res.status(404).json({ error: 'Job not found' });
     res.status(200).json(updatedJob);
   } catch (error) {
-    res
-      .status(400)
-      .json({
-        error: 'Invalid job ID or failed to update job',
-        details: error.message,
-      });
+    res.status(400).json({
+      error: 'Invalid job ID or failed to update job',
+      details: error.message,
+    });
   }
 };
 
