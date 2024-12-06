@@ -297,6 +297,7 @@ rewriter = AdvancedEmotionPostRewriter()
 @csrf_exempt
 @require_http_methods(["POST"])
 def rewrite_text(request):
+    print("hi")
     """Enhanced text rewriting endpoint"""
     try:
         data = json.loads(request.body)

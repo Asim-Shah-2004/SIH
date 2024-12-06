@@ -1,29 +1,20 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
-
-# Create your views here.
-from django.shortcuts import render
-
-# Create your views here.
 import os
+import json
+import time
+import torch
+import numpy as np
+from typing import Dict, Any
+from dotenv import load_dotenv
 from django.http import JsonResponse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-import json
-import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
-import numpy as np
-from typing import Dict, Any
-from dotenv import load_dotenv
-import os
 
 load_dotenv()
-
 
 class HybridSpamDetector:
     def __init__(self):
@@ -58,6 +49,13 @@ class HybridSpamDetector:
         # Load additional pre-trained models for specific checks
         self.toxicity_tokenizer = AutoTokenizer.from_pretrained('unitary/toxic-bert')
         self.toxicity_model = AutoModelForSequenceClassification.from_pretrained('unitary/toxic-bert').to(self.device)
+        
+        # Message flooding detection parameters
+        self.message_history = {}
+        self.repetition_threshold = 3  # Number of times a message can be repeated
+        self.time_window = 60  # Seconds to track repetitions
+        self.ip_flood_tracking = {}
+        self.ip_flood_threshold = 10  # Maximum messages from an IP in time window
 
     def preprocess_text(self, text: str) -> torch.Tensor:
         """Tokenize and prepare text for model input"""
@@ -69,6 +67,53 @@ class HybridSpamDetector:
             return_tensors='pt'
         )
         return inputs.to(self.device)
+
+    def detect_message_flooding(self, text: str, ip_address: str = None) -> Dict[str, bool]:
+        """
+        Detect message flooding through two mechanisms:
+        1. Identical message repetition
+        2. High volume of messages from a single IP
+        """
+        current_time = time.time()
+        flood_detection = {
+            "message_repetition_flood": False,
+            "ip_volume_flood": False
+        }
+        
+        # Clean up old entries in message history
+        self.message_history = {
+            msg: timestamps for msg, timestamps in self.message_history.items()
+            if any(current_time - ts < self.time_window for ts in timestamps)
+        }
+        
+        # Track message repetition
+        if text not in self.message_history:
+            self.message_history[text] = [current_time]
+        else:
+            self.message_history[text].append(current_time)
+            
+            # Check if message exceeds repetition threshold
+            if len(self.message_history[text]) > self.repetition_threshold:
+                flood_detection["message_repetition_flood"] = True
+        
+        # Track IP-based flooding if IP is provided
+        if ip_address:
+            if ip_address not in self.ip_flood_tracking:
+                self.ip_flood_tracking[ip_address] = [current_time]
+            else:
+                # Remove timestamps outside the time window
+                self.ip_flood_tracking[ip_address] = [
+                    ts for ts in self.ip_flood_tracking[ip_address] 
+                    if current_time - ts < self.time_window
+                ]
+                
+                self.ip_flood_tracking[ip_address].append(current_time)
+                
+                # Check if IP exceeds message volume threshold
+                if len(self.ip_flood_tracking[ip_address]) > self.ip_flood_threshold:
+                    flood_detection["ip_volume_flood"] = True
+        
+        return flood_detection
 
     def get_spam_score(self, text: str) -> float:
         """Get spam probability using pre-trained model"""
@@ -136,7 +181,7 @@ class HybridSpamDetector:
             "combined_score": initial_score
         }
 
-    def analyze_content(self, text: str) -> Dict[str, Any]:
+    def analyze_content(self, text: str, ip_address: str = None) -> Dict[str, Any]:
         """Complete content analysis"""
         # Get initial spam score
         spam_score = self.get_spam_score(text)
@@ -147,6 +192,9 @@ class HybridSpamDetector:
         # Identify specific categories
         categories = self.identify_categories(text)
         
+        # Detect flooding
+        flooding_detection = self.detect_message_flooding(text, ip_address)
+        
         # Get Gemini validation for uncertain cases
         gemini_results = self.get_gemini_validation(text, spam_score)
         
@@ -154,14 +202,15 @@ class HybridSpamDetector:
         final_score = gemini_results["combined_score"]
         
         return {
-            "is_spam": final_score > 0.5,
+            "is_spam": final_score > 0.5 or flooding_detection["message_repetition_flood"] or flooding_detection["ip_volume_flood"],
             "spam_score": final_score,
             "initial_score": spam_score,
             "toxicity_score": toxicity_score,
             "gemini_score": gemini_results["gemini_score"],
             "categories": categories,
             "confidence": 1 - abs(0.5 - final_score) * 2,
-            "requires_manual_review": 0.4 <= final_score <= 0.6
+            "requires_manual_review": 0.4 <= final_score <= 0.6,
+            "flooding_detection": flooding_detection
         }
 
 # Initialize global detector
@@ -173,13 +222,14 @@ def analyze_spam(request):
     try:
         data = json.loads(request.body)
         content = data.get('content', '')
+        ip_address = request.META.get('REMOTE_ADDR')
         
         if not content:
             return JsonResponse({
                 'error': 'No content provided'
             }, status=400)
             
-        analysis = spam_detector.analyze_content(content)
+        analysis = spam_detector.analyze_content(content, ip_address)
         
         return JsonResponse({
             'analysis': analysis,
@@ -198,6 +248,7 @@ def bulk_analyze_spam(request):
     try:
         data = json.loads(request.body)
         contents = data.get('contents', [])
+        ip_address = request.META.get('REMOTE_ADDR')
         
         if not contents:
             return JsonResponse({
@@ -206,7 +257,7 @@ def bulk_analyze_spam(request):
             
         results = []
         for content in contents:
-            analysis = spam_detector.analyze_content(content)
+            analysis = spam_detector.analyze_content(content, ip_address)
             results.append({
                 'content': content,
                 'analysis': analysis
@@ -221,4 +272,4 @@ def bulk_analyze_spam(request):
     except Exception as e:
         return JsonResponse({
             'error': str(e)
-      },status=500)
+        }, status=500)
