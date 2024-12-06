@@ -3,7 +3,7 @@ import {
   sendConnectionRequest,
   acceptConnectionRequest,
   rejectConnectionRequest,
-  getConnections
+  getConnections,
 } from '../controllers/connectionController.js';
 
 const connectionRouter = express.Router();

@@ -8,37 +8,38 @@ export const sendConnectionRequest = async (req, res) => {
 
     const [sender, receiver] = await Promise.all([
       User.findById(senderId),
-      User.findById(targetUserId)
+      User.findById(targetUserId),
     ]);
 
     if (!sender || !receiver) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     if (sender.sentRequests.includes(targetUserId)) {
-      return res.status(400).json({ message: "Connection request already sent" });
+      return res
+        .status(400)
+        .json({ message: 'Connection request already sent' });
     }
 
     if (sender.connections.includes(targetUserId)) {
-      return res.status(400).json({ message: "Users are already connected" });
+      return res.status(400).json({ message: 'Users are already connected' });
     }
 
     await Promise.all([
       User.findByIdAndUpdate(senderId, {
-        $addToSet: { sentRequests: targetUserId }
+        $addToSet: { sentRequests: targetUserId },
       }),
       User.findByIdAndUpdate(targetUserId, {
         $addToSet: {
           receivedRequests: senderId,
-          notifications: `${sender.fullName} sent you a connection request`
-        }
-      })
+          notifications: `${sender.fullName} sent you a connection request`,
+        },
+      }),
     ]);
 
-    res.json({ message: "Connection request sent successfully" });
-
+    res.json({ message: 'Connection request sent successfully' });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -49,15 +50,15 @@ export const acceptConnectionRequest = async (req, res) => {
 
     const [requester, accepter] = await Promise.all([
       User.findById(requesterId),
-      User.findById(accepterId)
+      User.findById(accepterId),
     ]);
 
     if (!requester || !accepter) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     if (!accepter.receivedRequests.includes(requesterId)) {
-      return res.status(400).json({ message: "No pending request found" });
+      return res.status(400).json({ message: 'No pending request found' });
     }
 
     await Promise.all([
@@ -65,22 +66,21 @@ export const acceptConnectionRequest = async (req, res) => {
         $pull: { receivedRequests: requesterId },
         $addToSet: {
           connections: requesterId,
-          notifications: `You accepted ${requester.fullName}'s connection request`
-        }
+          notifications: `You accepted ${requester.fullName}'s connection request`,
+        },
       }),
       User.findByIdAndUpdate(requesterId, {
         $pull: { sentRequests: accepterId },
         $addToSet: {
           connections: accepterId,
-          notifications: `${accepter.fullName} accepted your connection request`
-        }
-      })
+          notifications: `${accepter.fullName} accepted your connection request`,
+        },
+      }),
     ]);
 
-    res.json({ message: "Connection request accepted" });
-
+    res.json({ message: 'Connection request accepted' });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -91,33 +91,32 @@ export const rejectConnectionRequest = async (req, res) => {
 
     const [requester, rejecter] = await Promise.all([
       User.findById(requesterId),
-      User.findById(rejecterId)
+      User.findById(rejecterId),
     ]);
 
     if (!requester || !rejecter) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     if (!rejecter.receivedRequests.includes(requesterId)) {
-      return res.status(400).json({ message: "No pending request found" });
+      return res.status(400).json({ message: 'No pending request found' });
     }
 
     await Promise.all([
       User.findByIdAndUpdate(rejecterId, {
-        $pull: { receivedRequests: requesterId }
+        $pull: { receivedRequests: requesterId },
       }),
       User.findByIdAndUpdate(requesterId, {
         $pull: { sentRequests: rejecterId },
         $addToSet: {
-          notifications: `${rejecter.fullName} declined your connection request`
-        }
-      })
+          notifications: `${rejecter.fullName} declined your connection request`,
+        },
+      }),
     ]);
 
-    res.json({ message: "Connection request rejected" });
-
+    res.json({ message: 'Connection request rejected' });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -131,16 +130,15 @@ export const getConnections = async (req, res) => {
       .populate('receivedRequests', 'fullName email profilePhoto');
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     res.json({
       connections: user.connections,
       sentRequests: user.sentRequests,
-      receivedRequests: user.receivedRequests
+      receivedRequests: user.receivedRequests,
     });
-
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

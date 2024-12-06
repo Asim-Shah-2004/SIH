@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import crypto from "crypto";
+import mongoose from 'mongoose';
+import crypto from 'crypto';
 
 const jobSchema = new mongoose.Schema({
   id: {
@@ -29,7 +29,7 @@ const jobSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ["Full-time", "Part-time", "Contract", "Internship"], // Example values
+    enum: ['Full-time', 'Part-time', 'Contract', 'Internship'], // Example values
     required: true,
   },
   experience: {
@@ -75,6 +75,6 @@ const jobSchema = new mongoose.Schema({
   },
 });
 
-const Job = mongoose.model("Job", jobSchema);
+const Job = mongoose.model('Job', jobSchema);
 
 export default Job;

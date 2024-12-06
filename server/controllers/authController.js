@@ -1,14 +1,15 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { User, College } from "../models/index.js"
+import { User, College } from '../models/index.js';
 
 export const register = async (req, res) => {
   try {
     const { email, password, role, ...otherData } = req.body;
 
-    const existingUser = role === 'college'
-      ? await College.findOne({ email })
-      : await User.findOne({ email });
+    const existingUser =
+      role === 'college'
+        ? await College.findOne({ email })
+        : await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
@@ -24,9 +25,10 @@ export const register = async (req, res) => {
       role,
     };
 
-    const newUser = role === 'college'
-      ? await College.create(userData)
-      : await User.create(userData);
+    const newUser =
+      role === 'college'
+        ? await College.create(userData)
+        : await User.create(userData);
 
     const token = jwt.sign(
       {
@@ -34,7 +36,7 @@ export const register = async (req, res) => {
         email: newUser.email,
         role,
         userAgent: req.headers['user-agent'],
-        ip: req.ip
+        ip: req.ip,
       },
       process.env.JWT_SECRET,
       { expiresIn: '24h' }
@@ -47,10 +49,9 @@ export const register = async (req, res) => {
         id: newUser._id,
         email: newUser.email,
         role,
-        fullName: newUser.fullName
-      }
+        fullName: newUser.fullName,
+      },
     });
-
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -88,9 +89,8 @@ export const login = async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      token
+      token,
     });
-
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

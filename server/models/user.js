@@ -9,29 +9,37 @@ const userSchema = new mongoose.Schema({
   profilePhoto: { type: String },
   phone: { type: String },
   address: { type: String },
-  education: [{
-    degree: { type: String },
-    institution: { type: String },
-    yearOfGraduation: { type: Number, default: null },
-  }],
-  workExperience: [{
-    companyName: { type: String },
-    role: { type: String },
-    startDate: { type: Date },
-    endDate: { type: Date, default: null },
-    description: { type: String },
-  }],
+  education: [
+    {
+      degree: { type: String },
+      institution: { type: String },
+      yearOfGraduation: { type: Number, default: null },
+    },
+  ],
+  workExperience: [
+    {
+      companyName: { type: String },
+      role: { type: String },
+      startDate: { type: Date },
+      endDate: { type: Date, default: null },
+      description: { type: String },
+    },
+  ],
   skills: [String],
-  projects: [{
-    title: { type: String },
-    description: { type: String },
-    link: { type: String },
-  }],
-  certifications: [{
-    name: { type: String },
-    issuingOrganization: { type: String },
-    issueDate: { type: Date }
-  }],
+  projects: [
+    {
+      title: { type: String },
+      description: { type: String },
+      link: { type: String },
+    },
+  ],
+  certifications: [
+    {
+      name: { type: String },
+      issuingOrganization: { type: String },
+      issueDate: { type: Date },
+    },
+  ],
   languages: [String],
   location: {
     latitude: { type: Number },
@@ -49,4 +57,4 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-export default User
+export default User;

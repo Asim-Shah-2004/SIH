@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import crypto from "crypto";
+import mongoose from 'mongoose';
+import crypto from 'crypto';
 
 const speakerSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -13,7 +13,7 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    default: () => crypto.randomUUID(), 
+    default: () => crypto.randomUUID(),
   },
   title: { type: String, required: true },
   location: { type: String, required: true },
@@ -25,10 +25,10 @@ const eventSchema = new mongoose.Schema({
   speakers: [speakerSchema],
   agenda: { type: String, required: true },
   sponsors: [{ type: String }],
-  registeredCount: { type: Number, required: true, default: 0 }, 
+  registeredCount: { type: Number, required: true, default: 0 },
   maxCapacity: { type: Number, required: true },
 });
 
-const Event = mongoose.model("Event", eventSchema);
+const Event = mongoose.model('Event', eventSchema);
 
 export default Event;

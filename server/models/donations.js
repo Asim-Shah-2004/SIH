@@ -43,6 +43,9 @@ const donationCampaignSchema = new mongoose.Schema({
   suggestedDonations: { type: [Number], required: true },
 });
 
-const DonationCampaign = mongoose.model('DonationCampaign', donationCampaignSchema);
+const DonationCampaign = mongoose.model(
+  'DonationCampaign',
+  donationCampaignSchema
+);
 
 export default DonationCampaign;

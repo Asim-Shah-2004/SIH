@@ -1,5 +1,3 @@
-import connectMongoDB from "./connectMongo.js";
+import connectMongoDB from './connectMongo.js';
 
-export { 
-    connectMongoDB 
-};
+export { connectMongoDB };

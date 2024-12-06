@@ -2,10 +2,13 @@ import jwt from 'jsonwebtoken';
 
 export const authenticateToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.split(' ')[1] : null;
+  const token =
+    authHeader && authHeader.startsWith('Bearer ')
+      ? authHeader.split(' ')[1]
+      : null;
 
   if (!token) {
-    return res.status(401).json({ message: "No token, authorization denied" });
+    return res.status(401).json({ message: 'No token, authorization denied' });
   }
 
   try {
@@ -16,6 +19,6 @@ export const authenticateToken = (req, res, next) => {
     req.user = decoded;
     next();
   } catch (error) {
-    return res.status(403).json({ message: "Token is not valid" });
+    return res.status(403).json({ message: 'Token is not valid' });
   }
 };

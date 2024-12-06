@@ -23,4 +23,4 @@ const collegeSchema = new mongoose.Schema({
 
 const College = mongoose.model('College', collegeSchema);
 
-export default College
+export default College;

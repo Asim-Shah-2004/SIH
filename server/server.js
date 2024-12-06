@@ -1,13 +1,21 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import logger from './utils/logger.js';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 
-import { connectMongoDB } from "./services/index.js"
-import { eventRouter, jobRouter, donationRouter, authRouter, connectionRouter, userRouter } from "./routers/index.js"
+import { connectMongoDB } from './services/index.js';
+import {
+  eventRouter,
+  jobRouter,
+  donationRouter,
+  authRouter,
+  connectionRouter,
+  userRouter,
+  mediaGetRouter,
+  mediaUploadRouter,
+} from './routers/index.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
 
 const app = express();
@@ -15,8 +23,8 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
-  }
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  },
 });
 
 const PORT = 3000;
@@ -24,26 +32,29 @@ const rooms = {};
 
 connectMongoDB();
 
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(morgan('dev'));
 
-app.use(cors({
-  origin: '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  })
+);
 
+app.use('/auth', authRouter);
+app.use('/media', mediaGetRouter);
 
-app.use('/auth', authRouter)
+app.use(authenticateToken);
 
-app.use(authenticateToken)
-
+app.use('/media', mediaUploadRouter);
 app.use('/events', eventRouter);
 app.use('/jobs', jobRouter);
 app.use('/donations', donationRouter);
-app.use('/connections', connectionRouter)
-app.use('/users', userRouter)
+app.use('/connections', connectionRouter);
+app.use('/users', userRouter);
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>');
