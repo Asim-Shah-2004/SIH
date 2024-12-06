@@ -4,6 +4,7 @@ import logger from './utils/logger.js';
 import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import Chat from './models/chat.js';
 
 import { connectMongoDB } from './services/index.js';
 import {
@@ -17,6 +18,7 @@ import {
   mediaUploadRouter,
   chatRouter,
 } from './routers/index.js';
+import { socketAuthMiddleware } from './middleware/socketAuthMiddleware.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
 
 const app = express();
@@ -27,6 +29,8 @@ const io = new Server(server, {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   },
 });
+
+io.use(socketAuthMiddleware);
 
 const PORT = 3000;
 const rooms = {};
@@ -63,7 +67,59 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  logger.info(`User connected: ${socket.id}`);
+  const userEmail = socket.user.email;
+
+  socket.on('joinChat', async (chatId) => {
+    try {
+      const chat = await Chat.findById(chatId);
+      if (!chat) return;
+
+      if (!chat.participants.includes(userEmail)) {
+        socket.emit('error', { message: 'Unauthorized to join this chat' });
+        return;
+      }
+
+      socket.join(chatId);
+
+      logger.info(`User ${userEmail} joined chat: ${chatId}`);
+    } catch (error) {
+      logger.error(`Error joining chat: ${error.message}`);
+    }
+  });
+
+  socket.on('leaveChat', (chatId) => {
+    socket.leave(chatId);
+    logger.info(`User ${socket.id} left chat: ${chatId}`);
+  });
+
+  socket.on('sendMessage', async ({ chatId, message }) => {
+    try {
+      const chat = await Chat.findById(chatId);
+      if (!chat) return;
+
+      // Check if user is a participant
+      if (!chat.participants.includes(socket.user.email)) {
+        socket.emit('error', {
+          message: 'Unauthorized to send messages in this chat',
+        });
+        return;
+      }
+
+      // Add sender information to message
+      message.sender = socket.user.email;
+
+      chat.messages.push(message);
+      chat.lastMessage = message.text || `${message.type} message`;
+      chat.lastMessageTimestamp = new Date(message.timestamp);
+
+      await chat.save();
+
+      // Emit to all users in the chat room except sender
+      socket.to(chatId).emit('receiveMessage', message);
+    } catch (error) {
+      logger.error(`Error sending message: ${error.message}`);
+    }
+  });
 
   socket.on('joinRoom', (roomId) => {
     if (!rooms[roomId]) {
@@ -81,6 +137,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     logger.info(`User disconnected: ${socket.id}`);
+
     Object.keys(rooms).forEach((roomId) => {
       rooms[roomId] = rooms[roomId].filter((id) => id !== socket.id);
       if (rooms[roomId].length === 0) {
