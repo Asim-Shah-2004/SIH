@@ -10,11 +10,12 @@ import {
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SERVER_URL } from '@env'; // Import the SERVER_URL from .env file
+import { useNavigation } from '@react-navigation/native';
 
-const UsersListPage = ({ navigation }) => {
+const UsersListPage = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
-    const token = AsyncStorage.getItem('token');
+    const navigation = useNavigation();
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -40,10 +41,15 @@ const UsersListPage = ({ navigation }) => {
     }, []);
 
     const handleConnect = async (userId) => {
+        const token = await AsyncStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('Token not found');
+        }
+
         try {
-            await axios.post(
-                `${SERVER_URL}/connect`,
-                { userId },
+            const response = await axios.post(`${SERVER_URL}/connections/send`,
+                { targetUserId: userId },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             alert('Connection request sent!');
@@ -71,7 +77,7 @@ const UsersListPage = ({ navigation }) => {
                         borderRadius: 5,
                         marginRight: 10,
                     }}
-                    onPress={() => navigation.navigate('UserProfile', { userId: item._id })}>
+                    onPress={() => navigation.navigate('Profile', { name: item.fullName })}>
                     <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Profile</Text>
                 </TouchableOpacity>
                 <TouchableOpacity

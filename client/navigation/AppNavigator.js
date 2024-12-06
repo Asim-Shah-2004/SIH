@@ -15,6 +15,7 @@ import MessageHeader from './components/MessageHeader';
 import All from '../screens/All';
 // import Map from '../screens/Map';
 import LoadingScreen from '../screens/LoadingScreen';
+import ProfileScreen from '../screens/Profile';
 
 const Stack = createNativeStackNavigator();
 
@@ -94,6 +95,22 @@ export default function AppNavigator() {
                     title: 'All',
                   }}
                 />
+                <Stack.Screen
+                  name="Profile"
+                  component={ProfileScreen}
+                  options={{
+                    ...screenConfig.headerScreens,
+                    title: 'Profile',
+                  }}
+                />
+                {/* <Stack.Screen
+                  name="Map"
+                  component={Map}
+                  options={{
+                    ...screenConfig.headerScreens,
+                    title: 'Map',
+                  }}
+                /> */}
               </>
             )}
           </>

@@ -4,6 +4,7 @@ export const sendConnectionRequest = async (req, res) => {
   try {
     const { targetUserId } = req.body;
     const senderId = req.user.id;
+    console.log(typeof targetUserId, typeof senderId);
 
     const [sender, receiver] = await Promise.all([
       User.findById(senderId),
@@ -27,7 +28,7 @@ export const sendConnectionRequest = async (req, res) => {
         $addToSet: { sentRequests: targetUserId }
       }),
       User.findByIdAndUpdate(targetUserId, {
-        $addToSet: { 
+        $addToSet: {
           receivedRequests: senderId,
           notifications: `${sender.fullName} sent you a connection request`
         }
@@ -62,14 +63,14 @@ export const acceptConnectionRequest = async (req, res) => {
     await Promise.all([
       User.findByIdAndUpdate(accepterId, {
         $pull: { receivedRequests: requesterId },
-        $addToSet: { 
+        $addToSet: {
           connections: requesterId,
           notifications: `You accepted ${requester.fullName}'s connection request`
         }
       }),
       User.findByIdAndUpdate(requesterId, {
         $pull: { sentRequests: accepterId },
-        $addToSet: { 
+        $addToSet: {
           connections: accepterId,
           notifications: `${accepter.fullName} accepted your connection request`
         }
@@ -107,7 +108,7 @@ export const rejectConnectionRequest = async (req, res) => {
       }),
       User.findByIdAndUpdate(requesterId, {
         $pull: { sentRequests: rejecterId },
-        $addToSet: { 
+        $addToSet: {
           notifications: `${rejecter.fullName} declined your connection request`
         }
       })
@@ -123,7 +124,7 @@ export const rejectConnectionRequest = async (req, res) => {
 export const getConnections = async (req, res) => {
   try {
     const userId = req.user.id;
-    
+
     const user = await User.findById(userId)
       .populate('connections', 'fullName email profilePhoto')
       .populate('sentRequests', 'fullName email profilePhoto')
