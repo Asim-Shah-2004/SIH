@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Modal } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import { alumniMapData } from '../constants/alumniData';
+import { alumniMapData } from '../constants/alumni/alumniMapData';
 
 const MapScreen = () => {
   const [location, setLocation] = useState(null);

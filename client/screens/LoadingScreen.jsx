@@ -9,7 +9,7 @@ import { SERVER_URL } from '@env';
 import LoadingComponent from '../components/LoadingComponent';
 
 const LoadingScreen = ({ loading, setLoading }) => {
-    const { setUser } = React.useContext(AuthContext); // Assuming you have a setUser function in AuthContext
+    const { setUser, setIsLoggedIn } = React.useContext(AuthContext); // Assuming you have a setUser function in AuthContext
     const decodeJWT = (token) => {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -32,6 +32,7 @@ const LoadingScreen = ({ loading, setLoading }) => {
             setUser(response.data);
             setTimeout(() => setLoading(false), 1500);
         } catch (err) {
+            setIsLoggedIn(false);
             console.error('Error fetching user data:', err);
         }
     };

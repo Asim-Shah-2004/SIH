@@ -1,4 +1,10 @@
 import mongoose from 'mongoose';
+const requestSchema = new mongoose.Schema({
+  _id: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  fullName: { type: String, required: true },
+  bio: { type: String },
+  profilePhoto: { type: String },
+});
 
 const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
@@ -45,8 +51,8 @@ const userSchema = new mongoose.Schema({
     latitude: { type: Number },
     longitude: { type: Number },
   },
-  connections: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  receivedRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  connections: [requestSchema],
+  receivedRequests: [requestSchema],
   sentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   notifications: [String],
   bio: { type: String },

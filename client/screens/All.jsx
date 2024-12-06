@@ -2,10 +2,12 @@ import { SERVER_URL } from '@env'; // Import the SERVER_URL from .env file
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { AuthContext } from '../providers/CustomProvider';
 
 const UsersListPage = () => {
+  const { user, setUser } = React.useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -47,6 +49,8 @@ const UsersListPage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       alert('Connection request sent!');
+      setUser(response.data.user);
+      setUsers(users);
     } catch (error) {
       console.error('Error sending connection request:', error);
       alert('Failed to send connection request');
@@ -74,15 +78,24 @@ const UsersListPage = () => {
           onPress={() => navigation.navigate('Profile', { name: item.fullName })}>
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Profile</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={{
-            backgroundColor: '#28A745',
+            backgroundColor: user.sentRequests.includes(item._id) ? '#6c757d' : '#28A745',
             padding: 20,
             borderRadius: 5,
           }}
-          onPress={() => handleConnect(item._id)}>
-          <Text style={{ color: '#fff', fontWeight: 'bold' }}>Connect</Text>
+          onPress={() => {
+            if (!user.sentRequests.includes(item._id)) {
+              handleConnect(item._id);
+            }
+          }
+          }>
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>
+            {user.sentRequests.includes(item._id) ? 'Pending' : 'Connect'}
+          </Text>
         </TouchableOpacity>
+
       </View>
     </View>
   );

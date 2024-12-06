@@ -1,84 +1,49 @@
 import React, { useState, useCallback } from 'react';
-import { View, FlatList, Text, TouchableOpacity } from 'react-native';
-
+import { View, FlatList, Text, TouchableOpacity, Button } from 'react-native';
+import { SERVER_URL } from '@env';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AuthContext } from '../../providers/CustomProvider';
 
 const Notifications = () => {
     // State to manage active tab (either 'invitations' or 'notifications')
     const [activeTab, setActiveTab] = useState(true);
     const [isPressed, setIsPressed] = useState(false); // Prevent multiple rapid clicks
-    const { role } = React.useContext(AuthContext);
+    const { user, setUser } = React.useContext(AuthContext);
 
-    // Sample data
-    const invitations = [
-        { id: '1', name: 'Alice Johnson', message: 'Invited you to connect' },
-        { id: '2', name: 'Bob Williams', message: 'Sent you a connection request' },
-        { id: '3', name: 'Charlie Davis', message: 'Wants to connect with you' },
-        { id: '4', name: 'David Clark', message: 'Invited you to join the group' },
-        { id: '5', name: 'Emily Evans', message: 'Sent you a connection request' },
-        { id: '6', name: 'Frank Garcia', message: 'Wants to connect with you' },
-        { id: '7', name: 'Grace Harris', message: 'Invited you to join the event' },
-        { id: '8', name: 'Hannah Lee', message: 'Sent you an invitation to collaborate' },
-        { id: '9', name: 'Isaac Martin', message: 'Invited you to join a professional network' },
-        { id: '10', name: 'Jack Brown', message: 'Sent you a job referral request' },
-        { id: '11', name: 'Katherine Taylor', message: 'Wants to connect with you' },
-        { id: '12', name: 'Liam Moore', message: 'Invited you to join a team' },
-        { id: '13', name: 'Mason Wilson', message: 'Sent you an invitation to collaborate' },
-        { id: '14', name: 'Nina Walker', message: 'Invited you to participate in a seminar' },
-        { id: '15', name: 'Oliver White', message: 'Wants to connect on LinkedIn' },
-    ];
-
-    const notifications = [
-        { id: '1', name: 'Company Updates', message: 'New company updates available' },
-        { id: '2', name: 'Event Reminder', message: 'Alumni event is coming up soon' },
-        { id: '3', name: 'Job Opportunity', message: 'New job posting match found' },
-        { id: '4', name: 'System Maintenance', message: 'Scheduled maintenance for tomorrow' },
-        { id: '5', name: 'Security Alert', message: 'Account security update required' },
-        { id: '6', name: 'New Message', message: 'You have received a new message from HR' },
-        { id: '7', name: 'Password Reset', message: 'Your password was successfully reset' },
-        {
-            id: '8',
-            name: 'New Update',
-            message: 'Your software has been updated to the latest version',
-        },
-        {
-            id: '9',
-            name: 'Task Reminder',
-            message: "Don't forget to submit your report by the end of the day",
-        },
-        {
-            id: '10',
-            name: 'Network Connectivity',
-            message: 'There are issues with your network connection',
-        },
-        {
-            id: '11',
-            name: 'Feature Announcement',
-            message: 'New features have been added to your dashboard',
-        },
-        { id: '12', name: 'Product Launch', message: 'Check out our new product launching next week' },
-        {
-            id: '13',
-            name: 'Survey Reminder',
-            message: 'Please complete the survey by the end of the week',
-        },
-        { id: '14', name: 'Job Alert', message: 'New job opening matching your profile' },
-        {
-            id: '15',
-            name: 'Meeting Invitation',
-            message: 'A meeting has been scheduled for tomorrow afternoon',
-        },
-    ];
-
-    // Handle press events for each item (you can add custom logic here)
-    const handleInvitationPress = (item) => {
-        console.log('Invitation pressed:', item);
+    const handleAccept = async (invitationId) => {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            throw new Error('Token not found');
+        }
+        try {
+            const response = await axios.post(`${SERVER_URL}/connections/accept`, { requesterId: invitationId }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert(response.data.message || 'Invitation accepted!');
+            setUser(response.data.user);
+        } catch (error) {
+            console.error('Error accepting invitation:', error);
+            alert('Failed to accept invitation.');
+        }
     };
 
-    const handleNotificationPress = (item) => {
-        console.log('Notification pressed:', item);
+    const handleReject = async (invitationId) => {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) {
+            throw new Error('Token not found');
+        }
+        try {
+            const response = await axios.post(`${SERVER_URL}/connections/reject`, { requesterId: invitationId }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            alert(response.data.message || 'Invitation rejected!');
+            setUser(response.data.user);
+        } catch (error) {
+            console.error('Error rejecting invitation:', error);
+            alert('Failed to reject invitation.');
+        }
     };
-
     // Debounced tab press handler
     const handleTabPress = useCallback(
         (isInvitation) => {
@@ -140,17 +105,29 @@ const Notifications = () => {
             {/* Conditional Rendering of Invitations Section */}
             {activeTab ? (
                 <View className="mb-6">
-                    {invitations.length > 0 ? (
+                    {user.receivedRequests.length > 0 ? (
                         <FlatList
-                            data={invitations}
-                            keyExtractor={(item) => item.id}
+                            data={user.receivedRequests}
+                            keyExtractor={(item) => item._id}
                             renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    className="mb-4 rounded-lg bg-white p-4 shadow-md"
-                                    onPress={() => handleInvitationPress(item)}>
-                                    <Text className="text-base font-bold">{item.name}</Text>
-                                    <Text className="text-sm text-gray-600">{item.message}</Text>
-                                </TouchableOpacity>
+                                <View className="mb-4 rounded-lg bg-white p-4 shadow-md">
+                                    <TouchableOpacity >
+                                        <Text className="text-base font-bold">{item.fullName}</Text>
+                                        <Text className="text-sm text-gray-600">{item.bio}</Text>
+                                    </TouchableOpacity>
+                                    <View className="flex-row mt-2 justify-between">
+                                        <Button
+                                            title="Accept"
+                                            onPress={() => handleAccept(item._id)}
+                                            color="green"
+                                        />
+                                        <Button
+                                            title="Reject"
+                                            onPress={() => handleReject(item._id)}
+                                            color="red"
+                                        />
+                                    </View>
+                                </View>
                             )}
                         />
                     ) : (
@@ -159,17 +136,12 @@ const Notifications = () => {
                 </View>
             ) : (
                 <View className="mb-6">
-                    {notifications.length > 0 ? (
+                    {user.notifications.length > 0 ? (
                         <FlatList
-                            data={notifications}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    className="mb-4 rounded-lg bg-white p-4 shadow-md"
-                                    onPress={() => handleNotificationPress(item)}>
-                                    <Text className="text-base font-bold">{item.name}</Text>
-                                    <Text className="text-sm text-gray-600">{item.message}</Text>
-                                </TouchableOpacity>
+                            data={user.notifications}
+                            keyExtractor={(_, index) => index.toString()}
+                            renderItem={({ item, index }) => (
+                                <Text className="text-base font-bold">{item}</Text>
                             )}
                         />
                     ) : (
