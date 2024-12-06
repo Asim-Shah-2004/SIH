@@ -13,6 +13,7 @@ export const Providers = ({ children }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [reqSet, setReqSet] = useState(new Set());
 
   useEffect(() => {
     const initializeLanguage = async () => {
@@ -50,7 +51,7 @@ export const Providers = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, role, setIsLoggedIn, setRole, user, setUser }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, role, setRole, reqSet, setReqSet, user, setUser }}>
       <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
     </AuthContext.Provider>
   );

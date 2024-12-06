@@ -64,6 +64,11 @@ const userSchema = new mongoose.Schema({
       otherParticipant: { type: String },
     },
   ],
+  location: {
+    latitude: { type: Number },
+    longitude: { type: Number },
+  },
+  about: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 

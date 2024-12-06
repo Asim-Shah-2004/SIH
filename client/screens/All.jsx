@@ -7,7 +7,7 @@ import { View, Text, FlatList, Button, TouchableOpacity, ActivityIndicator } fro
 import { AuthContext } from '../providers/CustomProvider';
 
 const UsersListPage = () => {
-  const { user, setUser } = React.useContext(AuthContext);
+  const { user, setUser, reqSet, setReqSet } = React.useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -50,7 +50,7 @@ const UsersListPage = () => {
       );
       alert('Connection request sent!');
       setUser(response.data.user);
-      setUsers(users);
+      setReqSet(new Set(response.data.user.sentRequests));
     } catch (error) {
       console.error('Error sending connection request:', error);
       alert('Failed to send connection request');
@@ -75,24 +75,24 @@ const UsersListPage = () => {
             borderRadius: 5,
             marginRight: 10,
           }}
-          onPress={() => navigation.navigate('Profile', { name: item.fullName })}>
+          onPress={() => navigation.navigate('Profile', { id: item._id })}>
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={{
-            backgroundColor: user.sentRequests.includes(item._id) ? '#6c757d' : '#28A745',
+            backgroundColor: reqSet && reqSet.has(item._id) ? '#6c757d' : '#28A745',
             padding: 20,
             borderRadius: 5,
           }}
           onPress={() => {
-            if (!user.sentRequests.includes(item._id)) {
+            if (!reqSet.has(item._id)) {
               handleConnect(item._id);
             }
           }
           }>
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>
-            {user.sentRequests.includes(item._id) ? 'Pending' : 'Connect'}
+            {reqSet && reqSet.has(item._id) ? 'Pending' : 'Connect'}
           </Text>
         </TouchableOpacity>
 

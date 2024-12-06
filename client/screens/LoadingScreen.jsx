@@ -9,7 +9,7 @@ import { SERVER_URL } from '@env';
 import LoadingComponent from '../components/LoadingComponent';
 
 const LoadingScreen = ({ loading, setLoading }) => {
-    const { setUser, setIsLoggedIn } = React.useContext(AuthContext); // Assuming you have a setUser function in AuthContext
+    const { setUser, setIsLoggedIn, setReqSet } = React.useContext(AuthContext); // Assuming you have a setUser function in AuthContext
     const decodeJWT = (token) => {
         const base64Url = token.split('.')[1];
         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
@@ -24,12 +24,13 @@ const LoadingScreen = ({ loading, setLoading }) => {
             }
 
             const decodedToken = decodeJWT(token);
-            const email = decodedToken.email;
+            const id = decodedToken.id;
 
-            const response = await axios.get(`${SERVER_URL}/users/${email}`, {
+            const response = await axios.get(`${SERVER_URL}/users/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setUser(response.data);
+            setReqSet(new Set(response.data.sentRequests));
             setTimeout(() => setLoading(false), 1500);
         } catch (err) {
             setIsLoggedIn(false);

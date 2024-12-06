@@ -17,8 +17,11 @@ import {
     Medal,
     Send,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Image, Pressable, Text, View, FlatList, Linking } from 'react-native';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SERVER_URL } from '@env';
 
 import Post from '../components/home/Post';
 import Badge from '../components/profile/Badge';
@@ -104,6 +107,31 @@ const ProfileScreen = ({ route }) => {
     const [activeSection, setActiveSection] = useState('about');
     const data = { ...DEFAULT_ALUMNI_DATA };
 
+    useEffect(() => {
+        const fetchData = async () => {
+            const id = route.params.id;
+            const token = await AsyncStorage.getItem('token');
+            if (!token) {
+                throw new Error('Token not found');
+            }
+            // Fetch user data based on route.params.id
+            console.log('Fetching user data for:', route.params.id);
+            try {
+                const response = await axios.get(`${SERVER_URL}/users/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                console.log('User data:', response.data);
+                console.log(response.data.fullName);
+
+
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        }
+
+        fetchData();
+    }, []);
+
     const renderHeader = () => (
         <>
             {/* Cover Section */}
@@ -131,7 +159,7 @@ const ProfileScreen = ({ route }) => {
                 />
 
                 <View className="mt-3 space-y-1">
-                    <Text className="text-2xl font-bold text-text">{route.params.name}</Text>
+                    <Text className="text-2xl font-bold text-text">{data.name}</Text>
                     <Text className="text-text/60 text-base">{data.position}</Text>
                     <Text className="text-text/60 text-sm">{`${data.location.city}, ${data.location.country}`}</Text>
                 </View>

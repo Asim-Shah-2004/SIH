@@ -27,8 +27,6 @@ const LoginScreen = () => {
 
   const handleRoleChange = (role) => {
     setSelectedRole(role);
-    // You can persist the role in AsyncStorage or update the context here if needed
-    console.log('Selected Role:', role);
   };
 
   useEffect(() => {
@@ -54,7 +52,6 @@ const LoginScreen = () => {
         password,
         role: selectedRole,
       });
-      console.log('Login response:', response.data);
       try {
         await AsyncStorage.setItem('isLoggedIn', 'true');
         await AsyncStorage.setItem('role', selectedRole);
@@ -62,7 +59,7 @@ const LoginScreen = () => {
         await AsyncStorage.setItem('token', response.data.token);
         setIsLoggedIn(true);
         setRole(selectedRole);
-        console.log('Data saved');
+        console.log('Data saved in AsyncStorage');
       } catch (e) {
         console.error('Error saving data', e);
       }
