@@ -78,8 +78,10 @@ class HybridSpamDetector:
         # Content Moderation Initialization
         self.content_moderator = ContentModerator()
         try:
-            # Assuming offensive_words.txt is in the same directory
-            self.content_moderator.load_words('C:/Users/vinay/Desktop/sih/SIH/ML/spam/offensive_words.txt')
+            # Use absolute path relative to current file's directory
+            current_dir = os.path.dirname(os.path.abspath(__file__))
+            offensive_words_path = os.path.join(current_dir, 'offensive_words.txt')
+            self.content_moderator.load_words(offensive_words_path)
         except Exception as e:
             print(f"Error initializing content moderator: {e}")
 

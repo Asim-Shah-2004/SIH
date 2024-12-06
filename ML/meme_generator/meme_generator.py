@@ -1,4 +1,4 @@
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.output_parsers import PydanticOutputParser
 from pydantic import BaseModel, Field
@@ -17,7 +17,8 @@ class MemeTemplate:
 
 class MemeGenerator:
     def __init__(self, openai_api_key: str, imgflip_username: str, imgflip_password: str):
-        self.llm = ChatOpenAI(api_key=openai_api_key, temperature=1.0)
+        api_key = os.getenv("GOOGLE_API_KEY")
+        self.llm = ChatGoogleGenerativeAI(model="gemini-pro", temperature=1.0, google_api_key=api_key)
         self.imgflip_username = imgflip_username
         self.imgflip_password = imgflip_password
         
