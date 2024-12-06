@@ -1,9 +1,11 @@
 import os
+import re
 import json
 import time
 import torch
+import unicodedata
 import numpy as np
-from typing import Dict, Any
+from typing import Dict, Any, Set, List, Tuple
 from dotenv import load_dotenv
 from django.http import JsonResponse
 from django.shortcuts import render
@@ -16,8 +18,71 @@ from langchain.chains import LLMChain
 
 load_dotenv()
 
+class ContentModerator:
+    def __init__(self):
+        self.offensive_words: Set[str] = set()
+        self.word_pattern = re.compile(r'\b\w+\b')
+        
+    def normalize_text(self, text: str) -> str:
+        """Normalize text by removing accents and converting to lowercase."""
+        text = text.lower()
+        text = unicodedata.normalize('NFKD', text)
+        text = ''.join(c for c in text if not unicodedata.combining(c))
+        return text
+    
+    def load_words(self, filepath: str) -> None:
+        try:
+            with open(filepath, 'r', encoding='utf-8') as file:
+                words = [line.strip().lower() for line in file if line.strip()]
+                self.offensive_words.update(words)
+                  # Debug print
+        except FileNotFoundError:
+            print(f"Warning: Could not find word list file: {filepath}")
+        
+    def check_text(self, text: str) -> Tuple[bool, List[str], str]:
+        """
+        Check text for offensive content and return:
+        - Whether text is offensive
+        - List of found offensive terms
+        - Censored version of the text
+        """
+        if not text:
+            return False, [], text
+        
+        original_text = text
+        text = self.normalize_text(text)
+        found_terms = []
+        censored_text = original_text
+        
+        # Check for exact matches of multi-word phrases first
+        for term in sorted(self.offensive_words, key=len, reverse=True):
+            if ' ' in term and term in text:
+                found_terms.append(term)
+                # Censor the term in the output text
+                pattern = re.compile(re.escape(term), re.IGNORECASE)
+                censored_text = pattern.sub('*' * len(term), censored_text)
+        
+        # Check for single word matches
+        words = self.word_pattern.findall(text)
+        for word in words:
+            if word in self.offensive_words:
+                found_terms.append(word)
+                # Censor the word in the output text
+                pattern = re.compile(r'\b' + re.escape(word) + r'\b', re.IGNORECASE)
+                censored_text = pattern.sub('*' * len(word), censored_text)
+        
+        return bool(found_terms), found_terms, censored_text
+
 class HybridSpamDetector:
     def __init__(self):
+        # Content Moderation Initialization
+        self.content_moderator = ContentModerator()
+        try:
+            # Assuming offensive_words.txt is in the same directory
+            self.content_moderator.load_words('C:/Users/vinay/Desktop/sih/SIH/ML/spam/offensive_words.txt')
+        except Exception as e:
+            print(f"Error initializing content moderator: {e}")
+
         # Load pre-trained spam detection model (using bert-base-uncased fine-tuned on spam)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
@@ -183,6 +248,9 @@ class HybridSpamDetector:
 
     def analyze_content(self, text: str, ip_address: str = None) -> Dict[str, Any]:
         """Complete content analysis"""
+        # Content moderation check
+        is_offensive, offensive_terms, censored_text = self.content_moderator.check_text(text)
+        
         # Get initial spam score
         spam_score = self.get_spam_score(text)
         
@@ -202,7 +270,10 @@ class HybridSpamDetector:
         final_score = gemini_results["combined_score"]
         
         return {
-            "is_spam": final_score > 0.5 or flooding_detection["message_repetition_flood"] or flooding_detection["ip_volume_flood"],
+            "is_spam": (final_score > 0.5 or 
+                        flooding_detection["message_repetition_flood"] or 
+                        flooding_detection["ip_volume_flood"] or 
+                        is_offensive),
             "spam_score": final_score,
             "initial_score": spam_score,
             "toxicity_score": toxicity_score,
@@ -210,7 +281,12 @@ class HybridSpamDetector:
             "categories": categories,
             "confidence": 1 - abs(0.5 - final_score) * 2,
             "requires_manual_review": 0.4 <= final_score <= 0.6,
-            "flooding_detection": flooding_detection
+            "flooding_detection": flooding_detection,
+            "offensive_content": {
+                "is_offensive": is_offensive,
+                "offensive_terms": offensive_terms,
+                "censored_text": censored_text
+            }
         }
 
 # Initialize global detector

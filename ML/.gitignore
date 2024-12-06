@@ -1,3 +1,4 @@
 .env
 *pyc
 /myenv/
+/spam/offensive_words.txt
