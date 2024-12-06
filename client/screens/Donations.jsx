@@ -2,6 +2,7 @@ import { SERVER_URL } from '@env';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
+import { AuthContext } from '../providers/CustomProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -33,6 +34,7 @@ const DonationPortal = ({ navigation }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCause, setSelectedCause] = useState({});
+  const { role } = React.useContext(AuthContext);
 
   useEffect(() => {
     const fetchCampaigns = async () => {
@@ -207,43 +209,50 @@ const DonationPortal = ({ navigation }) => {
     <View className="flex-1 bg-gray-50">
       {/* Modern Donation Input with Indian Format */}
       <View className="px-4 pb-4 pt-6">
-        <View className="rounded-2xl border border-gray-100 bg-white p-4 shadow-lg">
-          <View className="mb-3 flex-row items-center justify-between">
-            <View>
-              <Text className="text-xl font-bold text-gray-900">Make a Donation</Text>
-              {/* <Text className="text-sm text-gray-600">Selected Cause: {selectedCause.title}</Text> */}
-            </View>
-            <TouchableOpacity
-              className="rounded-xl bg-gray-100 p-3"
-              onPress={() => setShowHistory(true)}>
-              <MaterialCommunityIcons name="history" size={24} color="#4B5563" />
-            </TouchableOpacity>
-          </View>
-          <View className="flex-row gap-2">
-            <View className="flex-1 flex-row items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
-              <Text className="text-2xl text-gray-400">₹</Text>
-              <TextInput
-                className="ml-2 h-14 flex-1 text-2xl font-medium text-gray-900"
-                placeholder="Enter amount"
-                keyboardType="numeric"
-                value={donationAmount}
-                onChangeText={(text) => setDonationAmount(text)}
-              />
-            </View>
-            <TouchableOpacity
-              className="rounded-xl bg-blue-500 px-6"
-              onPress={() => handleDonation(donationAmount)}>
-              <View className="h-14 items-center justify-center">
-                <Text className="text-base font-bold text-white">Donate</Text>
+        {role === 'alumni' ? (
+          <View className="rounded-2xl border border-gray-100 bg-white p-4 shadow-lg">
+            <View className="mb-3 flex-row items-center justify-between">
+              <View>
+                <Text className="text-xl font-bold text-gray-900">Make a Donation</Text>
+                {/* <Text className="text-sm text-gray-600">Selected Cause: {selectedCause.title}</Text> */}
               </View>
-            </TouchableOpacity>
-          </View>
-          {donationAmount ? (
-            <Text className="mt-2 text-sm text-gray-400">
-              {formatIndianNumber(Number(donationAmount))}
-            </Text>
-          ) : null}
-        </View>
+              <TouchableOpacity
+                className="rounded-xl bg-gray-100 p-3"
+                onPress={() => setShowHistory(true)}>
+                <MaterialCommunityIcons name="history" size={24} color="#4B5563" />
+              </TouchableOpacity>
+            </View>
+            <View className="flex-row gap-2">
+              <View className="flex-1 flex-row items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
+                <Text className="text-2xl text-gray-400">₹</Text>
+                <TextInput
+                  className="ml-2 h-14 flex-1 text-2xl font-medium text-gray-900"
+                  placeholder="Enter amount"
+                  keyboardType="numeric"
+                  value={donationAmount}
+                  onChangeText={(text) => setDonationAmount(text)}
+                />
+              </View>
+              <TouchableOpacity
+                className="rounded-xl bg-blue-500 px-6"
+                onPress={() => handleDonation(donationAmount)}>
+                <View className="h-14 items-center justify-center">
+                  <Text className="text-base font-bold text-white">Donate</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
+            {donationAmount ? (
+              <Text className="mt-2 text-sm text-gray-400">
+                {formatIndianNumber(Number(donationAmount))}
+              </Text>
+            ) : null}
+          </View>) : (
+          <TouchableOpacity
+            onPress={() => { }}
+            className="mx-4 my-4 rounded-lg bg-blue-600 px-5 py-3">
+            <Text className="text-center font-bold text-white">Post a New Donation</Text>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Donation History Modal */}

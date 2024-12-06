@@ -67,7 +67,7 @@ const UsersListPage = () => {
         <TouchableOpacity
           style={{
             backgroundColor: '#007BFF',
-            padding: 10,
+            padding: 20,
             borderRadius: 5,
             marginRight: 10,
           }}
@@ -77,7 +77,7 @@ const UsersListPage = () => {
         <TouchableOpacity
           style={{
             backgroundColor: '#28A745',
-            padding: 10,
+            padding: 20,
             borderRadius: 5,
           }}
           onPress={() => handleConnect(item._id)}>

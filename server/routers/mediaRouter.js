@@ -5,6 +5,6 @@ const mediaGetRouter = express.Router();
 const mediaUploadRouter = express.Router();
 
 mediaGetRouter.get('/:type/:id', getMedia);
-mediaUploadRouter.post('/upload', putMedia);
+// mediaUploadRouter.post('/upload', putMedia);
 
 export { mediaGetRouter, mediaUploadRouter };
