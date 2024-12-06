@@ -17,6 +17,9 @@ from scipy.spatial.distance import pdist, squareform
 from bson import json_util
 import json
 from geopy.geocoders import Nominatim
+import os
+from dotenv import load_dotenv
+load_dotenv()
 @csrf_exempt
 @require_POST
 def get_user_recommendations(request):
@@ -33,7 +36,10 @@ def get_user_recommendations(request):
             }, status=400)
         
         # MongoDB Connection
-        client = MongoClient('mongodb+srv://IPL_AUCTION_24:IPLAuction2024DontGuessAlsoUseVim@cluster0.ilknu4v.mongodb.net/SIH')
+        mongo_url = os.getenv("MONGO_URL")
+
+# Create MongoClient with the URL from the environment
+        client = MongoClient(mongo_url) 
         db = client['SIH']
         users_collection = db['users2']
         
@@ -197,7 +203,10 @@ def recommend_by_interests(request):
         if not email:
             return JsonResponse({'error': 'Email is required'}, status=400)
         
-        client = MongoClient('mongodb+srv://IPL_AUCTION_24:IPLAuction2024DontGuessAlsoUseVim@cluster0.ilknu4v.mongodb.net/SIH')
+        mongo_url = os.getenv("MONGO_URL")
+
+# Create MongoClient with the URL from the environment
+        client = MongoClient(mongo_url)
         db = client['SIH']
         users_collection = db['users2']
         
@@ -308,7 +317,10 @@ def recommend_by_location(request):
         if not email:
             return JsonResponse({'error': 'Email is required'}, status=400)
         
-        client = MongoClient('mongodb+srv://IPL_AUCTION_24:IPLAuction2024DontGuessAlsoUseVim@cluster0.ilknu4v.mongodb.net/SIH')
+        mongo_url = os.getenv("MONGO_URL")
+
+# Create MongoClient with the URL from the environment
+        client = MongoClient(mongo_url)
         db = client['SIH']
         users_collection = db['users2']
         
@@ -587,7 +599,10 @@ def recommend_by_profession(request):
         if not email:
             return JsonResponse({'error': 'Email is required'}, status=400)
         
-        client = MongoClient('mongodb+srv://IPL_AUCTION_24:IPLAuction2024DontGuessAlsoUseVim@cluster0.ilknu4v.mongodb.net/SIH')
+        mongo_url = os.getenv("MONGO_URL")
+
+# Create MongoClient with the URL from the environment
+        client = MongoClient(mongo_url) 
         db = client['SIH']
         users_collection = db['users']
         
@@ -799,8 +814,11 @@ def get_comprehensive_recommendations(request):
                 'error': 'Email is required'
             }, status=400)
         
+        mongo_url = os.getenv("MONGO_URL")
+
+# Create MongoClient with the URL from the environment
+        client = MongoClient(mongo_url)
         # MongoDB Connection
-        client = MongoClient('mongodb+srv://IPL_AUCTION_24:IPLAuction2024DontGuessAlsoUseVim@cluster0.ilknu4v.mongodb.net/SIH')
         db = client['SIH']
         users_collection = db['users2']
         
