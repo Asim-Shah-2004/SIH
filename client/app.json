@@ -34,7 +34,8 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "permissions": ["camera", "microphone"]
     },
     "plugins": [
       "expo-font",
@@ -44,6 +45,14 @@
         {
           "photosPermission": "Allow Vidya Setu to access your photos",
           "cameraPermission": "Allow Vidya Setu to access your camera"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow Vidya Setu to access your camera",
+          "microphonePermission": "Allow Vidya Setu to access your microphone",
+          "recordAudioAndroid": true
         }
       ],
       [

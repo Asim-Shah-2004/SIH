@@ -26,9 +26,10 @@
     "@react-navigation/stack": "^7.0.4",
     "axios": "^1.7.9",
     "base-64": "^1.0.0",
-    "expo": "^52.0.15",
+    "expo": "^52.0.17",
     "expo-av": "~15.0.1",
     "expo-blur": "^14.0.1",
+    "expo-camera": "^16.0.9",
     "expo-constants": "~17.0.3",
     "expo-document-picker": "~13.0.1",
     "expo-font": "~13.0.1",
@@ -66,7 +67,8 @@
     "react-native-timeline-flatlist": "^0.8.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.13",
-    "rn-emoji-keyboard": "^1.7.0"
+    "rn-emoji-keyboard": "^1.7.0",
+    "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -82,7 +84,7 @@
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "tailwindcss": "^3.4.16",
-    "typescript": "~5.7.2"
+    "typescript": "~5.5.4"
   },
   "eslintConfig": {
     "extends": "universe/native",

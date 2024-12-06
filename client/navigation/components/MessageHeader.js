@@ -4,6 +4,14 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 
 const MessageHeader = ({ navigation, route }) => {
   const { chatData } = route.params;
+
+  const handleVideoCall = () => {
+    navigation.navigate('Call', {
+      chatData,
+      roomId: `${chatData?.id}-video` || 'default-room',
+    });
+  };
+
   return (
     <View className="border-accent/10 flex-row items-center justify-between border-b bg-white px-4 py-3">
       <View className="flex-1 flex-row items-center">
@@ -17,10 +25,7 @@ const MessageHeader = ({ navigation, route }) => {
         </View>
       </View>
       <View className="flex-row gap-4">
-        <TouchableOpacity className="bg-primary/5 rounded-full p-2">
-          <Ionicons name="call" size={20} color="#2C3E8D" />
-        </TouchableOpacity>
-        <TouchableOpacity className="bg-primary/5 rounded-full p-2">
+        <TouchableOpacity className="bg-primary/5 rounded-full p-2" onPress={handleVideoCall}>
           <Ionicons name="videocam" size={20} color="#2C3E8D" />
         </TouchableOpacity>
       </View>

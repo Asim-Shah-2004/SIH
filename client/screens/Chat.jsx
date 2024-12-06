@@ -1,6 +1,6 @@
 // screens/ChatScreen.js
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { View, FlatList, Text, TouchableOpacity, Image, RefreshControl } from 'react-native';
 
 import { chatData } from '../constants/chatData';
@@ -13,7 +13,7 @@ const ChatScreen = () => {
     navigation.navigate('Message', { chatData: item });
   };
 
-  const onRefresh = React.useCallback(() => {
+  const onRefresh = useCallback(() => {
     setRefreshing(true);
     // Add your refresh logic here
     setTimeout(() => setRefreshing(false), 1000);

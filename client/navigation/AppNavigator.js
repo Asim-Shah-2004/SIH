@@ -1,20 +1,20 @@
-import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { AuthContext } from '../providers/CustomProvider';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
 import NewJob from '../components/jobs/NewJob';
-
+import { AuthContext } from '../providers/CustomProvider';
+import All from '../screens/All';
 import AlumniDirectory from '../screens/AlumniDirectory';
+import Call from '../screens/Call';
 import Chat from '../screens/Chat';
+import LoadingScreen from '../screens/LoadingScreen';
 import Message from '../screens/Message';
 import Notifications from '../screens/Notifications';
 import MessageHeader from './components/MessageHeader';
-import All from '../screens/All';
 // import Map from '../screens/Map';
-import LoadingScreen from '../screens/LoadingScreen';
 import ProfileScreen from '../screens/Profile';
 
 const Stack = createNativeStackNavigator();
@@ -60,12 +60,27 @@ export default function AppNavigator() {
         ) : (
           <>
             {loading ? (
-              <Stack.Screen name="Loading" children={() => <LoadingScreen loading={loading} setLoading={setLoading} />} />
+              <Stack.Screen
+                name="Loading"
+                children={() => <LoadingScreen loading={loading} setLoading={setLoading} />}
+              />
             ) : (
               <>
                 <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
                 <Stack.Screen name="Chat" component={Chat} options={screenConfig.headerScreens} />
-                <Stack.Screen name="Message" component={Message} options={screenConfig.messageScreen} />
+                <Stack.Screen
+                  name="Message"
+                  component={Message}
+                  options={screenConfig.messageScreen}
+                />
+                <Stack.Screen
+                  name="Call"
+                  component={Call}
+                  options={{
+                    ...screenConfig.headerlessScreens,
+                    animation: 'fade',
+                  }}
+                />
                 <Stack.Screen
                   name="Alerts"
                   component={Notifications}
@@ -116,7 +131,6 @@ export default function AppNavigator() {
           </>
         )}
       </Stack.Navigator>
-
     </GestureHandlerRootView>
   );
 }
