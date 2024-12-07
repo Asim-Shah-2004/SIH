@@ -123,9 +123,7 @@ export const getChatMessages = async (req, res) => {
     const startIndex = Math.max(0, endIndex - Number(limit));
 
     // Get messages slice without sorting
-    const paginatedMessages = chat.messages
-      .slice(startIndex, endIndex)
-      .reverse();
+    const paginatedMessages = chat.messages.slice(startIndex, endIndex);
 
     const totalPages = Math.ceil(totalMessages / Number(limit));
 

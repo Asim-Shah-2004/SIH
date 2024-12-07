@@ -1,9 +1,18 @@
-import { useNavigation } from '@react-navigation/native';
-import { useCallback, useState, useEffect } from 'react';
-import { View, FlatList, Text, TouchableOpacity, Image, RefreshControl, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { SERVER_URL } from '@env';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { useCallback, useState, useEffect, useContext } from 'react';
+import {
+  View,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  Image,
+  RefreshControl,
+  ActivityIndicator,
+} from 'react-native';
+
+import { AuthContext } from '../providers/CustomProvider';
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000;
@@ -15,19 +24,21 @@ const ChatScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const { token } = useContext(AuthContext);
 
   const fetchChats = async (attempt = 0) => {
     try {
-      const token = await AsyncStorage.getItem('token');
       if (!token) {
         navigation.navigate('Login');
         return;
       }
 
-      const { data: { data } } = await axios.get(`${SERVER_URL}/chat/fetch`, {
+      const {
+        data: { data },
+      } = await axios.get(`${SERVER_URL}/chat/fetch`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setChats(data);
@@ -75,10 +86,10 @@ const ChatScreen = () => {
     <View className="flex-1 bg-background">
       {error ? (
         <View className="flex-1 items-center justify-center p-4">
-          <Text className="text-red-500 mb-4">{error}</Text>
+          <Text className="mb-4 text-red-500">{error}</Text>
           {retryCount >= MAX_RETRIES && (
             <TouchableOpacity
-              className="bg-primary px-4 py-2 rounded-lg"
+              className="rounded-lg bg-primary px-4 py-2"
               onPress={() => {
                 setLoading(true);
                 setRetryCount(0);
@@ -100,15 +111,13 @@ const ChatScreen = () => {
               <View className="relative">
                 <Image
                   source={{
-                    uri: item.profilePhoto || 'https://via.placeholder.com/50'
+                    uri: item.profilePhoto || 'https://via.placeholder.com/50',
                   }}
                   className="h-12 w-12 rounded-full"
                 />
               </View>
               <View className="ml-4 flex-1">
-                <Text className="text-lg font-semibold text-text">
-                  {item.otherParticipantName}
-                </Text>
+                <Text className="text-lg font-semibold text-text">{item.otherParticipantName}</Text>
                 <Text className="mt-1 text-highlight">{item.lastMessage}</Text>
               </View>
               <View className="items-end">

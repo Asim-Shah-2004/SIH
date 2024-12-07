@@ -1,13 +1,14 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useState, useEffect } from 'react';
-import Login from '../screens/Login';
-import Register from '../screens/Register';
-import OnboardingPage from '../screens/Onboarding';
 import { View, Text } from 'react-native';
+
 import LoadingComponent from '../components/LoadingComponent';
 import ExplanationScreen from '../screens/ExplanationScreen';
-import RegisterScreen from '../screens/Register';
+import Login from '../screens/Login';
 import Manual from '../screens/Manual';
+import OnboardingPage from '../screens/Onboarding';
+import RegisterScreen from '../screens/Register';
+// import Register from '../screens/Register';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,9 +22,7 @@ export default function AuthNavigator() {
   }, []);
 
   if (!isReady) {
-    return (
-      <LoadingComponent />
-    );
+    return <LoadingComponent />;
   }
 
   return (

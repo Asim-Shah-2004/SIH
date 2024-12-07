@@ -1,9 +1,13 @@
 import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
-  type: { type: String, required: true },
+  type: {
+    type: String,
+    enum: ['text', 'image', 'audio', 'video', 'document'],
+    required: true,
+  },
   text: { type: String },
-  uri: { type: String, enum: ['image', 'audio', 'video', 'document'] },
+  uri: { type: String },
   fileName: { type: String },
   fileSize: { type: Number },
   sender: { type: String, required: true },

@@ -4,8 +4,8 @@ import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Animated, {
   withSpring,
   useAnimatedStyle,
@@ -13,9 +13,21 @@ import Animated, {
   withSequence,
 } from 'react-native-reanimated';
 
+import { AuthContext } from '../../providers/CustomProvider';
 import { formatMessageTime } from '../../utils/dateUtils';
 
-const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize, mimeType }) => {
+const MessageBubble = ({
+  type,
+  text,
+  sender,
+  timestamp,
+  uri,
+  fileName,
+  fileSize,
+  mimeType,
+  isUploading,
+  uploadFailed,
+}) => {
   const [sound, setSound] = useState();
   const [isPlaying, setIsPlaying] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -23,6 +35,7 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
   const [isDownloading, setIsDownloading] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [lastTap, setLastTap] = useState(null);
+  const { user } = useContext(AuthContext);
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
 
@@ -121,14 +134,33 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
     opacity: opacity.value,
   }));
 
+  const renderUploadingState = () => {
+    if (isUploading) {
+      return (
+        <View className="absolute right-2 top-2">
+          <ActivityIndicator size="small" color={sender === user.email ? 'white' : '#0000ff'} />
+        </View>
+      );
+    }
+    if (uploadFailed) {
+      return (
+        <View className="absolute right-2 top-2">
+          <Ionicons name="alert-circle" size={20} color="red" />
+        </View>
+      );
+    }
+    return null;
+  };
+
   return (
     <TouchableOpacity onPress={handleDoubleTap} activeOpacity={0.9}>
       <View
-        className={`mb-2 max-w-[80%] ${
-          sender === 'me' ? 'self-end bg-primary' : 'self-start bg-white'
+        className={`relative mb-2 max-w-[80%] ${
+          sender === user.email ? 'self-end bg-primary' : 'self-start bg-white'
         } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border-accent/10 border'}`}>
+        {renderUploadingState()}
         {type === 'text' && (
-          <Text className={`${sender === 'me' ? 'text-white' : 'text-text'} text-[15px]`}>
+          <Text className={`${sender === user.email ? 'text-white' : 'text-text'} text-[15px]`}>
             {text}
           </Text>
         )}
@@ -144,7 +176,7 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
               <Ionicons
                 name="document-outline"
                 size={24}
-                className={sender === 'me' ? 'text-white' : 'text-text'}
+                className={sender === user.email ? 'text-white' : 'text-text'}
               />
               {isDownloading && (
                 <View className="absolute inset-0 flex items-center justify-center">
@@ -153,9 +185,9 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
               )}
             </View>
             <View>
-              <Text className={sender === 'me' ? 'text-white' : 'text-text'}>{fileName}</Text>
+              <Text className={sender === user.email ? 'text-white' : 'text-text'}>{fileName}</Text>
               <Text
-                className={`text-xs ${sender === 'me' ? 'text-white/70' : 'text-highlight/70'}`}>
+                className={`text-xs ${sender === user.email ? 'text-white/70' : 'text-highlight/70'}`}>
                 {isDownloading
                   ? `Downloading... ${downloadProgress.toFixed(0)}%`
                   : `${(fileSize / 1024).toFixed(1)} KB`}
@@ -175,19 +207,25 @@ const MessageBubble = ({ type, text, sender, timestamp, uri, fileName, fileSize,
                 <Ionicons
                   name={isPlaying ? 'pause' : 'play'}
                   size={20}
-                  className={sender === 'me' ? 'text-white' : 'text-text'}
+                  className={sender === user.email ? 'text-white' : 'text-text'}
                 />
               )}
             </TouchableOpacity>
-            <Text className={sender === 'me' ? 'text-white' : 'text-text'}>Voice message</Text>
+            <Text className={sender === user.email ? 'text-white' : 'text-text'}>
+              Voice message
+            </Text>
           </View>
         )}
         <View className="flex-row items-center justify-end gap-1">
           <Animated.View style={animatedStyle}>
-            <Ionicons name="heart" size={16} color={sender === 'me' ? '#ffffff' : '#FF0000'} />
+            <Ionicons
+              name="heart"
+              size={16}
+              color={sender === user.email ? '#ffffff' : '#FF0000'}
+            />
           </Animated.View>
           <Text
-            className={`text-xs ${sender === 'me' ? 'text-white/70' : 'text-highlight/70'} mt-1`}>
+            className={`text-xs ${sender === user.email ? 'text-white/70' : 'text-highlight/70'} mt-1`}>
             {formatMessageTime(timestamp)}
           </Text>
         </View>
