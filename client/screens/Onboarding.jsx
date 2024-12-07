@@ -26,7 +26,7 @@ export default function OnboardingPage({ navigation }) {
 
   const handleNext = () => {
     if (currentStep === onboardingData.length - 1) {
-      navigation.navigate('Login');
+      navigation.navigate('Explanation');
     } else {
       setCurrentStep((prev) => prev + 1);
     }

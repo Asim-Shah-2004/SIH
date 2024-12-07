@@ -5,6 +5,9 @@ import Register from '../screens/Register';
 import OnboardingPage from '../screens/Onboarding';
 import { View, Text } from 'react-native';
 import LoadingComponent from '../components/LoadingComponent';
+import ExplanationScreen from '../screens/ExplanationScreen';
+import RegisterScreen from '../screens/Register';
+import Manual from '../screens/Manual';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,7 +30,10 @@ export default function AuthNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Onboarding" component={OnboardingPage} />
       <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Register" component={Register} />
+      {/* <Stack.Screen name="Register" component={Register} /> */}
+      <Stack.Screen name="Explanation" component={ExplanationScreen} />
+      <Stack.Screen name="Register" component={RegisterScreen} />
+      <Stack.Screen name="Manual" component={Manual} />
     </Stack.Navigator>
   );
 }

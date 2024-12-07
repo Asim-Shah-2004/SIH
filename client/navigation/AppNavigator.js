@@ -16,6 +16,8 @@ import Notifications from '../screens/Notifications';
 import MessageHeader from './components/MessageHeader';
 // import Map from '../screens/Map';
 import ProfileScreen from '../screens/Profile';
+import RegisterScreen from '../screens/Register';
+import ExplanationScreen from '../screens/ExplanationScreen';
 
 const Stack = createNativeStackNavigator();
 
