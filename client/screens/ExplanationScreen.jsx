@@ -93,7 +93,15 @@ const ExplanationScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      
+      {/* Login Section */}
+      <View className="p-6 bg-white border-t border-gray-100">
+        <Text className="text-center text-base text-gray-600">
+          Already have an account?{' '}
+          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+            <Text className="font-bold text-purple-600"> Login</Text>
+          </TouchableOpacity>
+        </Text>
+      </View>
     </View>
   );
 };
