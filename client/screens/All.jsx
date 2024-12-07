@@ -21,7 +21,7 @@ const UsersListPage = () => {
       }
 
       try {
-        const response = await axios.get(`${SERVER_URL}/users/getAll`, {
+        const response = await axios.get(`${SERVER_URL}/users/getAllexCon`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data); // Assuming the response contains an array of users

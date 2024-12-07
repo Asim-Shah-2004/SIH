@@ -1,6 +1,6 @@
 import { User } from '../models/index.js';
 
-const getAllUsers = async (req, res) => {
+const getAllUsersExceptConnections = async (req, res) => {
   const id = req.user.id;
 
   try {
@@ -21,6 +21,16 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  const id = req.user.id;
+  try {
+    const users = await User.find({ _id: { $ne: id } });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
 const getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -30,4 +40,4 @@ const getUser = async (req, res) => {
   }
 };
 
-export { getAllUsers, getUser };
+export { getAllUsers, getUser, getAllUsersExceptConnections };

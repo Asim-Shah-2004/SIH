@@ -10,11 +10,12 @@ const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  role: { type: String, enum: ['user', 'college'], default: 'user' },
   isUniversityGeneratedPassword: { type: Boolean, default: true },
   profilePhoto: { type: String },
-  phone: { type: String },
-  address: { type: String },
+  phone: { type: String, required: true },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
+  country: { type: String, required: true },
   education: [
     {
       degree: { type: String },
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema({
       description: { type: String },
     },
   ],
-  skills: [String],
+  skills: { type: [String], required: true },
   projects: [
     {
       title: { type: String },
@@ -46,17 +47,17 @@ const userSchema = new mongoose.Schema({
       issueDate: { type: Date },
     },
   ],
-  languages: [String],
+  languages: { type: [String], required: true },
   location: {
-    latitude: { type: Number },
-    longitude: { type: Number },
+    latitude: { type: Number, required: true },
+    longitude: { type: Number, required: true },
   },
-  connections: [requestSchema],
-  receivedRequests: [requestSchema],
-  sentRequests: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  notifications: [String],
+  connections: { type: [requestSchema], default: [] },
+  receivedRequests: { type: [requestSchema], default: [] },
+  sentRequests: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [] },
+  notifications: { type: [String], default: [] },
   bio: { type: String },
-  interests: [String],
+  interests: { type: [String], required: true },
   website: { type: String },
   chats: [
     {
@@ -64,10 +65,6 @@ const userSchema = new mongoose.Schema({
       otherParticipant: { type: String },
     },
   ],
-  location: {
-    latitude: { type: Number },
-    longitude: { type: Number },
-  },
   about: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
