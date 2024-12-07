@@ -9,7 +9,7 @@ import { Alert } from 'react-native';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
 export class MessageService {
-  static async uploadMedia(buffer, type) {
+  static async uploadMedia(buffer, type, mimeType) {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
@@ -17,6 +17,7 @@ export class MessageService {
         {
           type,
           buffer: buffer.toString('base64'),
+          mimeType,
         },
         {
           headers: {
@@ -50,7 +51,7 @@ export class MessageService {
         // Upload document and get ID
         const response = await fetch(file.uri);
         const buffer = await response.arrayBuffer();
-        const mediaId = await this.uploadMedia(buffer, 'document');
+        const mediaId = await this.uploadMedia(buffer, 'document', file.type);
 
         if (!mediaId) return null;
 
@@ -75,13 +76,14 @@ export class MessageService {
         : ImagePicker.launchImageLibraryAsync;
 
       const result = await method({
-        mediaTypes: 'image',
+        mediaTypes: ['images'],
+        quality: 0.5,
         allowsEditing: true,
         base64: true,
       });
 
       if (!result.canceled && result.assets[0]) {
-        const mediaId = await this.uploadMedia(result.assets[0].base64, 'image');
+        const mediaId = await this.uploadMedia(result.assets[0].base64, 'image', 'image/jpeg');
 
         if (!mediaId) return null;
 
@@ -123,7 +125,7 @@ export class MessageService {
       // Convert audio to base64
       const response = await fetch(uri);
       const buffer = await response.arrayBuffer();
-      const mediaId = await this.uploadMedia(buffer, 'audio');
+      const mediaId = await this.uploadMedia(buffer, 'audio', 'audio/mpeg');
 
       if (!mediaId) return null;
 

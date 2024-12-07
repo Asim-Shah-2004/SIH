@@ -1,3 +1,4 @@
+import { SERVER_URL } from '@env';
 import { Ionicons } from '@expo/vector-icons';
 import { Audio } from 'expo-av';
 import * as FileSystem from 'expo-file-system';
@@ -165,7 +166,11 @@ const MessageBubble = ({
           </Text>
         )}
         {type === 'image' && (
-          <Image source={{ uri }} className="h-48 w-48 rounded-lg" resizeMode="cover" />
+          <Image
+            source={{ uri: `${SERVER_URL}/media/image/${uri}` }}
+            className="h-48 w-48 rounded-lg"
+            resizeMode="cover"
+          />
         )}
         {type === 'document' && (
           <TouchableOpacity

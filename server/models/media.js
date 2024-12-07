@@ -7,9 +7,10 @@ const mediaSchema = new mongoose.Schema({
     required: true,
   },
   buffer: {
-    type: Buffer,
+    type: String,
     required: true,
   },
+  mimeType: { type: String },
   createdAt: {
     type: Date,
     default: Date.now,

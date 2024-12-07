@@ -1,5 +1,9 @@
 import { SERVER_URL } from '@env';
 import axios from 'axios';
+import { Audio } from 'expo-av';
+import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
 import React, { useState, useRef, useEffect, useContext } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 
@@ -26,6 +30,11 @@ const MessageScreen = ({ route }) => {
   const [recording, setRecording] = useState(null);
   const [uploadingMessages, setUploadingMessages] = useState({}); // Track uploading messages
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [permissions, setPermissions] = useState({
+    camera: false,
+    audio: false,
+    mediaLibrary: false,
+  });
   const scrollViewRef = useRef();
 
   useEffect(() => {
@@ -42,11 +51,25 @@ const MessageScreen = ({ route }) => {
     // Fetch chat history
     fetchMessages();
 
+    requestPermissions();
+
     return () => {
       socket.emit('leaveChat', chatData.chatId);
       socket.off('receiveMessage');
     };
   }, [socket, chatData.chatId]);
+
+  const requestPermissions = async () => {
+    const cameraStatus = await ImagePicker.requestCameraPermissionsAsync();
+    const audioStatus = await Audio.requestPermissionsAsync();
+    const mediaStatus = await MediaLibrary.requestPermissionsAsync();
+
+    setPermissions({
+      camera: cameraStatus.status === 'granted',
+      audio: audioStatus.status === 'granted',
+      mediaLibrary: mediaStatus.status === 'granted',
+    });
+  };
 
   const fetchMessages = async (pageNum = page) => {
     if (isLoadingMore || !hasMore) return;
@@ -105,10 +128,13 @@ const MessageScreen = ({ route }) => {
     setMessage('');
   };
 
-  const handleMediaSend = async (messagePromise, tempId) => {
+  const handleMediaSend = async (messagePromise, tempId, type) => {
     // Add temporary message with uploading state
     const tempMessage = {
       id: tempId,
+      type,
+      uri: '',
+      fileName: 'Uploading...',
       timestamp: Date.now(),
       sender: user.email,
       isUploading: true,
@@ -154,16 +180,49 @@ const MessageScreen = ({ route }) => {
 
   const handleAttachment = async () => {
     if (!socket) return;
-    const tempId = `temp-${Date.now()}`;
-    handleMediaSend(MessageService.handleDocumentAttachment(), tempId);
+
+    try {
+      const result = await DocumentPicker.getDocumentAsync();
+      if (result.type === 'success') {
+        const tempId = `temp-${Date.now()}`;
+        handleMediaSend(MessageService.handleDocumentAttachment(result), tempId, 'document');
+      }
+    } catch (error) {
+      console.error('Error picking document:', error);
+    }
   };
 
   const handleImagePicker = async (useCamera = false) => {
+    if (useCamera && !permissions.camera) {
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Camera permission is required to take photos');
+        return;
+      }
+    }
+
+    if (!useCamera && !permissions.mediaLibrary) {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Media library permission is required to pick photos');
+        return;
+      }
+    }
+
     const tempId = `temp-${Date.now()}`;
-    handleMediaSend(MessageService.handleImagePicker(useCamera), tempId);
+    handleMediaSend(MessageService.handleImagePicker(useCamera), tempId, 'image');
   };
 
   const startRecording = async () => {
+    if (!permissions.audio) {
+      const { status } = await Audio.requestPermissionsAsync();
+      if (status !== 'granted') {
+        alert('Audio recording permission is required');
+        return;
+      }
+      setPermissions((prev) => ({ ...prev, audio: true }));
+    }
+
     const newRecording = await MessageService.startRecording();
     if (newRecording) {
       setRecording(newRecording);
@@ -173,7 +232,7 @@ const MessageScreen = ({ route }) => {
 
   const stopRecording = async () => {
     const tempId = `temp-${Date.now()}`;
-    handleMediaSend(MessageService.stopRecording(recording), tempId);
+    handleMediaSend(MessageService.stopRecording(recording), tempId, 'audio');
     setRecording(null);
     setIsRecording(false);
   };
