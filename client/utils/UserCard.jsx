@@ -13,8 +13,15 @@ const UserCard = ({ alumni }) => {
     navigation.navigate('Profile', { _id }); // Navigate to the profile with user ID
   };
 
-  const handleConnect = () => {
-    console.log(`Connecting with user ID: ${_id}`);
+  const handleConnect = async () => {
+    try {
+      const updatedUser = await connectHandler(_id);
+      setUser(updatedUser);
+      setReqSet(new Set(updatedUser.sentRequests));
+    }
+    catch (error) {
+      console.error('Error connecting:', error);
+    }
   };
 
   const truncatedBio = bio
@@ -49,12 +56,13 @@ const UserCard = ({ alumni }) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleConnect}
-          className="w-full rounded-md bg-blue-600 px-3 py-2"
+          className={`w-full rounded-md px-3 py-2 ${reqSet.has(_id) ? 'bg-gray-400' : 'bg-blue-600'}`} // Change the background color conditionally
         >
           <Text className="text-center text-xs font-medium text-white">
-            Connect
+            {reqSet.has(_id) ? 'Pending' : 'Connect'}  {/* Change text based on the condition */}
           </Text>
         </TouchableOpacity>
+
       </View>
     </View>
   );

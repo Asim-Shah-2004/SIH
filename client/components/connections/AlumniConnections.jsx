@@ -16,10 +16,9 @@ const AlumniRecommendations = () => {
     useEffect(() => {
         const getRecommendations = async () => {
             try {
-                const response = await axios.post('http://127.0.0.1:8000/api/get_comprehensive_recommendations/', {
+                const response = await axios.post('http://192.168.1.6:8000/api/get_comprehensive_recommendations/', {
                     "email": "raywridesh@example.org"
                 });
-                console.log('Recommendations Response:', response.data);
                 setInterestRecommendations(response.data.interest_recommendations);
                 setLocationRecommendations(response.data.location_recommendations);
                 setOverallRecommendations(response.data.overall_recommendations);
@@ -33,12 +32,7 @@ const AlumniRecommendations = () => {
 
     const renderRecommendationItem = ({ item }) => (
         <UserCard
-            user={item}
-        // onConnect={() => {
-        //     console.log(`Connecting with ${item.name}`);
-        //     // Handle the connect logic here (send invitation, etc.)
-        // }}
-        // onViewProfile={() => navigation.navigate('Profile')} // Navigate to the user's profile
+            alumni={item}
         />
     );
 
