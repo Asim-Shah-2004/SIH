@@ -185,6 +185,138 @@ const Manual = () => {
             <Text style={styles.heading}>Professional Details</Text>
             
             <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Work Experience</Text>
+              {formData.workExperience.map((exp, index) => (
+                <View key={index} style={styles.experienceCard}>
+                  <TextInput
+                    placeholder="Company Name"
+                    value={exp.company}
+                    onChangeText={(text) => {
+                      const newExp = [...formData.workExperience];
+                      newExp[index].company = text;
+                      setFormData(prev => ({...prev, workExperience: newExp}));
+                    }}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Position"
+                    value={exp.position}
+                    onChangeText={(text) => {
+                      const newExp = [...formData.workExperience];
+                      newExp[index].position = text;
+                      setFormData(prev => ({...prev, workExperience: newExp}));
+                    }}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Duration (years)"
+                    value={exp.duration}
+                    onChangeText={(text) => {
+                      const newExp = [...formData.workExperience];
+                      newExp[index].duration = text;
+                      setFormData(prev => ({...prev, workExperience: newExp}));
+                    }}
+                    keyboardType="numeric"
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Description"
+                    value={exp.description}
+                    onChangeText={(text) => {
+                      const newExp = [...formData.workExperience];
+                      newExp[index].description = text;
+                      setFormData(prev => ({...prev, workExperience: newExp}));
+                    }}
+                    multiline
+                    style={[styles.input, styles.textArea]}
+                  />
+                </View>
+              ))}
+              <TouchableOpacity
+                onPress={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    workExperience: [...prev.workExperience, {
+                      company: '',
+                      position: '',
+                      duration: '',
+                      description: ''
+                    }]
+                  }));
+                }}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>+ Add Work Experience</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Education</Text>
+              {formData.education.map((edu, index) => (
+                <View key={index} style={styles.educationCard}>
+                  <TextInput
+                    placeholder="Degree"
+                    value={edu.degree}
+                    onChangeText={(text) => {
+                      const newEdu = [...formData.education];
+                      newEdu[index].degree = text;
+                      setFormData(prev => ({...prev, education: newEdu}));
+                    }}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="Graduation Year"
+                    value={edu.graduationYear}
+                    onChangeText={(text) => {
+                      const newEdu = [...formData.education];
+                      newEdu[index].graduationYear = text;
+                      setFormData(prev => ({...prev, education: newEdu}));
+                    }}
+                    keyboardType="numeric"
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="University"
+                    value={edu.university}
+                    onChangeText={(text) => {
+                      const newEdu = [...formData.education];
+                      newEdu[index].university = text;
+                      setFormData(prev => ({...prev, education: newEdu}));
+                    }}
+                    style={styles.input}
+                  />
+                  <TextInput
+                    placeholder="CGPA"
+                    value={edu.cgpa}
+                    onChangeText={(text) => {
+                      const newEdu = [...formData.education];
+                      newEdu[index].cgpa = text;
+                      setFormData(prev => ({...prev, education: newEdu}));
+                    }}
+                    keyboardType="decimal-pad"
+                    style={styles.input}
+                  />
+                </View>
+              ))}
+              <TouchableOpacity
+                onPress={() => {
+                  setFormData(prev => ({
+                    ...prev,
+                    education: [...prev.education, {
+                      degree: '',
+                      graduationYear: '',
+                      university: '',
+                      cgpa: ''
+                    }]
+                  }));
+                }}
+                style={styles.addButton}
+              >
+                <Text style={styles.addButtonText}>+ Add Education</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.section}>
               <Text style={styles.sectionTitle}>Skills</Text>
               <View style={styles.chipContainer}>
                 {skillSuggestions.map((skill, index) => (
@@ -404,6 +536,37 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 12,
     top: 12,
+  },
+  experienceCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  
+  educationCard: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  
+  addButton: {
+    backgroundColor: '#f0f0f0',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  
+  addButtonText: {
+    color: '#1a1a1a',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
