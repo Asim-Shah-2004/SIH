@@ -1,12 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 
 import { alumniRecommendations } from '../../constants/alumni/alumniRecommendations';
 import UserCard from '../../utils/UserCard'; // Importing the UserCard component
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 
 const AlumniRecommendations = () => {
     const navigation = useNavigation();
+    const [interestRecommendations, setInterestRecommendations] = useState([]);
+    const [locationRecommendations, setLocationRecommendations] = useState([]);
+    const [overallRecommendations, setOverallRecommendations] = useState([]);
+    const [professionRecommendations, setProfessionRecommendations] = useState([]);
+
+    useEffect(() => {
+        const getRecommendations = async () => {
+            try {
+                const response = await axios.post('http://127.0.0.1:8000/api/get_comprehensive_recommendations/', {
+                    "email": "raywridesh@example.org"
+                });
+                console.log('Recommendations Response:', response.data);
+                setInterestRecommendations(response.data.interest_recommendations);
+                setLocationRecommendations(response.data.location_recommendations);
+                setOverallRecommendations(response.data.overall_recommendations);
+                setProfessionRecommendations(response.data.profession_recommendations);
+            } catch (err) {
+                console.error('Error:', err);
+            }
+        };
+        getRecommendations();
+    }, []);
+
     const renderRecommendationItem = ({ item }) => (
         <UserCard
             user={item}
@@ -48,10 +72,10 @@ const AlumniRecommendations = () => {
             {/* Alumni Recommendations based on different categories */}
             <Text className="mb-3 text-lg font-bold">Alumni Recommendations</Text>
 
-            <Text className="mb-3 text-lg font-bold">Based on Location</Text>
+            <Text className="mb-3 text-lg font-bold">Overall</Text>
             <FlatList
-                data={alumniRecommendations}
-                keyExtractor={(item) => item.id.toString()}
+                data={overallRecommendations}
+                keyExtractor={(item) => item._id}
                 renderItem={renderRecommendationItem} // Using the UserCard component here
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -61,8 +85,19 @@ const AlumniRecommendations = () => {
 
             <Text className="mb-3 text-lg font-bold">Based on Interests</Text>
             <FlatList
-                data={alumniRecommendations}
-                keyExtractor={(item) => item.id.toString()}
+                data={interestRecommendations}
+                keyExtractor={(item) => item._id}
+                renderItem={renderRecommendationItem} // Using the UserCard component here
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{ paddingVertical: 12 }}
+                ItemSeparatorComponent={() => <View style={{ width: 15 }} />} // Spacing between cards
+            />
+
+            <Text className="mb-3 text-lg font-bold">Based on Profession</Text>
+            <FlatList
+                data={professionRecommendations}
+                keyExtractor={(item) => item._id}
                 renderItem={renderRecommendationItem} // Using the UserCard component here
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -70,10 +105,10 @@ const AlumniRecommendations = () => {
                 ItemSeparatorComponent={() => <View style={{ width: 12 }} />} // Spacing between cards
             />
 
-            <Text className="mb-3 text-lg font-bold">Based on Batch</Text>
+            <Text className="mb-3 text-lg font-bold">Based on Location</Text>
             <FlatList
-                data={alumniRecommendations}
-                keyExtractor={(item) => item.id.toString()}
+                data={locationRecommendations}
+                keyExtractor={(item) => item._id}
                 renderItem={renderRecommendationItem} // Using the UserCard component here
                 horizontal
                 showsHorizontalScrollIndicator={false}

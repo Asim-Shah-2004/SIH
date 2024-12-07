@@ -1,10 +1,11 @@
 import { SERVER_URL } from '@env'; // Import the SERVER_URL from .env file
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../providers/CustomProvider';
+import { connectHandler } from '../utils/connectHandler';
 
 const UsersListPage = () => {
   const { user, setUser, reqSet, setReqSet } = React.useContext(AuthContext);
@@ -36,21 +37,10 @@ const UsersListPage = () => {
   }, []);
 
   const handleConnect = async (userId) => {
-    const token = await AsyncStorage.getItem('token');
-
-    if (!token) {
-      throw new Error('Token not found');
-    }
-
     try {
-      const response = await axios.post(
-        `${SERVER_URL}/connections/send`,
-        { targetUserId: userId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert('Connection request sent!');
-      setUser(response.data.user);
-      setReqSet(new Set(response.data.user.sentRequests));
+      const updatedUser = await connectHandler(userId)
+      setUser(updatedUser);
+      setReqSet(new Set(updatedUser.sentRequests));
     } catch (error) {
       console.error('Error sending connection request:', error);
       alert('Failed to send connection request');
@@ -75,7 +65,7 @@ const UsersListPage = () => {
             borderRadius: 5,
             marginRight: 10,
           }}
-          onPress={() => navigation.navigate('Profile', { id: item._id })}>
+          onPress={() => navigation.navigate('Profile', { _id: item._id })}>
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>View Profile</Text>
         </TouchableOpacity>
 

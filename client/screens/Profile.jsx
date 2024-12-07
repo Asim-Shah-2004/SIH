@@ -109,13 +109,13 @@ const ProfileScreen = ({ route }) => {
 
     useEffect(() => {
         const fetchData = async () => {
-            const id = route.params.id;
+            const id = route.params._id;
             const token = await AsyncStorage.getItem('token');
             if (!token) {
                 throw new Error('Token not found');
             }
             // Fetch user data based on route.params.id
-            console.log('Fetching user data for:', route.params.id);
+            console.log('Fetching user data for:', route.params._id);
             try {
                 const response = await axios.get(`${SERVER_URL}/users/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
