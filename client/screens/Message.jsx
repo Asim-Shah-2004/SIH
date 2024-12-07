@@ -182,11 +182,8 @@ const MessageScreen = ({ route }) => {
     if (!socket) return;
 
     try {
-      const result = await DocumentPicker.getDocumentAsync();
-      if (result.type === 'success') {
-        const tempId = `temp-${Date.now()}`;
-        handleMediaSend(MessageService.handleDocumentAttachment(result), tempId, 'document');
-      }
+      const tempId = `temp-${Date.now()}`;
+      handleMediaSend(MessageService.handleDocumentAttachment(), tempId, 'document');
     } catch (error) {
       console.error('Error picking document:', error);
     }

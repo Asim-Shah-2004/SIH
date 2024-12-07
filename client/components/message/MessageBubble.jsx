@@ -93,7 +93,12 @@ const MessageBubble = ({
       };
 
       const localUri = `${FileSystem.documentDirectory}${fileName}`;
-      const downloadResumable = FileSystem.createDownloadResumable(uri, localUri, {}, callback);
+      const downloadResumable = FileSystem.createDownloadResumable(
+        `${SERVER_URL}/media/document/${uri}`,
+        localUri,
+        {},
+        callback
+      );
 
       const { uri: fileUri } = await downloadResumable.downloadAsync();
 
@@ -156,9 +161,8 @@ const MessageBubble = ({
   return (
     <TouchableOpacity onPress={handleDoubleTap} activeOpacity={0.9}>
       <View
-        className={`relative mb-2 max-w-[80%] ${
-          sender === user.email ? 'self-end bg-primary' : 'self-start bg-white'
-        } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border-accent/10 border'}`}>
+        className={`relative mb-2 max-w-[80%] ${sender === user.email ? 'self-end bg-primary' : 'self-start bg-white'
+          } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border-accent/10 border'}`}>
         {renderUploadingState()}
         {type === 'text' && (
           <Text className={`${sender === user.email ? 'text-white' : 'text-text'} text-[15px]`}>

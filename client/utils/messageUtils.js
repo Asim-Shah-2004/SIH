@@ -40,6 +40,8 @@ export class MessageService {
         multiple: false,
       });
 
+      if (result.canceled) return null;
+
       if (result.assets && result.assets.length > 0) {
         const file = result.assets[0];
 
@@ -47,11 +49,11 @@ export class MessageService {
           Alert.alert('Error', 'File size must be less than 10MB');
           return null;
         }
-
+        
         // Upload document and get ID
         const response = await fetch(file.uri);
         const buffer = await response.arrayBuffer();
-        const mediaId = await this.uploadMedia(buffer, 'document', file.type);
+        const mediaId = await this.uploadMedia(buffer, 'document', file.mimeType);
 
         if (!mediaId) return null;
 
@@ -77,7 +79,6 @@ export class MessageService {
 
       const result = await method({
         mediaTypes: ['images'],
-        quality: 0.5,
         allowsEditing: true,
         base64: true,
       });
