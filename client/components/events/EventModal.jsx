@@ -1,5 +1,5 @@
 import { X, Calendar, MapPin, Star } from 'lucide-react-native';
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { View, Text, Modal, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 
 import PaymentModal from './PaymentModal';

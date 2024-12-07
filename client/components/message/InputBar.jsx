@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import EmojiKeyboard from 'rn-emoji-keyboard';
 

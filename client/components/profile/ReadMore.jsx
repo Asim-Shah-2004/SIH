@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { Text, View, TouchableOpacity, Animated } from 'react-native';
 
 const ReadMore = ({ children, numberOfLines, className }) => {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 
 import NewPost from '../components/home/NewPost';

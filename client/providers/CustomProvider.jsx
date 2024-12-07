@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Buffer } from 'buffer';
-import React, { createContext, useState, useEffect } from 'react';
+import { createContext, useState, useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { View, SafeAreaView, ActivityIndicator, Text } from 'react-native';
 

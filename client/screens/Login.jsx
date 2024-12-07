@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
@@ -18,7 +18,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState('alumni');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const { setRole, setIsLoggedIn, setToken } = React.useContext(AuthContext);
+  const { setRole, setIsLoggedIn, setToken } = useContext(AuthContext);
 
   const ROLES = [
     { label: 'Alumni', value: 'alumni' },

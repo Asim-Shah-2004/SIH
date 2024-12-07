@@ -1,14 +1,15 @@
 import { SERVER_URL } from '@env'; // Import the SERVER_URL from .env file
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useContext, useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
+
 import { AuthContext } from '../providers/CustomProvider';
 import { connectHandler } from '../utils/connectHandler';
 
 const UsersListPage = () => {
-  const { user, setUser, reqSet, setReqSet } = React.useContext(AuthContext);
+  const { user, setUser, reqSet, setReqSet } = useContext(AuthContext);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
@@ -38,7 +39,7 @@ const UsersListPage = () => {
 
   const handleConnect = async (userId) => {
     try {
-      const updatedUser = await connectHandler(userId)
+      const updatedUser = await connectHandler(userId);
       setUser(updatedUser);
       setReqSet(new Set(updatedUser.sentRequests));
     } catch (error) {
@@ -79,13 +80,11 @@ const UsersListPage = () => {
             if (!reqSet.has(item._id)) {
               handleConnect(item._id);
             }
-          }
-          }>
+          }}>
           <Text style={{ color: '#fff', fontWeight: 'bold' }}>
             {reqSet && reqSet.has(item._id) ? 'Pending' : 'Connect'}
           </Text>
         </TouchableOpacity>
-
       </View>
     </View>
   );

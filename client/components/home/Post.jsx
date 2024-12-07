@@ -6,7 +6,7 @@ import {
   HeartIcon,
   StarIcon,
 } from 'lucide-react-native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 
 const Post = ({ postData }) => {

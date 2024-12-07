@@ -1,51 +1,67 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from 'react-native';
+import { SERVER_URL } from '@env';
 import * as ImagePicker from 'expo-image-picker';
-import { CheckIcon, XIcon } from 'lucide-react-native';
-import {SERVER_URL} from '@env';
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 
 const CITY_COORDINATES = {
-  'Mumbai': { latitude: 19.0760, longitude: 72.8777 },
-  'Delhi': { latitude: 28.6139, longitude: 77.2090 },
-  'Bangalore': { latitude: 12.9716, longitude: 77.5946 }
+  Mumbai: { latitude: 19.076, longitude: 72.8777 },
+  Delhi: { latitude: 28.6139, longitude: 77.209 },
+  Bangalore: { latitude: 12.9716, longitude: 77.5946 },
 };
 
-const Manual = ({route, navigation}) => { 
+const Manual = ({ route, navigation }) => {
   const resumeData = route.params?.resumeData || null;
-  
-  // Initialize empty data structures for education and experience
-  const emptyEducation = [{
-    degree: '',
-    university: '',
-    graduationYear: '',
-    major: '',
-    honors: ''
-  }];
 
-  const emptyExperience = [{
-    company: '',
-    position: '',
-    startDate: '',
-    endDate: '',
-    description: ''
-  }];
+  // Initialize empty data structures for education and experience
+  const emptyEducation = [
+    {
+      degree: '',
+      university: '',
+      graduationYear: '',
+      major: '',
+      honors: '',
+    },
+  ];
+
+  const emptyExperience = [
+    {
+      company: '',
+      position: '',
+      startDate: '',
+      endDate: '',
+      description: '',
+    },
+  ];
 
   // Process resumeData only if it exists
-  const newEDU = resumeData ? resumeData.education.map(edu => ({ 
-    degree: edu.degree,
-    university: edu.institution, 
-    graduationYear: edu.graduation_year,
-    major: edu.major,
-    honors: edu.honors
-  })) : emptyEducation;
+  const newEDU = resumeData
+    ? resumeData.education.map((edu) => ({
+        degree: edu.degree,
+        university: edu.institution,
+        graduationYear: edu.graduation_year,
+        major: edu.major,
+        honors: edu.honors,
+      }))
+    : emptyEducation;
 
-  const newJOB = resumeData ? resumeData.experience.map(exp => ({ 
-    company: exp.company, 
-    position: exp.position, 
-    startDate: exp.start_date,
-    endDate: exp.end_date, 
-    description: exp.responsibilities[0]
-  })) : emptyExperience;
+  const newJOB = resumeData
+    ? resumeData.experience.map((exp) => ({
+        company: exp.company,
+        position: exp.position,
+        startDate: exp.start_date,
+        endDate: exp.end_date,
+        description: exp.responsibilities[0],
+      }))
+    : emptyExperience;
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -61,49 +77,48 @@ const Manual = ({route, navigation}) => {
     phoneNumber: resumeData?.personal_info?.phone || '',
     location: resumeData?.personal_info?.location || '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
   });
 
   const [passwordError, setPasswordError] = useState('');
-  
+
   const skillSuggestions = [
-    'React', 'JavaScript', 'Python', 'Design', 'Marketing', 
-    'Data Analysis', 'Machine Learning', 'UI/UX', 'Communication'
+    'React',
+    'JavaScript',
+    'Python',
+    'Design',
+    'Marketing',
+    'Data Analysis',
+    'Machine Learning',
+    'UI/UX',
+    'Communication',
   ];
   const interestSuggestions = [
-    'Technology', 'Travel', 'Photography', 'Cooking', 'Sports', 
-    'Music', 'Reading', 'Art', 'Fitness', 'Gaming'
+    'Technology',
+    'Travel',
+    'Photography',
+    'Cooking',
+    'Sports',
+    'Music',
+    'Reading',
+    'Art',
+    'Fitness',
+    'Gaming',
   ];
 
-  const convertImageToBase64 = async (uri) => {
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.error('Error converting image:', error);
-      return null;
-    }
-  };
-
   const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
       allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
+      aspect: [1, 1],
+      base64: true,
     });
 
     if (!result.canceled) {
-      const base64Image = await convertImageToBase64(result.assets[0].uri);
-      setFormData(prev => ({
+      const base64Image = result.assets[0].base64;
+      setFormData((prev) => ({
         ...prev,
-        profilePic: base64Image
+        profilePic: base64Image,
       }));
     }
   };
@@ -123,22 +138,22 @@ const Manual = ({route, navigation}) => {
 
   const prepareDataForSubmission = () => {
     const coordinates = getRandomCityCoordinates();
-    
+
     // Format the data according to the backend schema
     const formattedData = {
       fullName: formData.name,
       email: formData.email,
-      password: "defaultPassword123", // You might want to handle this differently
+      password: 'defaultPassword123', // You might want to handle this differently
       isUniversityGeneratedPassword: true,
       profilePhoto: formData.profilePic,
       phone: formData.phoneNumber,
       address: formData.location,
-      education: formData.education.map(edu => ({
+      education: formData.education.map((edu) => ({
         degree: edu.degree,
         institution: edu.university,
-        yearOfGraduation: parseInt(edu.graduationYear),
+        yearOfGraduation: parseInt(edu.graduationYear, 10),
       })),
-      workExperience: formData.workExperience.map(exp => ({
+      workExperience: formData.workExperience.map((exp) => ({
         companyName: exp.company,
         role: exp.position,
         startDate: new Date(exp.startDate),
@@ -171,7 +186,7 @@ const Manual = ({route, navigation}) => {
 
     try {
       const coordinates = getRandomCityCoordinates();
-      
+
       // Prepare data according to schema
       const formattedData = {
         fullName: formData.name,
@@ -181,12 +196,12 @@ const Manual = ({route, navigation}) => {
         profilePhoto: formData.profilePic,
         phone: formData.phoneNumber,
         address: formData.location,
-        education: formData.education.map(edu => ({
+        education: formData.education.map((edu) => ({
           degree: edu.degree,
           institution: edu.university,
-          yearOfGraduation: parseInt(edu.graduationYear) || null,
+          yearOfGraduation: parseInt(edu.graduationYear, 10) || null,
         })),
-        workExperience: formData.workExperience.map(exp => ({
+        workExperience: formData.workExperience.map((exp) => ({
           companyName: exp.company,
           role: exp.position,
           startDate: exp.startDate ? new Date(exp.startDate) : null,
@@ -212,9 +227,9 @@ const Manual = ({route, navigation}) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json',
         },
-        body: JSON.stringify(formattedData),  // Make sure to stringify!
+        body: JSON.stringify(formattedData), // Make sure to stringify!
       });
 
       if (!response.ok) {
@@ -225,35 +240,25 @@ const Manual = ({route, navigation}) => {
 
       const data = await response.json();
       console.log('Registration successful:', data);
-      
+
       // Navigate to login or next screen
       navigation.navigate('Login');
-      
     } catch (error) {
       console.error('Registration error:', error);
-      Alert.alert(
-        'Registration Failed',
-        error.message || 'Please check your data and try again'
-      );
+      Alert.alert('Registration Failed', error.message || 'Please check your data and try again');
     }
   };
 
   const renderStep = () => {
-    switch(step) {
+    switch (step) {
       case 1:
         return (
-          <ScrollView className="p-4 space-y-4">
+          <ScrollView className="space-y-4 p-4">
             <Text style={styles.heading}>Basic Information</Text>
-            
-            <TouchableOpacity 
-              onPress={pickImage}
-              style={styles.imagePickerContainer}
-            >
+
+            <TouchableOpacity onPress={pickImage} style={styles.imagePickerContainer}>
               {formData.profilePic ? (
-                <Image 
-                  source={{ uri: formData.profilePic }} 
-                  style={styles.profileImage}
-                />
+                <Image source={{ uri: formData.profilePic }} style={styles.profileImage} />
               ) : (
                 <View style={styles.imagePlaceholder}>
                   <Text style={styles.imagePlaceholderText}>Add Profile Picture</Text>
@@ -266,7 +271,7 @@ const Manual = ({route, navigation}) => {
               <TextInput
                 placeholder="Enter your full name"
                 value={formData.name}
-                onChangeText={(text) => setFormData(prev => ({...prev, name: text}))}
+                onChangeText={(text) => setFormData((prev) => ({ ...prev, name: text }))}
                 style={styles.input}
               />
             </View>
@@ -276,7 +281,7 @@ const Manual = ({route, navigation}) => {
               <TextInput
                 placeholder="Enter your email"
                 value={formData.email}
-                onChangeText={(text) => setFormData(prev => ({...prev, email: text}))}
+                onChangeText={(text) => setFormData((prev) => ({ ...prev, email: text }))}
                 keyboardType="email-address"
                 style={styles.input}
               />
@@ -289,7 +294,7 @@ const Manual = ({route, navigation}) => {
                 value={formData.phoneNumber}
                 onChangeText={(text) => {
                   const cleaned = text.replace(/\D/g, '');
-                  setFormData(prev => ({...prev, phoneNumber: cleaned.slice(0, 10)}));
+                  setFormData((prev) => ({ ...prev, phoneNumber: cleaned.slice(0, 10) }));
                 }}
                 keyboardType="numeric"
                 style={styles.input}
@@ -301,16 +306,16 @@ const Manual = ({route, navigation}) => {
               <TextInput
                 placeholder="Where are you based?"
                 value={formData.location}
-                onChangeText={(text) => setFormData(prev => ({...prev, location: text}))}
+                onChangeText={(text) => setFormData((prev) => ({ ...prev, location: text }))}
                 style={styles.input}
               />
             </View>
           </ScrollView>
         );
-      
+
       case 2:
         return (
-          <ScrollView className="p-4 space-y-4">
+          <ScrollView className="space-y-4 p-4">
             <Text style={styles.heading}>Profile Details</Text>
 
             <View style={styles.inputContainer}>
@@ -318,7 +323,7 @@ const Manual = ({route, navigation}) => {
               <TextInput
                 placeholder="What's your current role?"
                 value={formData.currentPosition}
-                onChangeText={(text) => setFormData(prev => ({...prev, currentPosition: text}))}
+                onChangeText={(text) => setFormData((prev) => ({ ...prev, currentPosition: text }))}
                 style={styles.input}
               />
             </View>
@@ -329,7 +334,7 @@ const Manual = ({route, navigation}) => {
                 placeholder="Enter new password"
                 value={formData.password}
                 onChangeText={(text) => {
-                  setFormData(prev => ({...prev, password: text}));
+                  setFormData((prev) => ({ ...prev, password: text }));
                   setPasswordError('');
                 }}
                 secureTextEntry
@@ -343,15 +348,13 @@ const Manual = ({route, navigation}) => {
                 placeholder="Confirm your password"
                 value={formData.confirmPassword}
                 onChangeText={(text) => {
-                  setFormData(prev => ({...prev, confirmPassword: text}));
+                  setFormData((prev) => ({ ...prev, confirmPassword: text }));
                   setPasswordError('');
                 }}
                 secureTextEntry
                 style={[styles.input, passwordError ? styles.inputError : null]}
               />
-              {passwordError ? (
-                <Text style={styles.errorText}>{passwordError}</Text>
-              ) : null}
+              {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
             </View>
 
             <View style={styles.inputContainer}>
@@ -359,7 +362,7 @@ const Manual = ({route, navigation}) => {
               <TextInput
                 placeholder="Tell us about yourself"
                 value={formData.bio}
-                onChangeText={(text) => setFormData(prev => ({...prev, bio: text}))}
+                onChangeText={(text) => setFormData((prev) => ({ ...prev, bio: text }))}
                 multiline
                 style={[styles.input, styles.textArea]}
               />
@@ -369,9 +372,9 @@ const Manual = ({route, navigation}) => {
 
       case 3:
         return (
-          <ScrollView className="p-4 space-y-4">
+          <ScrollView className="space-y-4 p-4">
             <Text style={styles.heading}>Professional Details</Text>
-            
+
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Work Experience</Text>
               {formData.workExperience.map((exp, index) => (
@@ -382,7 +385,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].company = text;
-                      setFormData(prev => ({...prev, workExperience: newExp}));
+                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
                     }}
                     style={styles.input}
                   />
@@ -392,7 +395,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].position = text;
-                      setFormData(prev => ({...prev, workExperience: newExp}));
+                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
                     }}
                     style={styles.input}
                   />
@@ -402,7 +405,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].duration = text;
-                      setFormData(prev => ({...prev, workExperience: newExp}));
+                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
                     }}
                     style={styles.input}
                   />
@@ -412,7 +415,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].duration = text;
-                      setFormData(prev => ({...prev, workExperience: newExp}));
+                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
                     }}
                     style={styles.input}
                   />
@@ -422,7 +425,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].description = text;
-                      setFormData(prev => ({...prev, workExperience: newExp}));
+                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
                     }}
                     multiline
                     style={[styles.input, styles.textArea]}
@@ -431,18 +434,20 @@ const Manual = ({route, navigation}) => {
               ))}
               <TouchableOpacity
                 onPress={() => {
-                  setFormData(prev => ({
+                  setFormData((prev) => ({
                     ...prev,
-                    workExperience: [...prev.workExperience, {
-                      company: '',
-                      position: '',
-                      duration: '',
-                      description: ''
-                    }]
+                    workExperience: [
+                      ...prev.workExperience,
+                      {
+                        company: '',
+                        position: '',
+                        duration: '',
+                        description: '',
+                      },
+                    ],
                   }));
                 }}
-                style={styles.addButton}
-              >
+                style={styles.addButton}>
                 <Text style={styles.addButtonText}>+ Add Work Experience</Text>
               </TouchableOpacity>
             </View>
@@ -457,7 +462,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newEdu = [...formData.education];
                       newEdu[index].degree = text;
-                      setFormData(prev => ({...prev, education: newEdu}));
+                      setFormData((prev) => ({ ...prev, education: newEdu }));
                     }}
                     style={styles.input}
                   />
@@ -467,7 +472,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newEdu = [...formData.education];
                       newEdu[index].graduationYear = text;
-                      setFormData(prev => ({...prev, education: newEdu}));
+                      setFormData((prev) => ({ ...prev, education: newEdu }));
                     }}
                     keyboardType="numeric"
                     style={styles.input}
@@ -478,7 +483,7 @@ const Manual = ({route, navigation}) => {
                     onChangeText={(text) => {
                       const newEdu = [...formData.education];
                       newEdu[index].university = text;
-                      setFormData(prev => ({...prev, education: newEdu}));
+                      setFormData((prev) => ({ ...prev, education: newEdu }));
                     }}
                     style={styles.input}
                   />
@@ -486,18 +491,20 @@ const Manual = ({route, navigation}) => {
               ))}
               <TouchableOpacity
                 onPress={() => {
-                  setFormData(prev => ({
+                  setFormData((prev) => ({
                     ...prev,
-                    education: [...prev.education, {
-                      degree: '',
-                      graduationYear: '',
-                      university: '',
-                      cgpa: ''
-                    }]
+                    education: [
+                      ...prev.education,
+                      {
+                        degree: '',
+                        graduationYear: '',
+                        university: '',
+                        cgpa: '',
+                      },
+                    ],
                   }));
                 }}
-                style={styles.addButton}
-              >
+                style={styles.addButton}>
                 <Text style={styles.addButtonText}>+ Add Education</Text>
               </TouchableOpacity>
             </View>
@@ -506,25 +513,24 @@ const Manual = ({route, navigation}) => {
               <Text style={styles.sectionTitle}>Skills</Text>
               <View style={styles.chipContainer}>
                 {skillSuggestions.map((skill, index) => (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     key={index}
                     onPress={() => {
                       if (!formData.skills.includes(skill)) {
-                        setFormData(prev => ({
-                          ...prev, 
-                          skills: [...prev.skills, skill]
+                        setFormData((prev) => ({
+                          ...prev,
+                          skills: [...prev.skills, skill],
                         }));
                       }
                     }}
-                    style={[
-                      styles.chip,
-                      formData.skills.includes(skill) && styles.chipSelected
-                    ]}
-                  >
-                    <Text style={[
-                      styles.chipText,
-                      formData.skills.includes(skill) && styles.chipTextSelected
-                    ]}>{skill}</Text>
+                    style={[styles.chip, formData.skills.includes(skill) && styles.chipSelected]}>
+                    <Text
+                      style={[
+                        styles.chipText,
+                        formData.skills.includes(skill) && styles.chipTextSelected,
+                      ]}>
+                      {skill}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -534,25 +540,27 @@ const Manual = ({route, navigation}) => {
               <Text style={styles.sectionTitle}>Interests</Text>
               <View style={styles.chipContainer}>
                 {interestSuggestions.map((interest, index) => (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     key={index}
                     onPress={() => {
                       if (!formData.interests.includes(interest)) {
-                        setFormData(prev => ({
-                          ...prev, 
-                          interests: [...prev.interests, interest]
+                        setFormData((prev) => ({
+                          ...prev,
+                          interests: [...prev.interests, interest],
                         }));
                       }
                     }}
                     style={[
                       styles.chip,
-                      formData.interests.includes(interest) && styles.chipSelected
-                    ]}
-                  >
-                    <Text style={[
-                      styles.chipText,
-                      formData.interests.includes(interest) && styles.chipTextSelected
-                    ]}>{interest}</Text>
+                      formData.interests.includes(interest) && styles.chipSelected,
+                    ]}>
+                    <Text
+                      style={[
+                        styles.chipText,
+                        formData.interests.includes(interest) && styles.chipTextSelected,
+                      ]}>
+                      {interest}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
@@ -708,7 +716,7 @@ const Manual = ({route, navigation}) => {
       borderWidth: 1,
       borderColor: '#e0e0e0',
     },
-    
+
     educationCard: {
       backgroundColor: '#fff',
       padding: 16,
@@ -717,7 +725,7 @@ const Manual = ({route, navigation}) => {
       borderWidth: 1,
       borderColor: '#e0e0e0',
     },
-    
+
     addButton: {
       backgroundColor: '#f0f0f0',
       padding: 12,
@@ -725,7 +733,7 @@ const Manual = ({route, navigation}) => {
       alignItems: 'center',
       marginTop: 8,
     },
-    
+
     addButtonText: {
       color: '#1a1a1a',
       fontSize: 16,
@@ -740,26 +748,22 @@ const Manual = ({route, navigation}) => {
       <View style={styles.footer}>
         <View style={styles.navigationButtons}>
           {step > 1 && (
-            <TouchableOpacity 
-              onPress={() => setStep(prev => prev - 1)}
-              style={[styles.button, styles.backButton]}
-            >
+            <TouchableOpacity
+              onPress={() => setStep((prev) => prev - 1)}
+              style={[styles.button, styles.backButton]}>
               <Text style={styles.backButtonText}>Back</Text>
             </TouchableOpacity>
           )}
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             onPress={() => {
-              if (step < 3) setStep(prev => prev + 1);
+              if (step < 3) setStep((prev) => prev + 1);
               else {
                 handleSubmit();
               }
             }}
-            style={[styles.button, styles.nextButton]}
-          >
-            <Text style={styles.nextButtonText}>
-              {step === 3 ? 'Submit' : 'Next'}
-            </Text>
+            style={[styles.button, styles.nextButton]}>
+            <Text style={styles.nextButtonText}>{step === 3 ? 'Submit' : 'Next'}</Text>
           </TouchableOpacity>
         </View>
         <Text style={styles.stepIndicator}>Step {step} of 3</Text>

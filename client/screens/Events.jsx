@@ -1,11 +1,12 @@
 import { SERVER_URL } from '@env';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthContext } from '../providers/CustomProvider';
+import axios from 'axios';
+import { useState, useEffect, useContext } from 'react';
+import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+
 import EventCard from '../components/events/EventCard';
 import EventModal from '../components/events/EventModal';
+import { AuthContext } from '../providers/CustomProvider';
 // import { eventsData } from '../constants/events/eventData';
 
 const EventsPage = () => {
@@ -13,7 +14,7 @@ const EventsPage = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loading, setLoading] = useState(true); // To handle loading state
   const [error, setError] = useState(null); // To handle errors
-  const { role } = React.useContext(AuthContext);
+  const { role } = useContext(AuthContext);
 
   const fetchEvents = async () => {
     try {
@@ -60,7 +61,7 @@ const EventsPage = () => {
         <>
           {role === 'college' && (
             <TouchableOpacity
-              onPress={() => { }}
+              onPress={() => {}}
               className="mx-4 mb-4 rounded-lg bg-blue-600 px-5 py-3">
               <Text className="text-center font-bold text-white">Host an Event</Text>
             </TouchableOpacity>

@@ -1,15 +1,15 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 
 import LoadingComponent from '../components/LoadingComponent';
+import ConfirmRegistration from '../screens/ConfirmRegistration';
 import ExplanationScreen from '../screens/ExplanationScreen';
+import LoginScreen from '../screens/Login';
+import Manual from '../screens/Manual';
+import OnboardingPage from '../screens/Onboarding';
 import RegisterScreen from '../screens/Register';
 // import Register from '../screens/Register';
-import Manual from '../screens/Manual';
-import ConfirmRegistration from '../screens/ConfirmRegistration';
-import OnboardingPage from '../screens/Onboarding';
-import LoginScreen from '../screens/Login';
 
 const Stack = createNativeStackNavigator();
 

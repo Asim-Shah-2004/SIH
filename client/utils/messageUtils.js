@@ -49,7 +49,7 @@ export class MessageService {
           Alert.alert('Error', 'File size must be less than 10MB');
           return null;
         }
-        
+
         // Upload document and get ID
         const response = await fetch(file.uri);
         const buffer = await response.arrayBuffer();

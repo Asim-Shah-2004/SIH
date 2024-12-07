@@ -1,8 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Platform, ToastAndroid, Alert } from 'react-native';
-import * as DocumentPicker from 'expo-document-picker';
-import { MaterialIcons } from '@expo/vector-icons';
 import { ML_SERVER_URL } from '@env';
+import { MaterialIcons } from '@expo/vector-icons';
+import * as DocumentPicker from 'expo-document-picker';
+import { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+  Platform,
+  ToastAndroid,
+  Alert,
+} from 'react-native';
 
 const RegisterScreen = ({ navigation }) => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -23,7 +31,7 @@ const RegisterScreen = ({ navigation }) => {
       const result = await DocumentPicker.getDocumentAsync({
         type: ['application/pdf'],
         copyToCacheDirectory: true,
-        multiple: false
+        multiple: false,
       });
 
       console.log('Document picker result:', result);
@@ -38,7 +46,7 @@ const RegisterScreen = ({ navigation }) => {
         formData.append('resume', {
           uri: selectedFile.uri,
           type: selectedFile.mimeType,
-          name: selectedFile.name
+          name: selectedFile.name,
         });
 
         try {
@@ -46,13 +54,13 @@ const RegisterScreen = ({ navigation }) => {
             method: 'POST',
             body: formData,
             headers: {
-              'Accept': 'application/json',
+              Accept: 'application/json',
               'ngrok-skip-browser-warning': 'true',
             },
           });
 
           console.log('Server response status:', response.status);
-          
+
           if (response.ok) {
             const data = await response.json();
             console.log('Server response:', data);
@@ -86,9 +94,7 @@ const RegisterScreen = ({ navigation }) => {
         {isProcessing ? (
           <View className="items-center">
             <ActivityIndicator size="large" color="#000000" />
-            <Text className="mt-4 text-center text-gray-600">
-              Processing your resume...
-            </Text>
+            <Text className="mt-4 text-center text-gray-600">Processing your resume...</Text>
           </View>
         ) : (
           <>

@@ -1,6 +1,14 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, useWindowDimensions, Animated } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
+import React from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  useWindowDimensions,
+  Animated,
+} from 'react-native';
+
 import Button from '../components/general/Button';
 
 const ProcessStep = ({ icon, title, description, isLast = false }) => (
@@ -8,14 +16,10 @@ const ProcessStep = ({ icon, title, description, isLast = false }) => (
     <View className="z-10 rounded-full bg-white p-2 shadow-sm">
       <MaterialIcons name={icon} size={25} color="#909" />
     </View>
-    {!isLast && (
-      <View className="absolute left-4 top-10 h-full w-0.5 bg-gray-100" />
-    )}
+    {!isLast && <View className="absolute left-4 top-10 h-full w-0.5 bg-gray-100" />}
     <View className="flex-1 pb-4">
       <Text className="text-base font-bold text-gray-900">{title}</Text>
-      <Text className="mt-1 text-sm leading-relaxed text-gray-600">
-        {description}
-      </Text>
+      <Text className="mt-1 text-sm leading-relaxed text-gray-600">{description}</Text>
     </View>
   </View>
 );
@@ -41,14 +45,10 @@ const ExplanationScreen = ({ navigation }) => {
           {/* AI Resume Upload Section */}
           <TouchableOpacity
             onPress={() => navigation.navigate('Register')}
-           className="mb-4 overflow-hidden rounded-2xl bg-white p-4 border-2 border-dashed shadow-sm">
+            className="mb-4 overflow-hidden rounded-2xl border-2 border-dashed bg-white p-4 shadow-sm">
             <View className="mb-3">
-              <Text className="text-sm font-semibold text-gray-900">
-                RECOMMENDED
-              </Text>
-              <Text className="text-xl font-bold text-gray-900">
-                Smart Profile Creation
-              </Text>
+              <Text className="text-sm font-semibold text-gray-900">RECOMMENDED</Text>
+              <Text className="text-xl font-bold text-gray-900">Smart Profile Creation</Text>
             </View>
 
             <ProcessStep
@@ -71,18 +71,16 @@ const ExplanationScreen = ({ navigation }) => {
 
           {/* Divider */}
           <View className="mb-4 flex-row items-center">
-            <View className="flex-1 h-0.5 bg-gray-100" />
+            <View className="h-0.5 flex-1 bg-gray-100" />
             <Text className="mx-2 text-sm font-medium text-gray-400">OR</Text>
-            <View className="flex-1 h-0.5 bg-gray-100" />
+            <View className="h-0.5 flex-1 bg-gray-100" />
           </View>
 
           {/* Manual Entry Section */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('Manual',{ resumeData: null }) }
-           className="rounded-2xl bg-white p-4 shadow-sm border">
-            <Text className="mb-2 text-xl font-bold text-gray-900">
-              Manual Setup
-            </Text>
+            onPress={() => navigation.navigate('Manual', { resumeData: null })}
+            className="rounded-2xl border bg-white p-4 shadow-sm">
+            <Text className="mb-2 text-xl font-bold text-gray-900">Manual Setup</Text>
             <ProcessStep
               icon="edit"
               title="Step-by-Step Entry"
@@ -94,7 +92,7 @@ const ExplanationScreen = ({ navigation }) => {
       </ScrollView>
 
       {/* Login Section */}
-      <View className="p-6 bg-white border-t border-gray-100">
+      <View className="border-t border-gray-100 bg-white p-6">
         <Text className="text-center text-base text-gray-600">
           Already have an account?{' '}
           <TouchableOpacity onPress={() => navigation.navigate('Login')}>

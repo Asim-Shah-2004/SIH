@@ -1,6 +1,6 @@
-import { FontAwesome } from '@expo/vector-icons'; // Add FontAwesome for pencil icon
+import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, Image, TextInput } from 'react-native';
 
 const ConnectModal = ({ isVisible, closeModal, item }) => {

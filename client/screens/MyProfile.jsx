@@ -1,46 +1,47 @@
-import { View, Text, ScrollView, Image } from 'react-native'
-import React, { useContext } from 'react'
-import { AuthContext } from '../providers/CustomProvider'
-import { Ionicons } from '@expo/vector-icons' // Make sure to install expo/vector-icons
+import { Ionicons } from '@expo/vector-icons';
+import React, { useContext } from 'react';
+import { View, Text, ScrollView, Image } from 'react-native';
+
+import { AuthContext } from '../providers/CustomProvider';
 
 const MyProfile = () => {
-  const { user } = useContext(AuthContext)
+  const { user } = useContext(AuthContext);
 
   const Section = ({ title, children }) => (
-    <View className="mb-4 bg-white rounded-xl p-4 shadow-md">
-      <Text className="text-xl font-semibold mb-3 text-gray-800">{title}</Text>
+    <View className="mb-4 rounded-xl bg-white p-4 shadow-md">
+      <Text className="mb-3 text-xl font-semibold text-gray-800">{title}</Text>
       {children}
     </View>
-  )
+  );
 
   const InfoItem = ({ icon, text }) => (
-    <View className="flex-row items-center mb-2">
+    <View className="mb-2 flex-row items-center">
       <Ionicons name={icon} size={20} color="#666" className="mr-2" />
-      <Text className="text-gray-700 ml-2">{text}</Text>
+      <Text className="ml-2 text-gray-700">{text}</Text>
     </View>
-  )
+  );
 
   return (
     <ScrollView className="flex-1 bg-gray-100">
       {/* Cover Photo */}
       <View className="h-40 bg-blue-500" />
-      
+
       {/* Profile Header */}
-      <View className="px-4 -mt-20">
-        <View className="bg-white rounded-xl p-4 shadow-lg">
-          <View className="items-center -mt-24">
+      <View className="-mt-20 px-4">
+        <View className="rounded-xl bg-white p-4 shadow-lg">
+          <View className="-mt-24 items-center">
             {user.profilePhoto && (
               <Image
                 source={{ uri: `${user.profilePhoto}` }}
-                className="w-32 h-32 rounded-full border-4 border-white shadow-lg mb-2"
+                className="mb-2 h-32 w-32 rounded-full border-4 border-white shadow-lg"
               />
             )}
-            <Text className="text-2xl font-bold text-gray-900 mt-2">{user.fullName}</Text>
-            <Text className="text-gray-600 text-center px-4 mt-1">{user.bio}</Text>
+            <Text className="mt-2 text-2xl font-bold text-gray-900">{user.fullName}</Text>
+            <Text className="mt-1 px-4 text-center text-gray-600">{user.bio}</Text>
           </View>
 
           {/* Quick Info */}
-          <View className="flex-row justify-around mt-4 pt-4 border-t border-gray-200">
+          <View className="mt-4 flex-row justify-around border-t border-gray-200 pt-4">
             <InfoItem icon="mail-outline" text={user.email} />
             <InfoItem icon="call-outline" text={user.phone} />
           </View>
@@ -48,23 +49,23 @@ const MyProfile = () => {
       </View>
 
       {/* Main Content */}
-      <View className="px-4 mt-4">
+      <View className="mt-4 px-4">
         {/* Education */}
         <Section title="Education">
           {user.education.map((edu, index) => (
             <View key={index} className="mb-3 border-b border-gray-100 pb-3">
-              <Text className="font-bold text-gray-800 text-lg">{edu.degree}</Text>
+              <Text className="text-lg font-bold text-gray-800">{edu.degree}</Text>
               <Text className="text-gray-600">{edu.institution}</Text>
-              <Text className="text-gray-500 text-sm">Class of {edu.yearOfGraduation}</Text>
+              <Text className="text-sm text-gray-500">Class of {edu.yearOfGraduation}</Text>
             </View>
           ))}
         </Section>
 
         {/* Skills */}
         <Section title="Skills">
-          <View className="flex-row flex-wrap -m-1">
+          <View className="-m-1 flex-row flex-wrap">
             {user.skills.map((skill, index) => (
-              <View key={index} className="bg-blue-100 rounded-full px-4 py-2 m-1">
+              <View key={index} className="m-1 rounded-full bg-blue-100 px-4 py-2">
                 <Text className="text-blue-800">{skill}</Text>
               </View>
             ))}
@@ -73,9 +74,9 @@ const MyProfile = () => {
 
         {/* Languages */}
         <Section title="Languages">
-          <View className="flex-row flex-wrap -m-1">
+          <View className="-m-1 flex-row flex-wrap">
             {user.languages.map((language, index) => (
-              <View key={index} className="bg-green-100 rounded-full px-4 py-2 m-1">
+              <View key={index} className="m-1 rounded-full bg-green-100 px-4 py-2">
                 <Text className="text-green-800">{language}</Text>
               </View>
             ))}
@@ -84,9 +85,9 @@ const MyProfile = () => {
 
         {/* Interests */}
         <Section title="Interests">
-          <View className="flex-row flex-wrap -m-1">
+          <View className="-m-1 flex-row flex-wrap">
             {user.interests.map((interest, index) => (
-              <View key={index} className="bg-purple-100 rounded-full px-4 py-2 m-1">
+              <View key={index} className="m-1 rounded-full bg-purple-100 px-4 py-2">
                 <Text className="text-purple-800">{interest}</Text>
               </View>
             ))}
@@ -104,11 +105,11 @@ const MyProfile = () => {
           </Section>
         )}
       </View>
-      
+
       {/* Bottom Padding */}
       <View className="h-10" />
     </ScrollView>
-  )
-}
+  );
+};
 
-export default MyProfile
+export default MyProfile;

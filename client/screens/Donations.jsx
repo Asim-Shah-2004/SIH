@@ -1,9 +1,8 @@
 import { SERVER_URL } from '@env';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import axios from 'axios';
-import React, { useState, useEffect } from 'react';
-import { AuthContext } from '../providers/CustomProvider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useState, useEffect, useContext } from 'react';
 import {
   View,
   Text,
@@ -14,6 +13,8 @@ import {
   Animated,
   Modal,
 } from 'react-native';
+
+import { AuthContext } from '../providers/CustomProvider';
 // import { donationCampaigns } from '../constants/donations/donationData';
 
 const formatIndianNumber = (num) => {
@@ -34,7 +35,7 @@ const DonationPortal = ({ navigation }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCause, setSelectedCause] = useState({});
-  const { role } = React.useContext(AuthContext);
+  const { role } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchCampaigns = async () => {
@@ -246,9 +247,10 @@ const DonationPortal = ({ navigation }) => {
                 {formatIndianNumber(Number(donationAmount))}
               </Text>
             ) : null}
-          </View>) : (
+          </View>
+        ) : (
           <TouchableOpacity
-            onPress={() => { }}
+            onPress={() => {}}
             className="mx-4 my-4 rounded-lg bg-blue-600 px-5 py-3">
             <Text className="text-center font-bold text-white">Post a New Donation</Text>
           </TouchableOpacity>

@@ -1,6 +1,6 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import React, { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -204,7 +204,7 @@ const HallOfFame = () => {
   const Modal = ({ alumni, onClose }) => {
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
-    React.useEffect(() => {
+    useEffect(() => {
       Animated.timing(fadeAnim, {
         toValue: 1,
         duration: 300,

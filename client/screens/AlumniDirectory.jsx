@@ -1,55 +1,80 @@
+import { SERVER_URL } from '@env';
 import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useCallback, useMemo } from 'react';
+import axios from 'axios';
+import { useState, useCallback, useMemo, useEffect, useContext } from 'react';
 import {
   View,
   Text,
   TextInput,
   FlatList,
-  Image,
   TouchableOpacity,
   ScrollView,
   Modal,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 
-import { alumniRecommendations, getAlumniFilters } from '../constants/alumni/alumniRecommendations';
+import { AuthContext } from '../providers/CustomProvider';
+import UserCard from '../utils/UserCard';
 
-const AlumniCard = ({ alumni, onConnect }) => (
-  <View className="border-overlay/20 m-1.5 flex-1 rounded-xl border bg-background p-4 shadow-md">
-    <View className="mb-2 flex-row items-center justify-end">
-      <View className="bg-primary/10 rounded-full px-2 py-0.5">
-        <Text className="text-2xs text-primary">{alumni.department}</Text>
-      </View>
-    </View>
-    <Image
-      source={{ uri: alumni.photo }}
-      className="border-primary/20 h-20 w-20 self-center rounded-full border-2"
-    />
-    <Text className="mt-2 text-center text-sm font-bold text-text" numberOfLines={1}>
-      {alumni.name}
-    </Text>
-    <Text className="text-primary/80 text-center text-xs" numberOfLines={1}>
-      {alumni.position}
-    </Text>
-    <Text className="text-text/60 text-center text-xs" numberOfLines={1}>
-      {alumni.company}
-    </Text>
-    <Text className="text-2xs text-text/40 text-center">
-      {alumni.batch.joining} - {alumni.batch.graduation}
-    </Text>
-    <TouchableOpacity
-      className={`mt-3 rounded-full px-4 py-2 shadow-sm ${
-        alumni.isConnected ? 'bg-overlay' : 'bg-gradient-to-r from-primary to-secondary'
-      }`}
-      onPress={() => onConnect(alumni.id)}
-      disabled={alumni.isConnected}
-      activeOpacity={0.7}>
-      <Text
-        className={`text-center text-xs font-medium ${alumni.isConnected ? 'text-text/60' : 'text-background'}`}>
-        {alumni.isConnected ? 'Connected' : 'Connect'}
-      </Text>
-    </TouchableOpacity>
-  </View>
-);
+// const AlumniCard = ({ alumni, onConnect }) => (
+//   <View className="border-overlay/20 m-1.5 flex-1 rounded-xl border bg-background p-4 shadow-md">
+//     <View className="mb-2 flex-row items-center justify-end">
+//       <View className="bg-primary/10 rounded-full px-2 py-0.5">
+//         <Text className="text-2xs text-primary">{alumni.department}</Text>
+//       </View>
+//     </View>
+//     <Image
+//       source={{ uri: alumni.photo }}
+//       className="border-primary/20 h-20 w-20 self-center rounded-full border-2"
+//     />
+//     <Text className="mt-2 text-center text-sm font-bold text-text" numberOfLines={1}>
+//       {alumni.name}
+//     </Text>
+//     <Text className="text-primary/80 text-center text-xs" numberOfLines={1}>
+//       {alumni.position}
+//     </Text>
+//     <Text className="text-text/60 text-center text-xs" numberOfLines={1}>
+//       {alumni.company}
+//     </Text>
+//     <Text className="text-2xs text-text/40 text-center">
+//       {alumni.batch.joining} - {alumni.batch.graduation}
+//     </Text>
+//     <TouchableOpacity
+//       className={`mt-3 rounded-full px-4 py-2 shadow-sm ${alumni.isConnected ? 'bg-overlay' : 'bg-gradient-to-r from-primary to-secondary'
+//         }`}
+//       onPress={() => onConnect(alumni.id)}
+//       disabled={alumni.isConnected}
+//       activeOpacity={0.7}>
+//       <Text
+//         className={`text-center text-xs font-medium ${alumni.isConnected ? 'text-text/60' : 'text-background'}`}>
+//         {alumni.isConnected ? 'Connected' : 'Connect'}
+//       </Text>
+//     </TouchableOpacity>
+//   </View>
+// );
+
+const getAlumniFilters = (data) => {
+  const filters = {
+    graduationYear: [...new Set(data.map((alumni) => alumni.education[0].yearOfGraduation))].sort(),
+    city: [...new Set(data.map((alumni) => alumni.city))],
+    skills: [...new Set(data.flatMap((alumni) => alumni.skills))].sort(),
+    company: [
+      ...new Set(
+        data.flatMap((alumni) => alumni.workExperience?.map((work) => work.company) || [])
+      ),
+    ]
+      .filter(Boolean)
+      .sort(),
+  };
+
+  return {
+    'Graduation Year': filters.graduationYear,
+    City: filters.city,
+    Company: filters.company,
+    Skills: filters.skills,
+  };
+};
 
 const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -62,12 +87,14 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
   };
 
   return (
-    <View className="z-10 mr-2">
+    <View className="z-50 mr-1.5">
       <TouchableOpacity
         onPress={() => setIsOpen(!isOpen)}
-        className={`flex-row items-center rounded-lg px-3 py-2 ${
+        className={`flex-row items-center rounded-lg px-3.5 py-2.5 ${
           selected.length > 0 ? 'bg-accent/10' : 'bg-overlay'
-        }`}>
+        }`}
+        activeOpacity={0.7}
+        hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
         <Text
           className={`mr-2 text-xs font-semibold ${
             selected.length > 0 ? 'text-accent' : 'text-text/70'
@@ -86,9 +113,10 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
           visible={isOpen}
           transparent
           animationType="fade"
-          onRequestClose={() => setIsOpen(false)}>
+          onRequestClose={() => setIsOpen(false)}
+          statusBarTranslucent>
           <TouchableOpacity
-            className="bg-overlay/80 flex-1"
+            className="bg-overlay/80 absolute inset-0 flex-1"
             activeOpacity={1}
             onPress={() => setIsOpen(false)}>
             <View className="mx-4 mt-20 rounded-2xl bg-background p-4 shadow-xl">
@@ -107,9 +135,9 @@ const FilterDropdown = ({ title, options, selected = [], onSelect, onClear }) =>
               </View>
 
               <ScrollView className="max-h-80">
-                {options.map((option) => (
+                {options.map((option, index) => (
                   <TouchableOpacity
-                    key={option}
+                    key={`${option}-${index}`}
                     className={`mb-2 rounded-lg p-3 ${
                       selected.includes(option) ? 'bg-accent' : 'bg-overlay/5'
                     }`}
@@ -140,10 +168,43 @@ const EmptyStateMessage = () => (
 
 const AlumniDirectory = () => {
   const [search, setSearch] = useState('');
-  const [filteredData, setFilteredData] = useState(alumniRecommendations);
+  const [filteredData, setFilteredData] = useState([]);
   const [activeFilters, setActiveFilters] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [alumniData, setAlumniData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const { token } = useContext(AuthContext);
 
-  const filters = useMemo(() => getAlumniFilters(alumniRecommendations), []);
+  const fetchAlumni = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${SERVER_URL}/users/getAll`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setAlumniData(response.data);
+      setFilteredData(response.data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch alumni data');
+      console.error('Error fetching alumni:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetchAlumni();
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchAlumni]);
+
+  const filters = useMemo(() => getAlumniFilters(alumniData), [alumniData]);
 
   const updateFilters = useCallback((key, values) => {
     setActiveFilters((prev) => {
@@ -158,18 +219,20 @@ const AlumniDirectory = () => {
   }, []);
 
   const filterAlumni = useCallback(() => {
-    let results = [...alumniRecommendations];
+    let results = [...alumniData];
 
     // Apply search filter
     if (search) {
       const searchLower = search.toLowerCase();
       results = results.filter(
         (alumni) =>
-          alumni.name.toLowerCase().includes(searchLower) ||
-          alumni.company.toLowerCase().includes(searchLower) ||
-          alumni.position.toLowerCase().includes(searchLower) ||
-          alumni.location.toLowerCase().includes(searchLower) ||
-          alumni.skills.some((skill) => skill.toLowerCase().includes(searchLower))
+          alumni.fullName.toLowerCase().includes(searchLower) ||
+          alumni.bio.toLowerCase().includes(searchLower) ||
+          (alumni.workExperience &&
+            alumni.workExperience.some((work) =>
+              work.company?.toLowerCase().includes(searchLower)
+            )) ||
+          (alumni.city && alumni.city.toLowerCase().includes(searchLower))
       );
     }
 
@@ -178,18 +241,16 @@ const AlumniDirectory = () => {
       return Object.entries(activeFilters).every(([key, values]) => {
         if (!values || values.length === 0) return true;
         switch (key) {
-          case 'Joining Year':
-            return values.includes(alumni.batch.joining);
+          case 'City':
+            return values.some((value) => alumni.city?.includes(value));
+          case 'Company':
+            return values.some((value) =>
+              alumni.workExperience?.some((work) => work.company === value)
+            );
           case 'Graduation Year':
-            return values.includes(alumni.batch.graduation);
-          case 'Location':
-            return values.some((value) => alumni.location.includes(value));
-          case 'Industry':
-            return values.includes(alumni.industry);
-          case 'Department':
-            return values.includes(alumni.department);
+            return values.some((value) => alumni.education[0]?.yearOfGraduation === value);
           case 'Skills':
-            return values.some((value) => alumni.skills.includes(value));
+            return values.some((value) => alumni.skills?.includes(value));
           default:
             return true;
         }
@@ -197,28 +258,47 @@ const AlumniDirectory = () => {
     });
 
     setFilteredData(results);
-  }, [search, activeFilters]);
-
-  // Update filtered data whenever search or filters change
-  React.useEffect(() => {
-    filterAlumni();
-  }, [filterAlumni]);
-
-  const handleConnect = useCallback((id) => {
-    // Implement connection logic here
-    console.log('Connecting with alumni:', id);
-  }, []);
-
-  const renderItem = ({ item }) => <AlumniCard alumni={item} onConnect={handleConnect} />;
+  }, [search, activeFilters, alumniData]);
 
   const clearAllFilters = useCallback(() => {
     setActiveFilters({});
     setSearch('');
   }, []);
 
+  const renderItem = useCallback(({ item }) => <UserCard alumni={item} />, []);
+
+  useEffect(() => {
+    fetchAlumni();
+  }, []);
+
+  // Update filtered data whenever search or filters change
+  useEffect(() => {
+    filterAlumni();
+  }, [filterAlumni]);
+
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" color="#0000ff" />
+        <Text className="text-text/60 mt-4">Loading alumni...</Text>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background px-4">
+        <Text className="mb-4 text-center text-red-500">{error}</Text>
+        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={fetchAlumni}>
+          <Text className="text-white">Retry</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-background">
-      <View className="border-overlay/10 space-y-4 border-b bg-background px-4 pb-3 pt-4 shadow-sm">
+      <View className="border-overlay/10 space-y-3.5 border-b bg-background px-4 pb-3 pt-3.5 shadow-sm">
         <View className="bg-overlay/5 flex-row items-center rounded-xl px-4 py-2.5">
           <Ionicons name="search" size={20} className="text-text/30" />
           <TextInput
@@ -231,21 +311,22 @@ const AlumniDirectory = () => {
           {search && (
             <TouchableOpacity
               onPress={() => setSearch('')}
-              className="bg-overlay/10 active:bg-overlay/20 rounded-full p-1.5"
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <Ionicons name="close-circle" size={18} className="text-text/50" />
+              className="bg-overlay/10 rounded-full p-2"
+              activeOpacity={0.7}
+              hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}>
+              <Ionicons name="close" size={16} className="text-text/50" />
             </TouchableOpacity>
           )}
         </View>
 
-        <View className="flex-row items-center justify-between px-0.5">
+        <View className="flex-row items-center justify-between">
           <Text className="text-text/50 text-xs font-medium">
             {Object.keys(activeFilters).length} filters applied
           </Text>
           {Object.keys(activeFilters).length > 0 && (
             <TouchableOpacity
               onPress={clearAllFilters}
-              className="bg-accent/10 rounded-lg px-3 py-1.5"
+              className="bg-accent/10 rounded-lg px-2.5 py-1"
               activeOpacity={0.7}>
               <Text className="text-xs font-medium text-accent">Clear All</Text>
             </TouchableOpacity>
@@ -255,8 +336,8 @@ const AlumniDirectory = () => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          className="-mx-1 space-x-2 py-1"
-          contentContainerStyle={{ paddingHorizontal: 1 }}>
+          className="-mx-1 flex-row space-x-1.5 py-0.5"
+          contentContainerStyle={{ paddingHorizontal: 4 }}>
           {Object.entries(filters).map(([key, values]) => (
             <FilterDropdown
               key={key}
@@ -273,19 +354,34 @@ const AlumniDirectory = () => {
       <FlatList
         data={filteredData}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item._id}
         numColumns={2}
         contentContainerStyle={{
           padding: 8,
-          flexGrow: 1, // This helps center the empty state
+          paddingBottom: 24,
+          flexGrow: 1,
+          paddingHorizontal: 12,
         }}
-        columnWrapperStyle={{ justifyContent: 'space-between' }}
+        columnWrapperStyle={{
+          gap: 12,
+          marginBottom: 12,
+          justifyContent: 'space-evenly',
+          width: '100%',
+        }}
         showsVerticalScrollIndicator={false}
-        initialNumToRender={8}
-        maxToRenderPerBatch={10}
+        initialNumToRender={6}
+        maxToRenderPerBatch={8}
         windowSize={5}
         removeClippedSubviews
         ListEmptyComponent={EmptyStateMessage}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#0000ff"
+            colors={['#0000ff']}
+          />
+        }
       />
     </View>
   );

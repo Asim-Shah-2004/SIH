@@ -1,7 +1,7 @@
 // utils/connectionUtils.js
-import axios from 'axios';
+import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SERVER_URL } from '@env'; // Assuming SERVER_URL is imported from config
+import axios from 'axios';
 
 export const connectHandler = async (userId) => {
   const token = await AsyncStorage.getItem('token');

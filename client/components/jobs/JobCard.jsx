@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, useWindowDimensions } from 'react-native';
 
 import JobDetailsModal from './JobDetailsModal';

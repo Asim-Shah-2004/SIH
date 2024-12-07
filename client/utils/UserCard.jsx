@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
+
 import { connectHandler } from './connectHandler';
 import { AuthContext } from '../providers/CustomProvider';
 
@@ -18,18 +19,19 @@ const UserCard = ({ alumni }) => {
       const updatedUser = await connectHandler(_id);
       setUser(updatedUser);
       setReqSet(new Set(updatedUser.sentRequests));
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error connecting:', error);
     }
   };
 
   const truncatedBio = bio
-    ? (bio.length > 50 ? bio.substring(0, 50) + '...' : bio)
+    ? bio.length > 50
+      ? bio.substring(0, 50) + '...'
+      : bio
     : 'Software Engineer';
 
   return (
-    <View className="w-48 rounded-lg bg-white p-4 shadow-lg items-center">
+    <View className="w-48 items-center rounded-lg bg-white p-4 shadow-lg">
       {/* User Info */}
       <Image
         source={{
@@ -37,10 +39,10 @@ const UserCard = ({ alumni }) => {
         }}
         className="mb-3 h-16 w-16 rounded-full"
       />
-      <Text className="text-base font-bold text-gray-800 mb-1 text-center" numberOfLines={1}>
+      <Text className="mb-1 text-center text-base font-bold text-gray-800" numberOfLines={1}>
         {fullName || 'John Doe'}
       </Text>
-      <Text className="text-xs text-gray-600 mb-4 text-center" numberOfLines={2}>
+      <Text className="mb-4 text-center text-xs text-gray-600" numberOfLines={2}>
         {truncatedBio}
       </Text>
 
@@ -48,21 +50,17 @@ const UserCard = ({ alumni }) => {
       <View className="w-full space-y-2">
         <TouchableOpacity
           onPress={handleViewProfile}
-          className="w-full rounded-md bg-gray-100 px-3 py-2"
-        >
-          <Text className="text-center text-xs font-medium text-blue-600">
-            View Profile
-          </Text>
+          className="w-full rounded-md bg-gray-100 px-3 py-2">
+          <Text className="text-center text-xs font-medium text-blue-600">View Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleConnect}
           className={`w-full rounded-md px-3 py-2 ${reqSet.has(_id) ? 'bg-gray-400' : 'bg-blue-600'}`} // Change the background color conditionally
         >
           <Text className="text-center text-xs font-medium text-white">
-            {reqSet.has(_id) ? 'Pending' : 'Connect'}  {/* Change text based on the condition */}
+            {reqSet.has(_id) ? 'Pending' : 'Connect'} {/* Change text based on the condition */}
           </Text>
         </TouchableOpacity>
-
       </View>
     </View>
   );

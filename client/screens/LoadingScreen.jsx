@@ -2,13 +2,13 @@ import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { decode } from 'base-64';
-import React, { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 
 import LoadingComponent from '../components/LoadingComponent';
-import { AuthContext } from '../providers/CustomProvider'; // Assume AuthContext is properly set up
+import { AuthContext } from '../providers/CustomProvider';
 
 const LoadingScreen = ({ loading, setLoading }) => {
-  const { setUser, setIsLoggedIn, setReqSet } = React.useContext(AuthContext); // Assuming you have a setUser function in AuthContext
+  const { setUser, setIsLoggedIn, setReqSet } = useContext(AuthContext);
   const decodeJWT = (token) => {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

@@ -13,8 +13,8 @@ import { View } from 'react-native';
 import TabNavigator from './TabNavigator';
 import { LANGUAGES } from '../i18n/i18n';
 import Events from '../screens/Events';
-import Settings from '../screens/Settings';
 import ProfileScreen from '../screens/MyProfile';
+import Settings from '../screens/Settings';
 
 const Drawer = createDrawerNavigator();
 
@@ -61,17 +61,17 @@ const drawerConfig = {
 
 const getDrawerIcon =
   (name) =>
-    ({ focused, color, size }) => (
-      <Ionicons
-        name={name}
-        size={24}
-        color={color}
-        style={{
-          transform: [{ scale: focused ? 1.1 : 1 }],
-          opacity: focused ? 1 : 0.85,
-        }}
-      />
-    );
+  ({ focused, color, size }) => (
+    <Ionicons
+      name={name}
+      size={24}
+      color={color}
+      style={{
+        transform: [{ scale: focused ? 1.1 : 1 }],
+        opacity: focused ? 1 : 0.85,
+      }}
+    />
+  );
 
 export default function DrawerNavigator() {
   const { i18n } = useTranslation();
