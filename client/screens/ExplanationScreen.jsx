@@ -78,7 +78,7 @@ const ExplanationScreen = ({ navigation }) => {
 
           {/* Manual Entry Section */}
           <TouchableOpacity
-            onPress={() => navigation.navigate('Manual')}
+            onPress={() => navigation.navigate('Manual',{ resumeData: null }) }
            className="rounded-2xl bg-white p-4 shadow-sm border">
             <Text className="mb-2 text-xl font-bold text-gray-900">
               Manual Setup

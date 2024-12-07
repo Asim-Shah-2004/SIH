@@ -22,7 +22,7 @@ const onboardingData = [
 
 export default function OnboardingPage({ navigation }) {
   const [currentStep, setCurrentStep] = useState(0);
-  console.log('Image source:', onboardingData[currentStep].image);
+  // console.log('Image source:', onboardingData[currentStep].image);
 
   const handleNext = () => {
     if (currentStep === onboardingData.length - 1) {
@@ -42,7 +42,7 @@ export default function OnboardingPage({ navigation }) {
             height: 300,
             marginBottom: 32,
           }}
-          resizeMode="contain"
+          contentFit="contain"
           onError={(e) => console.log('Error loading image:', e.nativeEvent.error)}
         />
 

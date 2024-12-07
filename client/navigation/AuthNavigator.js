@@ -8,6 +8,7 @@ import LoadingComponent from '../components/LoadingComponent';
 import ExplanationScreen from '../screens/ExplanationScreen';
 import RegisterScreen from '../screens/Register';
 import Manual from '../screens/Manual';
+import ConfirmRegistration from '../screens/ConfirmRegistration';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +35,7 @@ export default function AuthNavigator() {
       <Stack.Screen name="Explanation" component={ExplanationScreen} />
       <Stack.Screen name="Register" component={RegisterScreen} />
       <Stack.Screen name="Manual" component={Manual} />
+      <Stack.Screen name="ConfirmRegistration" component={ConfirmRegistration} />
     </Stack.Navigator>
   );
 }
