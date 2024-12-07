@@ -1,3 +1,6 @@
+import { SERVER_URL } from '@env';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { Audio } from 'expo-av';
 import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -6,7 +9,30 @@ import { Alert } from 'react-native';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
 export class MessageService {
-  static async handleDocumentAttachment(messages) {
+  static async uploadMedia(buffer, type) {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const response = await axios.post(
+        `${SERVER_URL}/media/upload`,
+        {
+          type,
+          buffer: buffer.toString('base64'),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      return response.data.id;
+    } catch (error) {
+      console.error('Error uploading media:', error);
+      Alert.alert('Error', 'Could not upload media');
+      return null;
+    }
+  }
+
+  static async handleDocumentAttachment() {
     try {
       const result = await DocumentPicker.getDocumentAsync({
         copyToCacheDirectory: true,
@@ -21,15 +47,19 @@ export class MessageService {
           return null;
         }
 
+        // Upload document and get ID
+        const response = await fetch(file.uri);
+        const buffer = await response.arrayBuffer();
+        const mediaId = await this.uploadMedia(buffer, 'document');
+
+        if (!mediaId) return null;
+
         return {
-          id: messages.length + 1,
           type: 'document',
           fileName: file.name,
           fileSize: file.size,
-          uri: file.uri,
-          mimeType: file.mimeType,
-          sender: 'me',
-          timestamp: new Date().getTime(),
+          uri: mediaId,
+          timestamp: Date.now(),
         };
       }
     } catch (error) {
@@ -38,24 +68,27 @@ export class MessageService {
     }
   }
 
-  static async handleImagePicker(messages, useCamera = false) {
+  static async handleImagePicker(useCamera = false) {
     try {
       const method = useCamera
         ? ImagePicker.launchCameraAsync
         : ImagePicker.launchImageLibraryAsync;
+
       const result = await method({
-        mediaTypes: ['images'],
-        quality: 0.8,
+        mediaTypes: 'image',
         allowsEditing: true,
+        base64: true,
       });
 
-      if (!result.canceled) {
+      if (!result.canceled && result.assets[0]) {
+        const mediaId = await this.uploadMedia(result.assets[0].base64, 'image');
+
+        if (!mediaId) return null;
+
         return {
-          id: messages.length + 1,
           type: 'image',
-          uri: result.assets[0].uri,
-          sender: 'me',
-          timestamp: new Date().getTime(),
+          uri: mediaId,
+          timestamp: Date.now(),
         };
       }
     } catch (error) {
@@ -82,17 +115,22 @@ export class MessageService {
     }
   }
 
-  static async stopRecording(recording, messages) {
+  static async stopRecording(recording) {
     try {
       await recording.stopAndUnloadAsync();
       const uri = recording.getURI();
 
+      // Convert audio to base64
+      const response = await fetch(uri);
+      const buffer = await response.arrayBuffer();
+      const mediaId = await this.uploadMedia(buffer, 'audio');
+
+      if (!mediaId) return null;
+
       return {
-        id: messages.length + 1,
         type: 'audio',
-        uri,
-        sender: 'me',
-        timestamp: new Date().getTime(),
+        uri: mediaId,
+        timestamp: Date.now(),
       };
     } catch (error) {
       Alert.alert('Error', 'Could not stop recording');

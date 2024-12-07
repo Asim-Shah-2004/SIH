@@ -3,13 +3,13 @@ import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { AuthContext } from '../providers/CustomProvider';
 
 import { LANGUAGES, changeLanguage } from '../i18n/i18n';
-import axios from 'axios';
+import { AuthContext } from '../providers/CustomProvider';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -18,7 +18,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState('alumni');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const { setRole, setIsLoggedIn } = React.useContext(AuthContext);
+  const { setRole, setIsLoggedIn, setToken } = React.useContext(AuthContext);
 
   const ROLES = [
     { label: 'Alumni', value: 'alumni' },
@@ -57,14 +57,14 @@ const LoginScreen = () => {
         await AsyncStorage.setItem('role', selectedRole);
         await AsyncStorage.setItem('user-language', selectedLanguage);
         await AsyncStorage.setItem('token', response.data.token);
+        setToken(response.data.token);
         setIsLoggedIn(true);
         setRole(selectedRole);
         console.log('Data saved in AsyncStorage');
       } catch (e) {
         console.error('Error saving data', e);
       }
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error logging in:', error);
     }
   };

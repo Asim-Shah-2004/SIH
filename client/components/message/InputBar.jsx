@@ -26,6 +26,7 @@ const InputBar = ({
         onClose={() => setIsEmojiPickerOpen(false)}
         onEmojiSelected={handleEmojiSelect}
         enableSearchBar
+        enableRecentlyUsed
         categoryPosition="top"
         height={300}
       />
