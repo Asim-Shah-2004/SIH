@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 
-import { alumniRecommendations } from '../../constants/alumni/alumniRecommendations';
 import UserCard from '../../utils/UserCard'; // Importing the UserCard component
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
+// import { connectHandler } from '../../utils/connectHandler';
 
 const AlumniRecommendations = () => {
     const navigation = useNavigation();
@@ -34,11 +34,11 @@ const AlumniRecommendations = () => {
     const renderRecommendationItem = ({ item }) => (
         <UserCard
             user={item}
-            onConnect={() => {
-                console.log(`Connecting with ${item.name}`);
-                // Handle the connect logic here (send invitation, etc.)
-            }}
-            onViewProfile={() => navigation.navigate('Profile')} // Navigate to the user's profile
+        // onConnect={() => {
+        //     console.log(`Connecting with ${item.name}`);
+        //     // Handle the connect logic here (send invitation, etc.)
+        // }}
+        // onViewProfile={() => navigation.navigate('Profile')} // Navigate to the user's profile
         />
     );
 

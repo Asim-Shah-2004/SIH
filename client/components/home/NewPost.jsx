@@ -6,16 +6,58 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
   Image,
   ScrollView,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import axios from 'axios';
 
 const NewPost = ({ onSubmitPost, user }) => {
   const [newPost, setNewPost] = useState('');
   const [media, setMedia] = useState([]);
-  const [aiSuggestions, setAiSuggestions] = useState([]);
+  const [emotion, setEmotion] = useState('');
+  const [AI, setAI] = useState(false);
+  const [prompt, setPrompt] = useState('');
+
+  const suggestions = [
+    'Make this more professional',
+    'Add a touch of humor',
+    'Simplify the language',
+  ];
+
+  const applyAISuggestion = (suggestion) => {
+    setPrompt((prevPrompt) => `${prevPrompt} ${suggestion}`);
+  };
+
+  const handleHelper = (val) => {
+    setAI(!val);
+  }
+
+  const analyzeEmotion = async () => {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/analyze_emotion/', {
+        post: newPost
+      });
+      console.log('Emotion Analysis Response:', response.data);
+      setEmotion(response.data.emotions[0].label);
+    } catch (error) {
+      console.error('Error analyzing emotion:', error);
+    }
+  };
+
+  const rewriteText = async () => {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/api/rewrite/', {
+        post: newPost,
+        style: prompt
+      });
+      console.log('Rewrite Response:', response.data);
+      setNewPost(response.data.rewritten_text);
+    }
+    catch (error) {
+      console.error('Error rewriting text:', error);
+    }
+  }
 
   const handleSubmit = () => {
     if (newPost.trim() || media.length > 0) {
@@ -25,7 +67,6 @@ const NewPost = ({ onSubmitPost, user }) => {
       });
       setNewPost('');
       setMedia([]);
-      setAiSuggestions([]);
     }
   };
 
@@ -79,30 +120,23 @@ const NewPost = ({ onSubmitPost, user }) => {
     setMedia((prevMedia) => prevMedia.filter((_, i) => i !== index));
   };
 
-  const generateAISuggestions = async () => {
-    const suggestions = [
-      'Make this more professional',
-      'Add a touch of humor',
-      'Simplify the language',
-    ];
-    setAiSuggestions(suggestions);
-  };
-
-  const applyAISuggestion = (suggestion) => {
-    setNewPost(suggestion);
-  };
-
   const renderMediaPreview = () => {
     return (
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.mediaContainer}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        className="flex-row mt-3 mb-3"
+      >
         {media.map((item, index) => (
-          <View key={index} style={styles.mediaItem}>
-            {item.type === 'image' ? (
-              <Image source={{ uri: item.uri }} style={styles.mediaPreview} />
-            ) : (
-              <Image source={{ uri: item.thumbnail || item.uri }} style={styles.mediaPreview} />
-            )}
-            <TouchableOpacity style={styles.removeMediaButton} onPress={() => removeMedia(index)}>
+          <View key={index} className="relative mr-2">
+            <Image
+              source={{ uri: item.type === 'image' ? item.uri : item.thumbnail || item.uri }}
+              className="w-24 h-24 rounded-lg"
+            />
+            <TouchableOpacity
+              className="absolute top-1 right-1 bg-black/60 rounded-full p-1"
+              onPress={() => removeMedia(index)}
+            >
               <Icon name="close-circle" size={24} color="white" />
             </TouchableOpacity>
           </View>
@@ -112,14 +146,14 @@ const NewPost = ({ onSubmitPost, user }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerContainer}>
+    <View className="bg-white p-4 border-b border-gray-200">
+      <View className="flex-row items-start">
         <Image
           source={{ uri: user?.avatar || 'https://via.placeholder.com/40' }}
-          style={styles.avatar}
+          className="w-10 h-10 rounded-full mr-3"
         />
         <TextInput
-          style={styles.postInput}
+          className="flex-1 min-h-[80px] max-h-[120px] text-base p-3 bg-gray-100 rounded-lg"
           placeholder="What's on your mind?"
           multiline
           value={newPost}
@@ -130,154 +164,96 @@ const NewPost = ({ onSubmitPost, user }) => {
 
       {media.length > 0 && renderMediaPreview()}
 
-      <View style={styles.postActions}>
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.actionButton} onPress={pickMedia}>
+      <View className="flex-row justify-between items-center mt-3">
+        <View className="flex-row space-x-4">
+          <TouchableOpacity className="flex-row items-center space-x-2" onPress={pickMedia}>
             <Icon name="image-outline" size={24} color="#4a4a4a" />
-            <Text style={styles.actionButtonText}>Media</Text>
+            <Text className="text-gray-700 text-sm">Media</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton} onPress={generateAISuggestions}>
+          <TouchableOpacity className="flex-row items-center space-x-2" onPress={() => handleHelper(AI)}>
             <Icon name="sparkles-outline" size={24} color="#4a4a4a" />
-            <Text style={styles.actionButtonText}>AI Helper</Text>
+            <Text className="text-gray-700 text-sm">AI Helper</Text>
           </TouchableOpacity>
         </View>
 
         <TouchableOpacity
-          style={[
-            styles.submitButton,
-            !newPost.trim() && media.length === 0 && styles.submitButtonDisabled,
-          ]}
+          className={`px-6 py-2 rounded-full ${!newPost.trim() && media.length === 0
+            ? 'bg-black/50'
+            : 'bg-black'
+            }`}
           onPress={handleSubmit}
-          disabled={!newPost.trim() && media.length === 0}>
-          <Text style={styles.submitButtonText}>Post</Text>
+          disabled={!newPost.trim() && media.length === 0}
+        >
+          <Text className="text-white font-semibold text-sm">Post</Text>
         </TouchableOpacity>
       </View>
 
-      {aiSuggestions.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.aiSuggestionsContainer}
-          contentContainerStyle={styles.aiSuggestionsContent}>
-          {aiSuggestions.map((suggestion, index) => (
+      {AI && (
+        <ScrollView className="mt-4 mb-2">
+          {/* Analyze Emotion Section */}
+          <View className="flex-row items-center mb-2">
             <TouchableOpacity
-              key={index}
-              style={styles.aiSuggestionChip}
-              onPress={() => applyAISuggestion(suggestion)}>
-              <Text style={styles.aiSuggestionText}>{suggestion}</Text>
+              className={`rounded-lg px-4 py-2 mr-2 ${newPost ? 'bg-blue-500' : 'bg-gray-300'
+                }`}
+              onPress={newPost ? analyzeEmotion : null} // Only trigger the function if newPost exists
+              disabled={!newPost} // Disable the button when newPost doesn't exist
+            >
+              <Text
+                className={`text-sm font-medium ${newPost ? 'text-white' : 'text-gray-500'
+                  }`}
+              >
+                Analyze Emotion
+              </Text>
             </TouchableOpacity>
-          ))}
+            {/* Display emotion beside the button */}
+            <Text className="text-gray-700 text-sm font-medium">
+              {emotion || 'No emotion detected'} {/* Display detected emotion */}
+            </Text>
+          </View>
+
+          {/* Horizontal Suggestions */}
+          <ScrollView
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            className="flex-row space-x-2 mb-2"
+          >
+            {suggestions.map((suggestion, index) => (
+              <TouchableOpacity
+                key={index}
+                className="bg-blue-100 border border-blue-200 rounded-full px-4 py-2"
+                onPress={() => applyAISuggestion(suggestion)}
+              >
+                <Text className="text-blue-600 text-sm font-medium">{suggestion}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+
+          {/* Text Input */}
+          <View>
+            <TextInput
+              className="flex-1 min-h-[40px] max-h-[80px] text-base p-3 bg-gray-100 rounded-lg border border-gray-300"
+              placeholder="What's on your mind?"
+              multiline
+              value={prompt}
+              onChangeText={setPrompt}
+              placeholderTextColor="#657786"
+            />
+          </View>
+
+          {/* Rewrite Button */}
+          <View className="mt-2">
+            <TouchableOpacity
+              className="bg-green-500 rounded-lg px-4 py-2"
+              onPress={rewriteText} // Ensure rewriteText is defined
+            >
+              <Text className="text-white text-center text-sm font-medium">Rewrite</Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       )}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: 'white',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginRight: 12,
-  },
-  postInput: {
-    flex: 1,
-    minHeight: 80,
-    maxHeight: 120,
-    fontSize: 16,
-    textAlignVertical: 'top',
-    padding: 12,
-    backgroundColor: '#f8f9fa',
-    borderRadius: 12,
-  },
-  mediaContainer: {
-    marginTop: 12,
-    marginBottom: 12,
-  },
-  mediaItem: {
-    position: 'relative',
-    marginRight: 10,
-  },
-  mediaPreview: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-  },
-  removeMediaButton: {
-    position: 'absolute',
-    top: 5,
-    right: 5,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: 15,
-  },
-  postActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 12,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 16,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  actionButtonText: {
-    color: '#4a4a4a',
-    fontSize: 14,
-  },
-  submitButton: {
-    backgroundColor: '#000',
-    paddingVertical: 8,
-    paddingHorizontal: 24,
-    borderRadius: 24,
-  },
-  submitButtonDisabled: {
-    backgroundColor: '#0009',
-  },
-  submitButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 15,
-  },
-  aiSuggestionsContainer: {
-    marginTop: 16,
-    marginBottom: 8,
-    maxHeight: 50,
-  },
-  aiSuggestionsContent: {
-    flexDirection: 'row',
-    gap: 8,
-    paddingHorizontal: 4,
-  },
-  aiSuggestionChip: {
-    backgroundColor: '#e8f3ff',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#cce4ff',
-    marginRight: 8,
-  },
-  aiSuggestionText: {
-    color: '#0066cc',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-});
 
 export default NewPost;
