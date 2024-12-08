@@ -208,16 +208,16 @@ class QuantumRecommendationEngine:
             'comments': [],
             'shares': []
         }
-        
+
         # Fetch interactions for this specific post
         interactions = list(self.interactions_collection.find({
             'postId': post['_id'],
             'interactionType': {'$in': ['like', 'comment', 'share']}
         }))
-        
+
         for interaction in interactions:
             interaction_user = self.users_collection.find_one({'_id': interaction['userId']})
-            
+
             # Classify interaction type and extract user details
             interaction_details = {
                 'userId': str(interaction['userId']),
@@ -226,7 +226,7 @@ class QuantumRecommendationEngine:
                 'timestamp': interaction.get('timestamp', datetime.now()),
                 'type': interaction.get('interactionType')
             }
-            
+
             # Categorize interactions
             if interaction['interactionType'] == 'like':
                 interaction_signals['likes'].append(interaction_details)
@@ -234,39 +234,39 @@ class QuantumRecommendationEngine:
                 interaction_signals['comments'].append(interaction_details)
             elif interaction['interactionType'] == 'share':
                 interaction_signals['shares'].append(interaction_details)
-        
+
         # Compute interaction priority
         priority_score = 0
         connection_interaction_multiplier = 1.5  # Higher priority for connections
-        
+
         # Likes priority
         for like in interaction_signals['likes']:
             is_connection = any(
-                str(conn.get('_id', '')) == like['userId'] 
+                str(conn.get('_id', '')) == like['userId']
                 for conn in current_user.get('connections', [])
             )
             priority_score += (2 if is_connection else 1)
-        
+
         # Comments priority (higher weight)
         for comment in interaction_signals['comments']:
             is_connection = any(
-                str(conn.get('_id', '')) == comment['userId'] 
+                str(conn.get('_id', '')) == comment['userId']
                 for conn in current_user.get('connections', [])
             )
             priority_score += (3 if is_connection else 1.5)
-        
+
         # Shares priority (highest weight)
         for share in interaction_signals['shares']:
             is_connection = any(
-                str(conn.get('_id', '')) == share['userId'] 
+                str(conn.get('_id', '')) == share['userId']
                 for conn in current_user.get('connections', [])
             )
             priority_score += (4 if is_connection else 2)
-        
+
         # Temporal decay for interactions
         recency_factor = np.exp(-0.1 * (datetime.now() - post.get('createdAt', datetime.now())).days)
         priority_score *= recency_factor
-        
+
         return {
             'priority_score': priority_score,
             'interaction_signals': interaction_signals
@@ -319,8 +319,8 @@ class QuantumRecommendationEngine:
                         'name': author_details.get('fullName'),
                         'email': author_details.get('email'),
                         'profile_picture': author_details.get('profilePhoto'),
-                        'occupation': author_details.get('workExperience')
-                    }
+                        'occupation': author_details.get('workExperience'),
+                    },
                 }
                 
                 all_scored_posts.append(comprehensive_post)
@@ -347,13 +347,7 @@ class QuantumRecommendationEngine:
                     'interaction_priority': interaction_data['priority_score'],
                     'interaction_signals': interaction_data['interaction_signals'],
                     'is_connection_post': False,
-                    'connection_info': {
-                        '_id': str(post['userId']),
-                        'name': author_details.get('fullName'),
-                        'email': author_details.get('email'),
-                        'profile_picture': author_details.get('profilePhoto'),
-                        'occupation': author_details.get('workExperience')
-                    }
+                    'connection_info': None 
                 }
                 
                 all_scored_posts.append(comprehensive_post)
@@ -381,6 +375,7 @@ class QuantumRecommendationEngine:
                 'quantum_score': post_data['quantum_score'],
                 'interaction_priority': post_data['interaction_priority'],
                 'is_connection_post': post_data['is_connection_post'],
+                'media': post_data['post'].get('media', []),  # Add media field
                 'connection_info': post_data['connection_info'],
                 'interaction_signals': {
                     'likes': [
