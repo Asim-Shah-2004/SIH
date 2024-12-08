@@ -1,9 +1,11 @@
+import { ML_SERVER_URL } from '@env';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import Markdown from 'react-native-markdown-display';
 
 const NewPost = ({ onSubmitPost, user }) => {
   const [newPost, setNewPost] = useState('');
@@ -28,7 +30,7 @@ const NewPost = ({ onSubmitPost, user }) => {
 
   const analyzeEmotion = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/analyze_emotion/', {
+      const response = await axios.post(`${ML_SERVER_URL}/api/analyze_emotion/`, {
         post: newPost,
       });
       console.log('Emotion Analysis Response:', response.data);
@@ -40,7 +42,7 @@ const NewPost = ({ onSubmitPost, user }) => {
 
   const rewriteText = async () => {
     try {
-      const response = await axios.post('http://127.0.0.1:8000/api/rewrite/', {
+      const response = await axios.post(`${ML_SERVER_URL}/api/rewrite/`, {
         post: newPost,
         style: prompt,
       });
@@ -70,9 +72,7 @@ const NewPost = ({ onSubmitPost, user }) => {
     }
 
     const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsMultipleSelection: true,
-      quality: 1,
     });
 
     if (!result.canceled) {
@@ -132,6 +132,13 @@ const NewPost = ({ onSubmitPost, user }) => {
     );
   };
 
+  const renderMarkdownPreview = () => (
+    <View className="mt-3 rounded-lg bg-gray-50 p-3">
+      <Text className="mb-2 text-sm font-medium text-gray-600">Preview:</Text>
+      <Markdown>{newPost}</Markdown>
+    </View>
+  );
+
   return (
     <View className="border-b border-gray-200 bg-white p-4">
       <View className="flex-row items-start">
@@ -140,8 +147,8 @@ const NewPost = ({ onSubmitPost, user }) => {
           className="mr-3 h-10 w-10 rounded-full"
         />
         <TextInput
-          className="max-h-[120px] min-h-[80px] flex-1 rounded-lg bg-gray-100 p-3 text-base"
-          placeholder="What's on your mind?"
+          className="max-h-[120px] min-h-[40px] flex-1 rounded-lg bg-gray-100 p-4 text-base shadow-sm"
+          placeholder="What's on your mind? (Markdown supported)"
           multiline
           value={newPost}
           onChangeText={setNewPost}
@@ -149,20 +156,24 @@ const NewPost = ({ onSubmitPost, user }) => {
         />
       </View>
 
-      {media.length > 0 && renderMediaPreview()}
+      {media.length > 0 && <View className="my-4">{renderMediaPreview()}</View>}
+
+      {newPost && renderMarkdownPreview()}
 
       <View className="mt-3 flex-row items-center justify-between">
-        <View className="flex-row space-x-4">
-          <TouchableOpacity className="flex-row items-center space-x-2" onPress={pickMedia}>
+        <View className="flex-row">
+          <TouchableOpacity
+            className="ounded-lg mr-2 flex-row items-center bg-gray-50 px-3 py-1"
+            onPress={pickMedia}>
             <Ionicons name="image-outline" size={24} color="#4a4a4a" />
-            <Text className="text-sm text-gray-700">Media</Text>
+            <Text className="text-sm font-medium text-gray-700">Media</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center space-x-2"
+            className="flex-row items-center rounded-lg bg-gray-50 px-3"
             onPress={() => handleHelper(AI)}>
             <Ionicons name="sparkles-outline" size={24} color="#4a4a4a" />
-            <Text className="text-sm text-gray-700">AI Helper</Text>
+            <Text className="text-sm font-medium text-gray-700">AI Helper</Text>
           </TouchableOpacity>
         </View>
 
@@ -177,61 +188,51 @@ const NewPost = ({ onSubmitPost, user }) => {
       </View>
 
       {AI && (
-        <ScrollView className="mb-2 mt-4">
+        <View className="mt-2 space-y-4">
           {/* Analyze Emotion Section */}
-          <View className="mb-2 flex-row items-center">
+          <View className="flex-row items-center justify-between rounded-lg bg-gray-50 p-3">
             <TouchableOpacity
-              className={`mr-2 rounded-lg px-4 py-2 ${newPost ? 'bg-blue-500' : 'bg-gray-300'}`}
-              onPress={newPost ? analyzeEmotion : null} // Only trigger the function if newPost exists
-              disabled={!newPost} // Disable the button when newPost doesn't exist
-            >
+              className={`rounded-lg px-4 py-2 ${newPost ? 'bg-blue-500' : 'bg-gray-300'}`}
+              onPress={newPost ? analyzeEmotion : null}
+              disabled={!newPost}>
               <Text className={`text-sm font-medium ${newPost ? 'text-white' : 'text-gray-500'}`}>
                 Analyze Emotion
               </Text>
             </TouchableOpacity>
-            {/* Display emotion beside the button */}
             <Text className="text-sm font-medium text-gray-700">
-              {emotion || 'No emotion detected'} {/* Display detected emotion */}
+              {emotion || 'No emotion detected'}
             </Text>
           </View>
 
-          {/* Horizontal Suggestions */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            className="mb-2 flex-row space-x-2">
+          {/* Suggestions Section */}
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="py-2">
             {suggestions.map((suggestion, index) => (
               <TouchableOpacity
                 key={index}
-                className="rounded-full border border-blue-200 bg-blue-100 px-4 py-2"
+                className="mr-1 rounded-full border border-blue-200 bg-blue-50 px-3 py-2 shadow-sm"
                 onPress={() => applyAISuggestion(suggestion)}>
                 <Text className="text-sm font-medium text-blue-600">{suggestion}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
 
-          {/* Text Input */}
+          {/* AI Prompt Input */}
           <View>
             <TextInput
-              className="max-h-[80px] min-h-[40px] flex-1 rounded-lg border border-gray-300 bg-gray-100 p-3 text-base"
-              placeholder="What's on your mind?"
+              className="mb-2 max-h-[80px] min-h-[40px] rounded-lg border border-gray-200 bg-white p-4 text-base shadow-sm"
+              placeholder="Enter AI prompt..."
               multiline
               value={prompt}
               onChangeText={setPrompt}
               placeholderTextColor="#657786"
             />
-          </View>
-
-          {/* Rewrite Button */}
-          <View className="mt-2">
             <TouchableOpacity
-              className="rounded-lg bg-green-500 px-4 py-2"
-              onPress={rewriteText} // Ensure rewriteText is defined
-            >
-              <Text className="text-center text-sm font-medium text-white">Rewrite</Text>
+              className="rounded-lg bg-green-500 px-4 py-3 shadow-sm"
+              onPress={rewriteText}>
+              <Text className="text-center text-sm font-medium text-white">Rewrite with AI</Text>
             </TouchableOpacity>
           </View>
-        </ScrollView>
+        </View>
       )}
     </View>
   );

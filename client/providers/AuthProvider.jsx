@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import { createContext, useState, useEffect, useContext } from 'react';
 import { View, ActivityIndicator, Text } from 'react-native';
 
- const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const useAuth = () => {
   const context = useContext(AuthContext);

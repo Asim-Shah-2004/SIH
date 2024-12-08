@@ -2,6 +2,7 @@ import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import Markdown from 'react-native-markdown-display';
 
 const Post = ({ postData }) => {
   const [showAllComments, setShowAllComments] = useState(false);
@@ -36,56 +37,45 @@ const Post = ({ postData }) => {
   return (
     <LinearGradient
       colors={['#ffffff', '#f8fafc']}
-      style={{
-        marginVertical: 8,
-        borderRadius: 12,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 3,
-      }}>
+      className="my-2 overflow-hidden rounded-xl shadow-sm">
       {/* Post Header */}
-      <View style={{ padding: 16, flexDirection: 'row', alignItems: 'center' }}>
+      <View className="flex-row items-center p-4">
         <Image
           source={{ uri: `https://ui-avatars.com/api/?name=User&background=random` }}
-          style={{ width: 48, height: 48, borderRadius: 24 }}
+          className="h-12 w-12 rounded-full"
         />
-        <View style={{ marginLeft: 12, flex: 1 }}>
-          <Text style={{ fontWeight: '600', fontSize: 16, color: '#1f2937' }}>
+        <View className="ml-3 flex-1">
+          <Text className="text-base font-semibold text-gray-800">
             User {postData.userId.slice(-4)}
           </Text>
-          <Text style={{ fontSize: 13, color: '#6b7280' }}>
-            {getRelativeTime(postData.createdAt)}
-          </Text>
+          <Text className="text-sm text-gray-500">{getRelativeTime(postData.createdAt)}</Text>
         </View>
       </View>
 
       {/* Post Content */}
-      <View style={{ paddingHorizontal: 16 }}>
-        <Text style={{ fontSize: 15, lineHeight: 22, color: '#374151' }}>{postData.text}</Text>
+      <View className="mt-3 px-4">
+        <Markdown
+          style={{
+            body: { fontSize: 15, lineHeight: 22, color: '#374151' },
+            heading1: { fontSize: 24, fontWeight: 'bold', marginVertical: 12 },
+            heading2: { fontSize: 20, fontWeight: 'bold', marginVertical: 10 },
+            link: { color: '#0a66c2' },
+            list: { marginLeft: 20 },
+          }}>
+          {postData.text}
+        </Markdown>
       </View>
 
       {/* Media Content */}
       {postData.media && (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3">
           {postData.media.map((item, index) => (
-            <View key={index} style={{ marginHorizontal: 16, marginBottom: 12 }}>
+            <View key={index} className="mx-4 mb-3">
               {item.type === 'image' && (
-                <Image
-                  source={{ uri: item.url }}
-                  style={{
-                    width: 300,
-                    height: 200,
-                    borderRadius: 8,
-                  }}
-                />
+                <Image source={{ uri: item.url }} className="h-[200px] w-[300px] rounded-lg" />
               )}
               {item.description && (
-                <Text style={{ fontSize: 12, color: '#6b7280', marginTop: 4 }}>
-                  {item.description}
-                </Text>
+                <Text className="mt-1 text-xs text-gray-500">{item.description}</Text>
               )}
             </View>
           ))}
@@ -93,68 +83,55 @@ const Post = ({ postData }) => {
       )}
 
       {/* Reactions & Stats */}
-      <View style={{ padding: 16, borderTopWidth: 1, borderTopColor: '#e5e7eb' }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View className="border-t border-gray-200 p-4">
+        <View className="flex-row items-center">
+          <View className="flex-row items-center">
             {Object.entries(getReactionCounts()).map(([type, count], index) => (
-              <View
-                key={type}
-                style={{
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginRight: 8,
-                }}>
+              <View key={type} className="mr-2 flex-row items-center">
                 {reactionIcons[type]}
-                <Text style={{ marginLeft: 4, color: '#6b7280' }}>{count}</Text>
+                <Text className="ml-1 text-gray-500">{count}</Text>
               </View>
             ))}
           </View>
-          <Text style={{ marginLeft: 'auto', color: '#6b7280' }}>
+          <Text className="ml-auto text-gray-500">
             {postData.comments.length} comments • {postData.shares.length} shares
           </Text>
         </View>
       </View>
 
       {/* Action Buttons */}
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          paddingVertical: 8,
-          borderTopWidth: 1,
-          borderTopColor: '#e5e7eb',
-        }}>
-        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View className="flex-row justify-around border-t border-gray-200 py-2">
+        <TouchableOpacity className="flex-row items-center">
           <Feather name="thumbs-up" size={20} color="#6b7280" />
-          <Text style={{ marginLeft: 6, color: '#6b7280' }}>Like</Text>
+          <Text className="ml-1.5 text-gray-500">Like</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity className="flex-row items-center">
           <Feather name="message-circle" size={20} color="#6b7280" />
-          <Text style={{ marginLeft: 6, color: '#6b7280' }}>Comment</Text>
+          <Text className="ml-1.5 text-gray-500">Comment</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity className="flex-row items-center">
           <Feather name="share-2" size={20} color="#6b7280" />
-          <Text style={{ marginLeft: 6, color: '#6b7280' }}>Share</Text>
+          <Text className="ml-1.5 text-gray-500">Share</Text>
         </TouchableOpacity>
       </View>
 
       {/* Comments Section */}
       {postData.comments.length > 0 && (
-        <View style={{ padding: 16, backgroundColor: '#f8fafc' }}>
+        <View className="bg-gray-50 p-4">
           <FlatList
             data={showAllComments ? postData.comments : postData.comments.slice(0, 2)}
             renderItem={({ item }) => (
-              <View style={{ marginBottom: 12 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View className="mb-3">
+                <View className="flex-row items-center">
                   <Image
                     source={{ uri: `https://ui-avatars.com/api/?name=User&background=random` }}
-                    style={{ width: 32, height: 32, borderRadius: 16 }}
+                    className="h-8 w-8 rounded-full"
                   />
-                  <View style={{ marginLeft: 8, flex: 1 }}>
-                    <Text style={{ fontWeight: '500' }}>User {item.userId.slice(-4)}</Text>
+                  <View className="ml-2 flex-1">
+                    <Text className="font-medium">User {item.userId.slice(-4)}</Text>
                     <Text>{item.text}</Text>
-                    <View style={{ flexDirection: 'row', marginTop: 4 }}>
-                      <Text style={{ color: '#6b7280', fontSize: 12 }}>
+                    <View className="mt-1 flex-row">
+                      <Text className="text-xs text-gray-500">
                         {getRelativeTime(item.createdAt)} • {item.likes.length} likes
                       </Text>
                     </View>
@@ -165,7 +142,7 @@ const Post = ({ postData }) => {
           />
           {postData.comments.length > 2 && (
             <TouchableOpacity onPress={() => setShowAllComments(!showAllComments)}>
-              <Text style={{ color: '#0a66c2', fontWeight: '500' }}>
+              <Text className="font-medium text-blue-600">
                 {showAllComments ? 'Show less' : `View all ${postData.comments.length} comments`}
               </Text>
             </TouchableOpacity>
