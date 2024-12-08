@@ -1,5 +1,4 @@
 import { MaterialIcons } from '@expo/vector-icons';
-import React from 'react';
 import { View, Text, ScrollView, Linking, TouchableOpacity } from 'react-native';
 
 const Section = ({ title, children }) => (

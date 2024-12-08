@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Buffer } from 'buffer';
+import { jwtDecode } from 'jwt-decode';
 import { createContext, useState, useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
 import { View, SafeAreaView, ActivityIndicator, Text } from 'react-native';
@@ -37,9 +37,7 @@ export const Providers = ({ children }) => {
         const token = await AsyncStorage.getItem('token');
         setIsLoggedIn(loggedInValue === 'true');
         if (token) {
-          const decodedToken = JSON.parse(
-            Buffer.from(token.split('.')[1], 'base64').toString('utf-8')
-          );
+          const decodedToken = jwtDecode(token);
           const currentTime = Date.now() / 1000;
           if (decodedToken.exp < currentTime) {
             setIsLoggedIn(false);

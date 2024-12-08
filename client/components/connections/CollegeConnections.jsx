@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 
 import AlumniDirectory from '../../screens/AlumniDirectory';

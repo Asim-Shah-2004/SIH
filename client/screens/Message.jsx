@@ -1,7 +1,6 @@
 import { SERVER_URL } from '@env';
 import axios from 'axios';
 import { Audio } from 'expo-av';
-import * as DocumentPicker from 'expo-document-picker';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
 import { useState, useRef, useEffect, useContext } from 'react';

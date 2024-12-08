@@ -1,4 +1,4 @@
-import { X, Calendar, MapPin, Star } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { useState, useCallback } from 'react';
 import { View, Text, Modal, Image, ScrollView, TouchableOpacity, Dimensions } from 'react-native';
 
@@ -39,7 +39,7 @@ const EventModal = ({ open, onClose, event }) => {
             {/* Close Button with Enhanced Styling */}
             <View className="absolute right-4 top-2 z-10">
               <TouchableOpacity className="mb-4 h-12 w-10 p-2" onPress={onClose}>
-                <X size={24} color="#6B7280" strokeWidth={2} />
+                <Feather name="x" size={24} color="#6B7280" strokeWidth={2} />
               </TouchableOpacity>
             </View>
 
@@ -58,7 +58,7 @@ const EventModal = ({ open, onClose, event }) => {
               {/* Info Cards with Enhanced Spacing */}
               <View className="mb-4 space-y-4">
                 <View className="flex-row items-center gap-2 space-x-3 rounded-xl bg-blue-50 p-3">
-                  <Calendar size={24} color="#2563EB" />
+                  <Feather name="calendar" size={24} color="#2563EB" />
                   <View>
                     <Text className="text-sm font-semibold text-blue-800">Date & Time</Text>
                     <Text className="text-gray-600">{`${event.date}, ${event.time}`}</Text>
@@ -66,7 +66,7 @@ const EventModal = ({ open, onClose, event }) => {
                 </View>
 
                 <View className="flex-row items-center gap-2 space-x-3 rounded-xl bg-green-50 p-3">
-                  <MapPin size={24} color="#16A34A" />
+                  <Feather name="map-pin" size={24} color="#16A34A" />
                   <View>
                     <Text className="text-sm font-semibold text-green-800">Location</Text>
                     <Text className="text-gray-600">{event.location}</Text>
@@ -89,7 +89,7 @@ const EventModal = ({ open, onClose, event }) => {
                       <Text className="font-semibold text-gray-900">{speaker.name}</Text>
                       <Text className="text-sm text-gray-600">{speaker.role}</Text>
                     </View>
-                    <Star size={20} color="#EAB308" fill="#EAB308" />
+                    <Feather name="star" size={20} color="#EAB308" fill="#EAB308" />
                   </View>
                 ))}
               </View>

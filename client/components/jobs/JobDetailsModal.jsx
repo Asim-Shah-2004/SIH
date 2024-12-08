@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
+import { useState } from 'react';
 import {
   Modal,
   View,
@@ -14,7 +14,7 @@ import {
 import ConnectModal from '../../utils/ConnectModal';
 
 const JobDetailsModal = ({ isVisible, onClose, item, userSkills }) => {
-  const [connectModalVisible, setConnectModalVisible] = React.useState(false);
+  const [connectModalVisible, setConnectModalVisible] = useState(false);
   const { width: screenWidth } = useWindowDimensions();
 
   const isSmallScreen = screenWidth < 380;

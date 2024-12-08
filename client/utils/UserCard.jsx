@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
+import { useContext } from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 
 import { connectHandler } from './connectHandler';
@@ -8,7 +8,7 @@ import { AuthContext } from '../providers/CustomProvider';
 const UserCard = ({ alumni }) => {
   const { _id, fullName, bio, profilePhoto } = alumni;
   const navigation = useNavigation();
-  const { user, setUser, reqSet, setReqSet } = React.useContext(AuthContext);
+  const { user, setUser, reqSet, setReqSet } = useContext(AuthContext);
 
   const handleViewProfile = () => {
     navigation.navigate('Profile', { _id }); // Navigate to the profile with user ID

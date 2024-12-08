@@ -1,4 +1,4 @@
-import { X } from 'lucide-react-native';
+import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
   Modal,
@@ -42,7 +42,7 @@ const PaymentModal = ({ open, onClose, onPaymentComplete }) => {
           {/* Close Button */}
           <View className="absolute right-4 top-2 z-10">
             <TouchableOpacity className="mb-4 h-12 w-10 p-2" onPress={onClose}>
-              <X size={24} color="#6B7280" strokeWidth={2} />
+              <Feather name="x" size={24} color="#6B7280" strokeWidth={2} />
             </TouchableOpacity>
           </View>
 

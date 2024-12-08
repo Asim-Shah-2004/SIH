@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, FlatList, TouchableOpacity, Text } from 'react-native';
 
 const notifications = [

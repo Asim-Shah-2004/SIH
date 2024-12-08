@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { decode } from 'base-64';
+import { jwtDecode } from 'jwt-decode';
 import { useContext, useEffect } from 'react';
 
 import LoadingComponent from '../components/LoadingComponent';
@@ -9,12 +9,7 @@ import { AuthContext } from '../providers/CustomProvider';
 
 const LoadingScreen = ({ loading, setLoading }) => {
   const { setUser, setIsLoggedIn, setReqSet } = useContext(AuthContext);
-  const decodeJWT = (token) => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decode(base64); // Decode base64 to string (JSON)
-    return JSON.parse(jsonPayload); // Parse the string to JSON
-  };
+
   const fetchUserData = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
@@ -22,7 +17,7 @@ const LoadingScreen = ({ loading, setLoading }) => {
         throw new Error('Token not found');
       }
 
-      const decodedToken = decodeJWT(token);
+      const decodedToken = jwtDecode(token);
       const id = decodedToken.id;
 
       const response = await axios.get(`${SERVER_URL}/users/${id}`, {

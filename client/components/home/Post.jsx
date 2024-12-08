@@ -1,11 +1,5 @@
+import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import {
-  ThumbsUpIcon,
-  MessageCircleIcon,
-  ShareIcon,
-  HeartIcon,
-  StarIcon,
-} from 'lucide-react-native';
 import { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 
@@ -34,9 +28,9 @@ const Post = ({ postData }) => {
   };
 
   const reactionIcons = {
-    like: <ThumbsUpIcon size={16} color="#0a66c2" />,
-    love: <HeartIcon size={16} color="#e11d48" />,
-    wow: <StarIcon size={16} color="#eab308" />,
+    like: <Feather name="thumbs-up" size={16} color="#0a66c2" />,
+    love: <Feather name="heart" size={16} color="#e11d48" />,
+    wow: <Feather name="star" size={16} color="#eab308" />,
   };
 
   return (
@@ -131,15 +125,15 @@ const Post = ({ postData }) => {
           borderTopColor: '#e5e7eb',
         }}>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <ThumbsUpIcon size={20} color="#6b7280" />
+          <Feather name="thumbs-up" size={20} color="#6b7280" />
           <Text style={{ marginLeft: 6, color: '#6b7280' }}>Like</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MessageCircleIcon size={20} color="#6b7280" />
+          <Feather name="message-circle" size={20} color="#6b7280" />
           <Text style={{ marginLeft: 6, color: '#6b7280' }}>Comment</Text>
         </TouchableOpacity>
         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <ShareIcon size={20} color="#6b7280" />
+          <Feather name="share-2" size={20} color="#6b7280" />
           <Text style={{ marginLeft: 6, color: '#6b7280' }}>Share</Text>
         </TouchableOpacity>
       </View>

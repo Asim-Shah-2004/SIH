@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, Linking } from 'react-native';
 
 const LinkText = ({ text, className }) => {

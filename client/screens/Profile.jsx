@@ -1,25 +1,7 @@
 import { SERVER_URL } from '@env';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {
-  Briefcase,
-  Github,
-  Globe,
-  Link2,
-  Linkedin,
-  Twitter,
-  Calendar,
-  Mail,
-  Phone,
-  Settings,
-  User,
-  Bookmark,
-  Share,
-  Heart,
-  Eye,
-  Medal,
-  Send,
-} from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import { Image, Pressable, Text, View, FlatList, Linking } from 'react-native';
 
@@ -37,15 +19,15 @@ const getSocialIcon = (platform) => {
   const iconColor = 'text-primary';
   switch (platform.toLowerCase()) {
     case 'github':
-      return <Github size={iconSize} className={iconColor} />;
+      return <Feather name="github" size={iconSize} className={iconColor} />;
     case 'linkedin':
-      return <Linkedin size={iconSize} className={iconColor} />;
+      return <Feather name="linkedin" size={iconSize} className={iconColor} />;
     case 'twitter':
-      return <Twitter size={iconSize} className={iconColor} />;
+      return <Feather name="twitter" size={iconSize} className={iconColor} />;
     case 'portfolio':
-      return <Globe size={iconSize} className={iconColor} />;
+      return <Feather name="globe" size={iconSize} className={iconColor} />;
     default:
-      return <Link2 size={iconSize} className={iconColor} />;
+      return <Feather name="link-2" size={iconSize} className={iconColor} />;
   }
 };
 
@@ -141,10 +123,10 @@ const ProfileScreen = ({ route }) => {
         />
         <View className="absolute right-4 top-6 flex-row space-x-3">
           <Pressable className="rounded-full bg-white/90 p-3 shadow">
-            <Share size={20} className="text-text" />
+            <Feather name="share-2" size={20} className="text-text" />
           </Pressable>
           <Pressable className="rounded-full bg-white/90 p-3 shadow">
-            <Settings size={20} className="text-text" />
+            <Feather name="settings" size={20} className="text-text" />
           </Pressable>
         </View>
       </View>
@@ -163,18 +145,18 @@ const ProfileScreen = ({ route }) => {
         </View>
 
         <View className="mt-6 flex-row justify-between">
-          <StatItem icon={Eye} count={data.stats.followers} label="Followers" />
-          <StatItem icon={Heart} count={data.stats.following} label="Following" />
-          <StatItem icon={Bookmark} count={data.stats.posts} label="Posts" />
+          <StatItem icon="users" count={data.stats.followers} label="Followers" />
+          <StatItem icon="user-plus" count={data.stats.following} label="Following" />
+          <StatItem icon="file-text" count={data.stats.posts} label="Posts" />
         </View>
 
         <View className="mt-6 flex-row gap-3">
           <Pressable className="flex-1 flex-row items-center justify-center space-x-2 rounded-lg bg-primary p-3">
-            <User size={16} className="text-white" />
+            <Feather name="user" size={16} className="text-white" />
             <Text className="text-base font-medium text-white">Connect</Text>
           </Pressable>
           <Pressable className="flex-row items-center justify-center space-x-2 rounded-lg border-2 border-primary p-3">
-            <Send size={16} className="text-primary" />
+            <Feather name="send" size={16} className="text-primary" />
             <Text className="text-base font-medium text-primary">Message</Text>
           </Pressable>
         </View>
@@ -219,12 +201,12 @@ const ProfileScreen = ({ route }) => {
           <View className="rounded-xl bg-white p-4 shadow">
             <Text className="mb-4 text-lg font-semibold text-text">Contact Information</Text>
             {[
-              { icon: Mail, value: data.email },
-              { icon: Phone, value: data.phone },
-              { icon: Calendar, value: `Batch of ${data.batch}` },
+              { icon: Feather, name: 'mail', value: data.email },
+              { icon: Feather, name: 'phone', value: data.phone },
+              { icon: Feather, name: 'calendar', value: `Batch of ${data.batch}` },
             ].map((item, i) => (
               <View key={i} className="mb-3 flex-row items-center space-x-3">
-                <item.icon size={20} className="text-primary" />
+                <item.icon name={item.name} size={20} className="text-primary" />
                 <LinkText text={item.value} className="text-text/80 text-base" />
               </View>
             ))}
@@ -239,7 +221,7 @@ const ProfileScreen = ({ route }) => {
                 className="mb-4 flex-row items-center space-x-4">
                 <View className="bg-primary/10 rounded-full p-3">{getSocialIcon(platform)}</View>
                 <Text className="flex-1 text-base font-medium text-text">{platform}</Text>
-                <Link2 size={16} className="text-primary" />
+                <Feather name="link-2" size={16} className="text-primary" />
               </Pressable>
             ))}
           </View>
@@ -258,7 +240,7 @@ const ProfileScreen = ({ route }) => {
           {data.workExperience.map((work, index) => (
             <Card
               key={index}
-              icon={<Briefcase size={18} className="text-primary" />}
+              icon={<Feather name="briefcase" size={18} className="text-primary" />}
               title={work.position}
               subtitle={work.company}
               meta={work.duration}
@@ -286,7 +268,7 @@ const ProfileScreen = ({ route }) => {
             {data.certifications.map((cert, index) => (
               <View key={index} className="mb-3 flex-row items-center justify-between">
                 <View className="flex-row items-center space-x-3">
-                  <Medal size={20} className="text-primary" />
+                  <MaterialCommunityIcons name="medal" size={20} className="text-primary" />
                   <Text className="text-base font-medium text-text">{cert.name}</Text>
                 </View>
                 <Text className="text-text/60 text-sm">{cert.year}</Text>

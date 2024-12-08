@@ -1,9 +1,9 @@
+import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 const NewPost = ({ onSubmitPost, user }) => {
   const [newPost, setNewPost] = useState('');
@@ -124,7 +124,7 @@ const NewPost = ({ onSubmitPost, user }) => {
             <TouchableOpacity
               className="absolute right-1 top-1 rounded-full bg-black/60 p-1"
               onPress={() => removeMedia(index)}>
-              <Icon name="close-circle" size={24} color="white" />
+              <Ionicons name="close-circle" size={24} color="white" />
             </TouchableOpacity>
           </View>
         ))}
@@ -154,14 +154,14 @@ const NewPost = ({ onSubmitPost, user }) => {
       <View className="mt-3 flex-row items-center justify-between">
         <View className="flex-row space-x-4">
           <TouchableOpacity className="flex-row items-center space-x-2" onPress={pickMedia}>
-            <Icon name="image-outline" size={24} color="#4a4a4a" />
+            <Ionicons name="image-outline" size={24} color="#4a4a4a" />
             <Text className="text-sm text-gray-700">Media</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             className="flex-row items-center space-x-2"
             onPress={() => handleHelper(AI)}>
-            <Icon name="sparkles-outline" size={24} color="#4a4a4a" />
+            <Ionicons name="sparkles-outline" size={24} color="#4a4a4a" />
             <Text className="text-sm text-gray-700">AI Helper</Text>
           </TouchableOpacity>
         </View>

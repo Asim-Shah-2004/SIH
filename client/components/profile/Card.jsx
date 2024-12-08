@@ -1,4 +1,3 @@
-import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 
 const Card = ({ icon, title, subtitle, meta, description, onPress, className = '' }) => (

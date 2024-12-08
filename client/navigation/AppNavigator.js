@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import { useContext, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import AuthNavigator from './AuthNavigator';
@@ -51,8 +51,8 @@ const screenConfig = {
 };
 
 export default function AppNavigator() {
-  const { isLoggedIn } = React.useContext(AuthContext);
-  const [loading, setLoading] = React.useState(true);
+  const { isLoggedIn } = useContext(AuthContext);
+  const [loading, setLoading] = useState(true);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
