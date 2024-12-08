@@ -3,20 +3,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Audio } from 'expo-av';
 import * as DocumentPicker from 'expo-document-picker';
+import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB in bytes
 
 export class MessageService {
-  static async uploadMedia(buffer, type, mimeType) {
+  static async uploadMedia(base64String, type, mimeType) {
     try {
       const token = await AsyncStorage.getItem('token');
       const response = await axios.post(
         `${SERVER_URL}/media/upload`,
         {
           type,
-          buffer: buffer.toString('base64'),
+          buffer: base64String,
           mimeType,
         },
         {
@@ -51,9 +52,10 @@ export class MessageService {
         }
 
         // Upload document and get ID
-        const response = await fetch(file.uri);
-        const buffer = await response.arrayBuffer();
-        const mediaId = await this.uploadMedia(buffer, 'document', file.mimeType);
+        const base64String = await FileSystem.readAsStringAsync(file.uri, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        const mediaId = await this.uploadMedia(base64String, 'document', file.mimeType);
 
         if (!mediaId) return null;
 
@@ -102,7 +104,6 @@ export class MessageService {
 
   static async startRecording() {
     try {
-      await Audio.requestPermissionsAsync();
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: true,
         playsInSilentModeIOS: true,
@@ -119,14 +120,16 @@ export class MessageService {
   }
 
   static async stopRecording(recording) {
+    if (!recording) return null;
+
     try {
       await recording.stopAndUnloadAsync();
       const uri = recording.getURI();
 
-      // Convert audio to base64
-      const response = await fetch(uri);
-      const buffer = await response.arrayBuffer();
-      const mediaId = await this.uploadMedia(buffer, 'audio', 'audio/mpeg');
+      const base64String = await FileSystem.readAsStringAsync(uri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      const mediaId = await this.uploadMedia(base64String, 'audio', 'audio/mpeg');
 
       if (!mediaId) return null;
 
@@ -136,7 +139,7 @@ export class MessageService {
         timestamp: Date.now(),
       };
     } catch (error) {
-      Alert.alert('Error', 'Could not stop recording');
+      console.log('Error stopping recording:', error);
       return null;
     }
   }

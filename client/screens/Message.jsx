@@ -9,11 +9,11 @@ import { View, ScrollView, Text } from 'react-native';
 import DateSeparator from '../components/message/DateSeparator';
 import InputBar from '../components/message/InputBar';
 import MessageBubble from '../components/message/MessageBubble';
-import { sampleMessages } from '../constants/messageData';
 import { AuthContext } from '../providers/CustomProvider';
 import { useSocket } from '../providers/SocketProvider';
 import { formatMessageDate, groupMessagesByDate } from '../utils/dateUtils';
 import { MessageService } from '../utils/messageUtils';
+// import { sampleMessages } from '../constants/messageData';
 
 const MessageScreen = ({ route }) => {
   const { chatData } = route.params;
@@ -64,9 +64,9 @@ const MessageScreen = ({ route }) => {
     const mediaStatus = await MediaLibrary.requestPermissionsAsync();
 
     setPermissions({
-      camera: cameraStatus.status === 'granted',
-      audio: audioStatus.status === 'granted',
-      mediaLibrary: mediaStatus.status === 'granted',
+      camera: cameraStatus.granted,
+      audio: audioStatus.granted,
+      mediaLibrary: mediaStatus.granted,
     });
   };
 
@@ -182,7 +182,7 @@ const MessageScreen = ({ route }) => {
 
     try {
       const tempId = `temp-${Date.now()}`;
-      handleMediaSend(MessageService.handleDocumentAttachment(), tempId, 'document');
+      await handleMediaSend(MessageService.handleDocumentAttachment(), tempId, 'document');
     } catch (error) {
       console.error('Error picking document:', error);
     }
@@ -206,13 +206,13 @@ const MessageScreen = ({ route }) => {
     }
 
     const tempId = `temp-${Date.now()}`;
-    handleMediaSend(MessageService.handleImagePicker(useCamera), tempId, 'image');
+    await handleMediaSend(MessageService.handleImagePicker(useCamera), tempId, 'image');
   };
 
   const startRecording = async () => {
     if (!permissions.audio) {
-      const { status } = await Audio.requestPermissionsAsync();
-      if (status !== 'granted') {
+      const { granted } = await Audio.requestPermissionsAsync();
+      if (!granted) {
         alert('Audio recording permission is required');
         return;
       }
@@ -228,7 +228,7 @@ const MessageScreen = ({ route }) => {
 
   const stopRecording = async () => {
     const tempId = `temp-${Date.now()}`;
-    handleMediaSend(MessageService.stopRecording(recording), tempId, 'audio');
+    await handleMediaSend(MessageService.stopRecording(recording), tempId, 'audio');
     setRecording(null);
     setIsRecording(false);
   };

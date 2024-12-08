@@ -63,8 +63,7 @@ const InputBar = ({
             </TouchableOpacity>
             <TouchableOpacity
               className="bg-accent/5 rounded-full p-3"
-              onPressIn={startRecording}
-              onPressOut={stopRecording}>
+              onPress={isRecording ? stopRecording : startRecording}>
               <Ionicons
                 name={isRecording ? 'radio-button-on' : 'mic'}
                 size={20}

@@ -56,7 +56,13 @@ const MessageBubble = ({
     } else {
       setIsLoading(true);
       try {
-        const { sound: audioSound } = await Audio.Sound.createAsync({ uri });
+        const downloadResumable = FileSystem.createDownloadResumable(
+          `${SERVER_URL}/media/audio/${uri}`,
+          FileSystem.documentDirectory + 'temp_audio.m4a'
+        );
+
+        const { uri: audioUri } = await downloadResumable.downloadAsync();
+        const { sound: audioSound } = await Audio.Sound.createAsync({ uri: audioUri });
         setSound(audioSound);
         await audioSound.playAsync();
         setIsPlaying(true);
