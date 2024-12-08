@@ -78,9 +78,15 @@ const Manual = ({ route, navigation }) => {
     location: resumeData?.personal_info?.location || '',
     password: '',
     confirmPassword: '',
+    city: resumeData?.personal_info?.city || '',
+    state: resumeData?.personal_info?.state || '',
+    country: resumeData?.personal_info?.country || '',
+    languages: resumeData?.personal_info?.languages || [],
+    about: resumeData?.personal_info?.about || '',
   });
 
   const [passwordError, setPasswordError] = useState('');
+  const [errors, setErrors] = useState({});
 
   const skillSuggestions = [
     'React',
@@ -177,7 +183,44 @@ const Manual = ({ route, navigation }) => {
     return formattedData;
   };
 
+  const validateFields = () => {
+    const newErrors = {};
+    const requiredFields = {
+      name: 'Full Name',
+      email: 'Email',
+      password: 'Password',
+      phoneNumber: 'Phone Number',
+      city: 'City',
+      state: 'State',
+      country: 'Country'
+    };
+
+    Object.entries(requiredFields).forEach(([field, label]) => {
+      if (!formData[field]) {
+        newErrors[field] = `${label} is required`;
+      }
+    });
+
+    // Validate arrays
+    if (!formData.skills?.length) newErrors.skills = 'At least one skill is required';
+    if (!formData.languages?.length) newErrors.languages = 'At least one language is required';
+    if (!formData.interests?.length) newErrors.interests = 'At least one interest is required';
+
+    // Validate education
+    if (!formData.education?.[0]?.degree || !formData.education?.[0]?.university) {
+      newErrors.education = 'Education details are required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async () => {
+    if (!validateFields()) {
+      Alert.alert('Missing Information', 'Please fill in all required fields');
+      return;
+    }
+
     if (formData.password !== formData.confirmPassword) {
       setPasswordError('Passwords do not match');
       setStep(2);
@@ -195,7 +238,9 @@ const Manual = ({ route, navigation }) => {
         isUniversityGeneratedPassword: false,
         profilePhoto: formData.profilePic,
         phone: formData.phoneNumber,
-        address: formData.location,
+        city: formData.city,
+        state: formData.state,
+        country: formData.country,
         education: formData.education.map((edu) => ({
           degree: edu.degree,
           institution: edu.university,
@@ -211,12 +256,13 @@ const Manual = ({ route, navigation }) => {
         skills: formData.skills || [],
         projects: [],
         certifications: [],
-        languages: [],
+        languages: formData.languages,
         location: {
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         },
         bio: formData.bio || '',
+        about: formData.about,
         interests: formData.interests || [],
         website: '',
       };
@@ -249,6 +295,15 @@ const Manual = ({ route, navigation }) => {
     }
   };
 
+  const isFormValid = () => {
+    const requiredFields = ['name', 'email', 'password', 'phoneNumber', 'city', 'state', 'country'];
+    const hasRequiredFields = requiredFields.every(field => formData[field]);
+    const hasArrays = formData.skills?.length && formData.languages?.length && formData.interests?.length;
+    const hasEducation = formData.education?.[0]?.degree && formData.education?.[0]?.university;
+    
+    return hasRequiredFields && hasArrays && hasEducation;
+  };
+
   const renderStep = () => {
     switch (step) {
       case 1:
@@ -266,49 +321,36 @@ const Manual = ({ route, navigation }) => {
               )}
             </TouchableOpacity>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Full Name</Text>
-              <TextInput
-                placeholder="Enter your full name"
-                value={formData.name}
-                onChangeText={(text) => setFormData((prev) => ({ ...prev, name: text }))}
-                style={styles.input}
-              />
-            </View>
+            {renderInput('Full Name', 'name', { placeholder: 'Enter your full name' })}
+            {renderInput('Email', 'email', { placeholder: 'Enter your email', keyboardType: 'email-address' })}
+            {renderInput('Phone Number', 'phoneNumber', { placeholder: 'Enter your phone number', keyboardType: 'numeric' })}
+            {renderInput('Location', 'location', { placeholder: 'Where are you based?' })}
+            {renderInput('City', 'city', { placeholder: 'Enter your city' })}
+            {renderInput('State', 'state', { placeholder: 'Enter your state' })}
+            {renderInput('Country', 'country', { placeholder: 'Enter your country' })}
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Email</Text>
-              <TextInput
-                placeholder="Enter your email"
-                value={formData.email}
-                onChangeText={(text) => setFormData((prev) => ({ ...prev, email: text }))}
-                keyboardType="email-address"
-                style={styles.input}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Phone Number</Text>
-              <TextInput
-                placeholder="Enter your phone number"
-                value={formData.phoneNumber}
-                onChangeText={(text) => {
-                  const cleaned = text.replace(/\D/g, '');
-                  setFormData((prev) => ({ ...prev, phoneNumber: cleaned.slice(0, 10) }));
-                }}
-                keyboardType="numeric"
-                style={styles.input}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Location</Text>
-              <TextInput
-                placeholder="Where are you based?"
-                value={formData.location}
-                onChangeText={(text) => setFormData((prev) => ({ ...prev, location: text }))}
-                style={styles.input}
-              />
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Languages</Text>
+              <View style={styles.chipContainer}>
+                {['English', 'Hindi', 'Spanish', 'French', 'German', 'Chinese'].map((lang, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => {
+                      if (!formData.languages.includes(lang)) {
+                        setFormData((prev) => ({
+                          ...prev,
+                          languages: [...prev.languages, lang],
+                        }));
+                      }
+                    }}
+                    style={[styles.chip, formData.languages.includes(lang) && styles.chipSelected]}>
+                    <Text style={[styles.chipText, formData.languages.includes(lang) && styles.chipTextSelected]}>
+                      {lang}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              {errors.languages && <Text style={styles.errorMessage}>{errors.languages}</Text>}
             </View>
           </ScrollView>
         );
@@ -318,55 +360,11 @@ const Manual = ({ route, navigation }) => {
           <ScrollView className="space-y-4 p-4">
             <Text style={styles.heading}>Profile Details</Text>
 
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Current Position</Text>
-              <TextInput
-                placeholder="What's your current role?"
-                value={formData.currentPosition}
-                onChangeText={(text) => setFormData((prev) => ({ ...prev, currentPosition: text }))}
-                style={styles.input}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>New Password</Text>
-              <TextInput
-                placeholder="Enter new password"
-                value={formData.password}
-                onChangeText={(text) => {
-                  setFormData((prev) => ({ ...prev, password: text }));
-                  setPasswordError('');
-                }}
-                secureTextEntry
-                style={styles.input}
-              />
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Confirm Password</Text>
-              <TextInput
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChangeText={(text) => {
-                  setFormData((prev) => ({ ...prev, confirmPassword: text }));
-                  setPasswordError('');
-                }}
-                secureTextEntry
-                style={[styles.input, passwordError ? styles.inputError : null]}
-              />
-              {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-            </View>
-
-            <View style={styles.inputContainer}>
-              <Text style={styles.label}>Bio</Text>
-              <TextInput
-                placeholder="Tell us about yourself"
-                value={formData.bio}
-                onChangeText={(text) => setFormData((prev) => ({ ...prev, bio: text }))}
-                multiline
-                style={[styles.input, styles.textArea]}
-              />
-            </View>
+            {renderInput('Current Position', 'currentPosition', { placeholder: "What's your current role?" })}
+            {renderInput('New Password', 'password', { placeholder: 'Enter new password', secureTextEntry: true })}
+            {renderInput('Confirm Password', 'confirmPassword', { placeholder: 'Confirm your password', secureTextEntry: true })}
+            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+            {renderInput('Bio', 'bio', { placeholder: 'Tell us about yourself', multiline: true, style: styles.textArea })}
           </ScrollView>
         );
 
@@ -507,6 +505,7 @@ const Manual = ({ route, navigation }) => {
                 style={styles.addButton}>
                 <Text style={styles.addButtonText}>+ Add Education</Text>
               </TouchableOpacity>
+              {errors.education && <Text style={styles.errorMessage}>{errors.education}</Text>}
             </View>
 
             <View style={styles.section}>
@@ -534,6 +533,7 @@ const Manual = ({ route, navigation }) => {
                   </TouchableOpacity>
                 ))}
               </View>
+              {errors.skills && <Text style={styles.errorMessage}>{errors.skills}</Text>}
             </View>
 
             <View style={styles.section}>
@@ -564,6 +564,7 @@ const Manual = ({ route, navigation }) => {
                   </TouchableOpacity>
                 ))}
               </View>
+              {errors.interests && <Text style={styles.errorMessage}>{errors.interests}</Text>}
             </View>
           </ScrollView>
         );
@@ -637,6 +638,14 @@ const Manual = ({ route, navigation }) => {
     },
     section: {
       marginBottom: 24,
+      backgroundColor: '#ffffff',
+      padding: 16,
+      borderRadius: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
     },
     sectionTitle: {
       fontSize: 18,
@@ -654,9 +663,11 @@ const Manual = ({ route, navigation }) => {
       paddingVertical: 6,
       borderRadius: 16,
       backgroundColor: '#e0e0e0',
+      borderWidth: 1,
+      borderColor: '#e0e0e0',
     },
     chipSelected: {
-      backgroundColor: '#1a1a1a',
+      backgroundColor: '#000',
     },
     chipText: {
       color: '#4a4a4a',
@@ -699,6 +710,9 @@ const Manual = ({ route, navigation }) => {
       fontWeight: '600',
       textAlign: 'center',
     },
+    nextButtonDisabled: {
+      backgroundColor: '#cccccc',
+    },
     stepIndicator: {
       textAlign: 'center',
       color: '#666',
@@ -739,35 +753,78 @@ const Manual = ({ route, navigation }) => {
       fontSize: 16,
       fontWeight: '600',
     },
+    inputRequired: {
+      borderColor: '#ff4444',
+    },
+    requiredIndicator: {
+      color: '#ff4444',
+      marginLeft: 4,
+    },
+    errorMessage: {
+      color: '#ff4444',
+      fontSize: 12,
+      marginTop: 4,
+    },
     ...additionalStyles,
   });
+
+  const renderInput = (label, field, options = {}) => (
+    <View style={styles.inputContainer}>
+      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Text style={styles.label}>{label}</Text>
+        <Text style={styles.requiredIndicator}>*</Text>
+      </View>
+      <TextInput
+        {...options}
+        value={formData[field]}
+        onChangeText={(text) => {
+          setFormData(prev => ({ ...prev, [field]: text }));
+          setErrors(prev => ({ ...prev, [field]: null }));
+        }}
+        style={[
+          styles.input,
+          errors[field] && styles.inputRequired
+        ]}
+      />
+      {errors[field] && <Text style={styles.errorMessage}>{errors[field]}</Text>}
+    </View>
+  );
+
+  const renderFooter = () => (
+    <View style={styles.footer}>
+      <View style={styles.navigationButtons}>
+        {step > 1 && (
+          <TouchableOpacity
+            onPress={() => setStep(prev => prev - 1)}
+            style={[styles.button, styles.backButton]}>
+            <Text style={styles.backButtonText}>Back</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity
+          onPress={() => {
+            if (step < 3) setStep(prev => prev + 1);
+            else handleSubmit();
+          }}
+          disabled={step === 3 && !isFormValid()}
+          style={[
+            styles.button,
+            styles.nextButton,
+            (step === 3 && !isFormValid()) && styles.nextButtonDisabled
+          ]}>
+          <Text style={styles.nextButtonText}>
+            {step === 3 ? 'Submit' : 'Next'}
+          </Text>
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.stepIndicator}>Step {step} of 3</Text>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
       {renderStep()}
-      <View style={styles.footer}>
-        <View style={styles.navigationButtons}>
-          {step > 1 && (
-            <TouchableOpacity
-              onPress={() => setStep((prev) => prev - 1)}
-              style={[styles.button, styles.backButton]}>
-              <Text style={styles.backButtonText}>Back</Text>
-            </TouchableOpacity>
-          )}
-
-          <TouchableOpacity
-            onPress={() => {
-              if (step < 3) setStep((prev) => prev + 1);
-              else {
-                handleSubmit();
-              }
-            }}
-            style={[styles.button, styles.nextButton]}>
-            <Text style={styles.nextButtonText}>{step === 3 ? 'Submit' : 'Next'}</Text>
-          </TouchableOpacity>
-        </View>
-        <Text style={styles.stepIndicator}>Step {step} of 3</Text>
-      </View>
+      {renderFooter()}
     </View>
   );
 };
