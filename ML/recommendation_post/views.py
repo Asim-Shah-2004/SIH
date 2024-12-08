@@ -377,7 +377,12 @@ class QuantumRecommendationEngine:
                 'is_connection_post': post_data['is_connection_post'],
                 'media': post_data['post'].get('media', []),  # Add media field
                 'connection_info': post_data['connection_info'],
-                'interaction_signals': {
+                'likes': post_data['post'].get('likes', []),
+                'comments': post_data['post'].get('comments', []),
+                'shares': post_data['post'].get('shares', []),
+                'reactions': post_data['post'].get('reactions', []),
+                'created_at': post_data['post'].get('createdAt'),
+                            'interaction_signals': {
                     'likes': [
                         {
                             'user_id': like['userId'],
