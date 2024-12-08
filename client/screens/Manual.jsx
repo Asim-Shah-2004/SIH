@@ -329,28 +329,32 @@ const Manual = ({ route, navigation }) => {
             {renderInput('State', 'state', { placeholder: 'Enter your state' })}
             {renderInput('Country', 'country', { placeholder: 'Enter your country' })}
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Languages</Text>
-              <View style={styles.chipContainer}>
+            <View className="bg-white p-4 rounded-xl shadow-sm mb-6">
+              <Text className="text-lg font-semibold mb-3">Languages</Text>
+              <View className="flex-row flex-wrap gap-2">
                 {['English', 'Hindi', 'Spanish', 'French', 'German', 'Chinese'].map((lang, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => {
-                      if (!formData.languages.includes(lang)) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          languages: [...prev.languages, lang],
-                        }));
-                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        languages: prev.languages.includes(lang)
+                          ? prev.languages.filter(l => l !== lang)
+                          : [...prev.languages, lang],
+                      }));
                     }}
-                    style={[styles.chip, formData.languages.includes(lang) && styles.chipSelected]}>
-                    <Text style={[styles.chipText, formData.languages.includes(lang) && styles.chipTextSelected]}>
+                    className={`px-4 py-2 rounded-full border ${
+                      formData.languages.includes(lang)
+                        ? 'bg-black border-black'
+                        : 'bg-gray-100 border-gray-200'
+                    }`}>
+                    <Text className={formData.languages.includes(lang) ? 'text-white' : 'text-gray-700'}>
                       {lang}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.languages && <Text style={styles.errorMessage}>{errors.languages}</Text>}
+              {errors.languages && <Text className="text-red-500 text-xs mt-2">{errors.languages}</Text>}
             </View>
           </ScrollView>
         );
@@ -508,63 +512,60 @@ const Manual = ({ route, navigation }) => {
               {errors.education && <Text style={styles.errorMessage}>{errors.education}</Text>}
             </View>
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Skills</Text>
-              <View style={styles.chipContainer}>
+            <View className="bg-white p-4 rounded-xl shadow-sm mb-6">
+              <Text className="text-lg font-semibold mb-3">Skills</Text>
+              <View className="flex-row flex-wrap gap-2">
                 {skillSuggestions.map((skill, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => {
-                      if (!formData.skills.includes(skill)) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          skills: [...prev.skills, skill],
-                        }));
-                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        skills: prev.skills.includes(skill)
+                          ? prev.skills.filter(s => s !== skill)
+                          : [...prev.skills, skill],
+                      }));
                     }}
-                    style={[styles.chip, formData.skills.includes(skill) && styles.chipSelected]}>
-                    <Text
-                      style={[
-                        styles.chipText,
-                        formData.skills.includes(skill) && styles.chipTextSelected,
-                      ]}>
+                    className={`px-4 py-2 rounded-full border ${
+                      formData.skills.includes(skill)
+                        ? 'bg-black border-black'
+                        : 'bg-gray-100 border-gray-200'
+                    }`}>
+                    <Text className={formData.skills.includes(skill) ? 'text-white' : 'text-gray-700'}>
                       {skill}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.skills && <Text style={styles.errorMessage}>{errors.skills}</Text>}
+              {errors.skills && <Text className="text-red-500 text-xs mt-2">{errors.skills}</Text>}
             </View>
 
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Interests</Text>
-              <View style={styles.chipContainer}>
+            <View className="bg-white p-4 rounded-xl shadow-sm mb-6">
+              <Text className="text-lg font-semibold mb-3">Interests</Text>
+              <View className="flex-row flex-wrap gap-2">
                 {interestSuggestions.map((interest, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => {
-                      if (!formData.interests.includes(interest)) {
-                        setFormData((prev) => ({
-                          ...prev,
-                          interests: [...prev.interests, interest],
-                        }));
-                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        interests: prev.interests.includes(interest)
+                          ? prev.interests.filter(i => i !== interest)
+                          : [...prev.interests, interest],
+                      }));
                     }}
-                    style={[
-                      styles.chip,
-                      formData.interests.includes(interest) && styles.chipSelected,
-                    ]}>
-                    <Text
-                      style={[
-                        styles.chipText,
-                        formData.interests.includes(interest) && styles.chipTextSelected,
-                      ]}>
+                    className={`px-4 py-2 rounded-full border ${
+                      formData.interests.includes(interest)
+                        ? 'bg-black border-black'
+                        : 'bg-gray-100 border-gray-200'
+                    }`}>
+                    <Text className={formData.interests.includes(interest) ? 'text-white' : 'text-gray-700'}>
                       {interest}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.interests && <Text style={styles.errorMessage}>{errors.interests}</Text>}
+              {errors.interests && <Text className="text-red-500 text-xs mt-2">{errors.interests}</Text>}
             </View>
           </ScrollView>
         );
