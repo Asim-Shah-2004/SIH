@@ -1,23 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
-import { createContext, useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { View, SafeAreaView, ActivityIndicator, Text } from 'react-native';
 
+import { AuthProvider } from './AuthProvider';
 import { SocketProvider } from './SocketProvider';
 import i18n from '../i18n/i18n';
 
-// Create the AuthContext
-export const AuthContext = createContext();
-
-export const Providers = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [role, setRole] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [reqSet, setReqSet] = useState(new Set());
-
+const Providers = ({ children }) => {
   useEffect(() => {
     const initializeLanguage = async () => {
       try {
@@ -30,61 +19,15 @@ export const Providers = ({ children }) => {
       }
     };
 
-    const checkAuthStatus = async () => {
-      try {
-        const loggedInValue = await AsyncStorage.getItem('isLoggedIn');
-        const roleValue = await AsyncStorage.getItem('role');
-        const token = await AsyncStorage.getItem('token');
-        setIsLoggedIn(loggedInValue === 'true');
-        if (token) {
-          const decodedToken = jwtDecode(token);
-          const currentTime = Date.now() / 1000;
-          if (decodedToken.exp < currentTime) {
-            setIsLoggedIn(false);
-            setToken(null);
-            await AsyncStorage.removeItem('token');
-          } else {
-            setToken(token);
-          }
-        }
-        setRole(roleValue || null);
-        setLoading(false);
-      } catch (e) {
-        console.error('Error reading AsyncStorage:', e);
-      }
-    };
-
     initializeLanguage();
-    checkAuthStatus();
   }, []);
 
-  if (loading) {
-    return (
-      <View className="h-full w-full bg-white">
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading .....</Text>
-      </View>
-    );
-  }
-
   return (
-    <AuthContext.Provider
-      value={{
-        isLoggedIn,
-        setIsLoggedIn,
-        role,
-        setRole,
-        reqSet,
-        setReqSet,
-        user,
-        setUser,
-        token,
-        setToken,
-      }}>
+    <AuthProvider>
       <SocketProvider>
         <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
       </SocketProvider>
-    </AuthContext.Provider>
+    </AuthProvider>
   );
 };
 

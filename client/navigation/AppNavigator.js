@@ -1,11 +1,11 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import AuthNavigator from './AuthNavigator';
 import DrawerNavigator from './DrawerNavigator';
 import NewJob from '../components/jobs/NewJob';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 import All from '../screens/All';
 import AlumniDirectory from '../screens/AlumniDirectory';
 import Call from '../screens/Call';
@@ -51,7 +51,7 @@ const screenConfig = {
 };
 
 export default function AppNavigator() {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn } = useAuth();
   const [loading, setLoading] = useState(true);
 
   return (

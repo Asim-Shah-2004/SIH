@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@env';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { useCallback, useState, useEffect, useContext } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import {
   View,
   FlatList,
@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000;
@@ -24,7 +24,7 @@ const ChatScreen = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
-  const { token } = useContext(AuthContext);
+  const { token } = useAuth();
 
   const fetchChats = async (attempt = 0) => {
     try {

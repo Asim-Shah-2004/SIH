@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@env';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
 } from 'react-native';
 
 import PaymentModal from '../components/events/PaymentModal';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 // import { donationCampaigns } from '../constants/donations/donationData';
 
 const formatIndianNumber = (num) => {
@@ -35,9 +35,8 @@ const DonationPortal = ({ navigation }) => {
   const [showHistory, setShowHistory] = useState(false);
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCause, setSelectedCause] = useState({});
-  const { role } = useContext(AuthContext);
+  const { token, role } = useAuth();
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
-  const { token } = useContext(AuthContext);
 
   const fetchDonationHistory = async () => {
     try {

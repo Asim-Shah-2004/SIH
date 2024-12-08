@@ -192,7 +192,7 @@ const Manual = ({ route, navigation }) => {
       phoneNumber: 'Phone Number',
       city: 'City',
       state: 'State',
-      country: 'Country'
+      country: 'Country',
     };
 
     Object.entries(requiredFields).forEach(([field, label]) => {
@@ -297,10 +297,11 @@ const Manual = ({ route, navigation }) => {
 
   const isFormValid = () => {
     const requiredFields = ['name', 'email', 'password', 'phoneNumber', 'city', 'state', 'country'];
-    const hasRequiredFields = requiredFields.every(field => formData[field]);
-    const hasArrays = formData.skills?.length && formData.languages?.length && formData.interests?.length;
+    const hasRequiredFields = requiredFields.every((field) => formData[field]);
+    const hasArrays =
+      formData.skills?.length && formData.languages?.length && formData.interests?.length;
     const hasEducation = formData.education?.[0]?.degree && formData.education?.[0]?.university;
-    
+
     return hasRequiredFields && hasArrays && hasEducation;
   };
 
@@ -322,39 +323,52 @@ const Manual = ({ route, navigation }) => {
             </TouchableOpacity>
 
             {renderInput('Full Name', 'name', { placeholder: 'Enter your full name' })}
-            {renderInput('Email', 'email', { placeholder: 'Enter your email', keyboardType: 'email-address' })}
-            {renderInput('Phone Number', 'phoneNumber', { placeholder: 'Enter your phone number', keyboardType: 'numeric' })}
+            {renderInput('Email', 'email', {
+              placeholder: 'Enter your email',
+              keyboardType: 'email-address',
+            })}
+            {renderInput('Phone Number', 'phoneNumber', {
+              placeholder: 'Enter your phone number',
+              keyboardType: 'numeric',
+            })}
             {renderInput('Location', 'location', { placeholder: 'Where are you based?' })}
             {renderInput('City', 'city', { placeholder: 'Enter your city' })}
             {renderInput('State', 'state', { placeholder: 'Enter your state' })}
             {renderInput('Country', 'country', { placeholder: 'Enter your country' })}
 
-            <View className="bg-white p-4 rounded-xl shadow-sm mb-6">
-              <Text className="text-lg font-semibold mb-3">Languages</Text>
+            <View className="mb-6 rounded-xl bg-white p-4 shadow-sm">
+              <Text className="mb-3 text-lg font-semibold">Languages</Text>
               <View className="flex-row flex-wrap gap-2">
-                {['English', 'Hindi', 'Spanish', 'French', 'German', 'Chinese'].map((lang, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    onPress={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        languages: prev.languages.includes(lang)
-                          ? prev.languages.filter(l => l !== lang)
-                          : [...prev.languages, lang],
-                      }));
-                    }}
-                    className={`px-4 py-2 rounded-full border ${
-                      formData.languages.includes(lang)
-                        ? 'bg-black border-black'
-                        : 'bg-gray-100 border-gray-200'
-                    }`}>
-                    <Text className={formData.languages.includes(lang) ? 'text-white' : 'text-gray-700'}>
-                      {lang}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                {['English', 'Hindi', 'Spanish', 'French', 'German', 'Chinese'].map(
+                  (lang, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      onPress={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          languages: prev.languages.includes(lang)
+                            ? prev.languages.filter((l) => l !== lang)
+                            : [...prev.languages, lang],
+                        }));
+                      }}
+                      className={`rounded-full border px-4 py-2 ${
+                        formData.languages.includes(lang)
+                          ? 'border-black bg-black'
+                          : 'border-gray-200 bg-gray-100'
+                      }`}>
+                      <Text
+                        className={
+                          formData.languages.includes(lang) ? 'text-white' : 'text-gray-700'
+                        }>
+                        {lang}
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                )}
               </View>
-              {errors.languages && <Text className="text-red-500 text-xs mt-2">{errors.languages}</Text>}
+              {errors.languages && (
+                <Text className="mt-2 text-xs text-red-500">{errors.languages}</Text>
+              )}
             </View>
           </ScrollView>
         );
@@ -364,11 +378,23 @@ const Manual = ({ route, navigation }) => {
           <ScrollView className="space-y-4 p-4">
             <Text style={styles.heading}>Profile Details</Text>
 
-            {renderInput('Current Position', 'currentPosition', { placeholder: "What's your current role?" })}
-            {renderInput('New Password', 'password', { placeholder: 'Enter new password', secureTextEntry: true })}
-            {renderInput('Confirm Password', 'confirmPassword', { placeholder: 'Confirm your password', secureTextEntry: true })}
+            {renderInput('Current Position', 'currentPosition', {
+              placeholder: "What's your current role?",
+            })}
+            {renderInput('New Password', 'password', {
+              placeholder: 'Enter new password',
+              secureTextEntry: true,
+            })}
+            {renderInput('Confirm Password', 'confirmPassword', {
+              placeholder: 'Confirm your password',
+              secureTextEntry: true,
+            })}
             {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-            {renderInput('Bio', 'bio', { placeholder: 'Tell us about yourself', multiline: true, style: styles.textArea })}
+            {renderInput('Bio', 'bio', {
+              placeholder: 'Tell us about yourself',
+              multiline: true,
+              style: styles.textArea,
+            })}
           </ScrollView>
         );
 
@@ -512,8 +538,8 @@ const Manual = ({ route, navigation }) => {
               {errors.education && <Text style={styles.errorMessage}>{errors.education}</Text>}
             </View>
 
-            <View className="bg-white p-4 rounded-xl shadow-sm mb-6">
-              <Text className="text-lg font-semibold mb-3">Skills</Text>
+            <View className="mb-6 rounded-xl bg-white p-4 shadow-sm">
+              <Text className="mb-3 text-lg font-semibold">Skills</Text>
               <View className="flex-row flex-wrap gap-2">
                 {skillSuggestions.map((skill, index) => (
                   <TouchableOpacity
@@ -522,26 +548,27 @@ const Manual = ({ route, navigation }) => {
                       setFormData((prev) => ({
                         ...prev,
                         skills: prev.skills.includes(skill)
-                          ? prev.skills.filter(s => s !== skill)
+                          ? prev.skills.filter((s) => s !== skill)
                           : [...prev.skills, skill],
                       }));
                     }}
-                    className={`px-4 py-2 rounded-full border ${
+                    className={`rounded-full border px-4 py-2 ${
                       formData.skills.includes(skill)
-                        ? 'bg-black border-black'
-                        : 'bg-gray-100 border-gray-200'
+                        ? 'border-black bg-black'
+                        : 'border-gray-200 bg-gray-100'
                     }`}>
-                    <Text className={formData.skills.includes(skill) ? 'text-white' : 'text-gray-700'}>
+                    <Text
+                      className={formData.skills.includes(skill) ? 'text-white' : 'text-gray-700'}>
                       {skill}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.skills && <Text className="text-red-500 text-xs mt-2">{errors.skills}</Text>}
+              {errors.skills && <Text className="mt-2 text-xs text-red-500">{errors.skills}</Text>}
             </View>
 
-            <View className="bg-white p-4 rounded-xl shadow-sm mb-6">
-              <Text className="text-lg font-semibold mb-3">Interests</Text>
+            <View className="mb-6 rounded-xl bg-white p-4 shadow-sm">
+              <Text className="mb-3 text-lg font-semibold">Interests</Text>
               <View className="flex-row flex-wrap gap-2">
                 {interestSuggestions.map((interest, index) => (
                   <TouchableOpacity
@@ -550,22 +577,27 @@ const Manual = ({ route, navigation }) => {
                       setFormData((prev) => ({
                         ...prev,
                         interests: prev.interests.includes(interest)
-                          ? prev.interests.filter(i => i !== interest)
+                          ? prev.interests.filter((i) => i !== interest)
                           : [...prev.interests, interest],
                       }));
                     }}
-                    className={`px-4 py-2 rounded-full border ${
+                    className={`rounded-full border px-4 py-2 ${
                       formData.interests.includes(interest)
-                        ? 'bg-black border-black'
-                        : 'bg-gray-100 border-gray-200'
+                        ? 'border-black bg-black'
+                        : 'border-gray-200 bg-gray-100'
                     }`}>
-                    <Text className={formData.interests.includes(interest) ? 'text-white' : 'text-gray-700'}>
+                    <Text
+                      className={
+                        formData.interests.includes(interest) ? 'text-white' : 'text-gray-700'
+                      }>
                       {interest}
                     </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.interests && <Text className="text-red-500 text-xs mt-2">{errors.interests}</Text>}
+              {errors.interests && (
+                <Text className="mt-2 text-xs text-red-500">{errors.interests}</Text>
+              )}
             </View>
           </ScrollView>
         );
@@ -779,13 +811,10 @@ const Manual = ({ route, navigation }) => {
         {...options}
         value={formData[field]}
         onChangeText={(text) => {
-          setFormData(prev => ({ ...prev, [field]: text }));
-          setErrors(prev => ({ ...prev, [field]: null }));
+          setFormData((prev) => ({ ...prev, [field]: text }));
+          setErrors((prev) => ({ ...prev, [field]: null }));
         }}
-        style={[
-          styles.input,
-          errors[field] && styles.inputRequired
-        ]}
+        style={[styles.input, errors[field] && styles.inputRequired]}
       />
       {errors[field] && <Text style={styles.errorMessage}>{errors[field]}</Text>}
     </View>
@@ -796,7 +825,7 @@ const Manual = ({ route, navigation }) => {
       <View style={styles.navigationButtons}>
         {step > 1 && (
           <TouchableOpacity
-            onPress={() => setStep(prev => prev - 1)}
+            onPress={() => setStep((prev) => prev - 1)}
             style={[styles.button, styles.backButton]}>
             <Text style={styles.backButtonText}>Back</Text>
           </TouchableOpacity>
@@ -804,18 +833,16 @@ const Manual = ({ route, navigation }) => {
 
         <TouchableOpacity
           onPress={() => {
-            if (step < 3) setStep(prev => prev + 1);
+            if (step < 3) setStep((prev) => prev + 1);
             else handleSubmit();
           }}
           disabled={step === 3 && !isFormValid()}
           style={[
             styles.button,
             styles.nextButton,
-            (step === 3 && !isFormValid()) && styles.nextButtonDisabled
+            step === 3 && !isFormValid() && styles.nextButtonDisabled,
           ]}>
-          <Text style={styles.nextButtonText}>
-            {step === 3 ? 'Submit' : 'Next'}
-          </Text>
+          <Text style={styles.nextButtonText}>{step === 3 ? 'Submit' : 'Next'}</Text>
         </TouchableOpacity>
       </View>
       <Text style={styles.stepIndicator}>Step {step} of 3</Text>

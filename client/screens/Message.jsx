@@ -9,7 +9,7 @@ import { View, ScrollView, Text } from 'react-native';
 import DateSeparator from '../components/message/DateSeparator';
 import InputBar from '../components/message/InputBar';
 import MessageBubble from '../components/message/MessageBubble';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 import { useSocket } from '../providers/SocketProvider';
 import { formatMessageDate, groupMessagesByDate } from '../utils/dateUtils';
 import { MessageService } from '../utils/messageUtils';
@@ -18,7 +18,7 @@ import { MessageService } from '../utils/messageUtils';
 const MessageScreen = ({ route }) => {
   const { chatData } = route.params;
   const socket = useSocket();
-  const { user, token } = useContext(AuthContext);
+  const { user, token } = useAuth();
 
   const [message, setMessage] = useState('');
   const [messages, setMessages] = useState([]);

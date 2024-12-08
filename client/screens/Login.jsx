@@ -4,12 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
 
 import { LANGUAGES, changeLanguage } from '../i18n/i18n';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -18,7 +18,7 @@ const LoginScreen = () => {
   const [password, setPassword] = useState('');
   const [selectedRole, setSelectedRole] = useState('alumni');
   const [selectedLanguage, setSelectedLanguage] = useState('en');
-  const { setRole, setIsLoggedIn, setToken } = useContext(AuthContext);
+  const { setRole, setIsLoggedIn, setToken } = useAuth();
 
   const ROLES = [
     { label: 'Alumni', value: 'alumni' },

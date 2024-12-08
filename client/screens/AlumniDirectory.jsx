@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@env';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
-import { useState, useCallback, useMemo, useEffect, useContext } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import {
   RefreshControl,
 } from 'react-native';
 
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 import UserCard from '../utils/UserCard';
 
 // const AlumniCard = ({ alumni, onConnect }) => (
@@ -174,7 +174,7 @@ const AlumniDirectory = () => {
   const [error, setError] = useState(null);
   const [alumniData, setAlumniData] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
-  const { token } = useContext(AuthContext);
+  const { token } = useAuth();
 
   const fetchAlumni = useCallback(async () => {
     try {

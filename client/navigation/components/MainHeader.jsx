@@ -1,12 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { useContext } from 'react';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 
-import { AuthContext } from '../../providers/CustomProvider';
+import { useAuth } from '../../providers/AuthProvider';
 
 export default function MainHeader() {
-  const { role } = useContext(AuthContext);
+  const { role } = useAuth();
   const navigation = useNavigation();
 
   const handleChatPress = () => navigation.navigate('Chat');

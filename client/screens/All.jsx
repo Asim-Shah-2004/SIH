@@ -2,14 +2,14 @@ import { SERVER_URL } from '@env'; // Import the SERVER_URL from .env file
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, FlatList, Button, TouchableOpacity, ActivityIndicator } from 'react-native';
 
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 import { connectHandler } from '../utils/connectHandler';
 
 const UsersListPage = () => {
-  const { user, setUser, reqSet, setReqSet } = useContext(AuthContext);
+  const { user, setUser, reqSet, setReqSet } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();

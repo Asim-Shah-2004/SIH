@@ -1,12 +1,12 @@
 import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 
 import EventCard from '../components/events/EventCard';
 import EventModal from '../components/events/EventModal';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 // import { eventsData } from '../constants/events/eventData';
 
 const EventsPage = () => {
@@ -14,7 +14,7 @@ const EventsPage = () => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [loading, setLoading] = useState(true); // To handle loading state
   const [error, setError] = useState(null); // To handle errors
-  const { role } = useContext(AuthContext);
+  const { role } = useAuth();
 
   const fetchEvents = async () => {
     try {

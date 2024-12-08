@@ -2,13 +2,13 @@ import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import LoadingComponent from '../components/LoadingComponent';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 const LoadingScreen = ({ loading, setLoading }) => {
-  const { setUser, setIsLoggedIn, setReqSet } = useContext(AuthContext);
+  const { setUser, setIsLoggedIn, setReqSet } = useAuth();
 
   const fetchUserData = async () => {
     try {

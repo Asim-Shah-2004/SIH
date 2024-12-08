@@ -2,7 +2,14 @@ import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useState, useMemo, useEffect } from 'react';
-import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, RefreshControl } from 'react-native';
+import {
+  View,
+  FlatList,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+  RefreshControl,
+} from 'react-native';
 
 import JobCard from '../components/jobs/JobCard';
 import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';

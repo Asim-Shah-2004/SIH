@@ -1,16 +1,16 @@
 import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback } from 'react';
 import { View, FlatList, Text, TouchableOpacity, Button } from 'react-native';
 
-import { AuthContext } from '../../providers/CustomProvider';
+import { useAuth } from '../../providers/AuthProvider';
 
 const Notifications = () => {
   // State to manage active tab (either 'invitations' or 'notifications')
   const [activeTab, setActiveTab] = useState(true);
   const [isPressed, setIsPressed] = useState(false); // Prevent multiple rapid clicks
-  const { user, setUser } = useContext(AuthContext);
+  const { user, setUser } = useAuth();
 
   const handleAccept = async (invitationId) => {
     const token = await AsyncStorage.getItem('token');

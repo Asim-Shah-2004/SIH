@@ -1,7 +1,8 @@
 import { SERVER_URL } from '@env';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
+
+import { useAuth } from './AuthProvider';
 
 const SocketContext = createContext();
 
@@ -15,19 +16,13 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
-  const [token, setToken] = useState(null);
+  const { token } = useAuth();
 
   useEffect(() => {
     const initSocket = async () => {
       try {
-        const storedToken = await AsyncStorage.getItem('token');
-        if (!storedToken) {
-          return;
-        }
-        setToken(storedToken);
-
         const socketInstance = io(SERVER_URL, {
-          auth: { token: storedToken },
+          auth: { token },
         });
 
         socketInstance.on('connect', () => {
@@ -47,7 +42,7 @@ export const SocketProvider = ({ children }) => {
     };
 
     initSocket();
-  }, []);
+  }, [token]);
 
   return <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>;
 };

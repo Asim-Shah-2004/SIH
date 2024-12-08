@@ -1,7 +1,7 @@
 import { SERVER_URL } from '@env';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import axios from 'axios';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import {
   Modal,
   View,
@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-import { AuthContext } from '../../providers/CustomProvider';
+import { useAuth } from '../../providers/AuthProvider';
 import CustomAlertModal from '../CustomAlertModal';
 
 const PaymentModal = ({
@@ -28,7 +28,7 @@ const PaymentModal = ({
   const [showThankYou, setShowThankYou] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState('');
   const [transactionDetails, setTransactionDetails] = useState(null);
-  const { token } = useContext(AuthContext);
+  const { token } = useAuth();
   const screenHeight = Dimensions.get('window').height;
 
   const displayConfig = {

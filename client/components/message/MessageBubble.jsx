@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import * as Haptics from 'expo-haptics';
 import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import Animated, {
   withSpring,
@@ -14,7 +14,7 @@ import Animated, {
   withSequence,
 } from 'react-native-reanimated';
 
-import { AuthContext } from '../../providers/CustomProvider';
+import { useAuth } from '../../providers/AuthProvider';
 import { formatMessageTime } from '../../utils/dateUtils';
 
 const MessageBubble = ({
@@ -36,7 +36,7 @@ const MessageBubble = ({
   const [isDownloading, setIsDownloading] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [lastTap, setLastTap] = useState(null);
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const scale = useSharedValue(0);
   const opacity = useSharedValue(0);
 

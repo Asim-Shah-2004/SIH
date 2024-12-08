@@ -1,11 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import React, { useContext } from 'react';
 import { View, Text, ScrollView, Image } from 'react-native';
 
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 const MyProfile = () => {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   const Section = ({ title, children }) => (
     <View className="mb-4 rounded-xl bg-white p-4 shadow-md">

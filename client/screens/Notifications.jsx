@@ -1,11 +1,9 @@
-import { useContext } from 'react';
-
 import AlumniNotifications from '../components/notifications/AlumniNotifications';
 import CollegeNotifications from '../components/notifications/CollegeNotifications';
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 const Notifications = () => {
-  const { role } = useContext(AuthContext);
+  const { role } = useAuth();
   if (role === 'alumni') {
     return <AlumniNotifications />;
   } else {

@@ -1,15 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 
-import { AuthContext } from '../providers/CustomProvider';
+import { useAuth } from '../providers/AuthProvider';
 
 const Settings = ({ navigation }) => {
   const [notifications, setNotifications] = useState(true);
   const [emailUpdates, setEmailUpdates] = useState(true);
   const [privateProfile, setPrivateProfile] = useState(false);
-  const { setRole, setIsLoggedIn } = useContext(AuthContext);
+  const { setRole, setIsLoggedIn } = useAuth();
 
   const handleLogout = async () => {
     console.log('Logging out...');
