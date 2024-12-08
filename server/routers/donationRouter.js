@@ -5,14 +5,16 @@ import {
   addDonationCampaign,
   updateDonationCampaign,
   deleteDonationCampaign,
+  donateToCampaign,
 } from '../controllers/donationController.js';
 
-const donationRouter = express.Router();
+const donationCampaignRouter = express.Router();
 
-donationRouter.get('/', getAllDonationCampaigns);
-donationRouter.get('/:id', getDonationCampaignById);
-donationRouter.post('/', addDonationCampaign);
-donationRouter.put('/:id', updateDonationCampaign);
-donationRouter.delete('/:id', deleteDonationCampaign);
+donationCampaignRouter.get('/', getAllDonationCampaigns);
+donationCampaignRouter.get('/:id', getDonationCampaignById);
+donationCampaignRouter.post('/', addDonationCampaign);
+donationCampaignRouter.put('/:id', updateDonationCampaign);
+donationCampaignRouter.delete('/:id', deleteDonationCampaign);
+donationCampaignRouter.post('/:id/donate', donateToCampaign);
 
-export default donationRouter;
+export default donationCampaignRouter;

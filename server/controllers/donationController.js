@@ -1,4 +1,5 @@
-import { DonationCampaign } from '../models/index.js';
+import { DonationCampaign, User, Transaction } from '../models/index.js';
+import mongoose from 'mongoose';
 
 export const getAllDonationCampaigns = async (req, res) => {
   try {
@@ -66,5 +67,59 @@ export const deleteDonationCampaign = async (req, res) => {
     res
       .status(400)
       .json({ error: 'Invalid campaign ID or failed to delete campaign' });
+  }
+};
+
+export const donateToCampaign = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { id } = req.params;
+    const { email } = req.user;
+    const { amount, transactionMethod } = req.body;
+
+    const user = await User.findOne({ email }).session(session);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const campaign = await DonationCampaign.findOne({ id }).session(session);
+    if (!campaign) {
+      throw new Error('Campaign not found');
+    }
+
+    const transaction = new Transaction({
+      user: user._id,
+      amount,
+      transactionMethod,
+    });
+    await transaction.save({ session });
+
+    campaign.raised += amount;
+    campaign.donors += 1;
+    campaign.transactions.push(transaction._id);
+    await campaign.save({ session });
+
+    user.donationHistory.push({
+      transactionId: transaction._id,
+      campaignId: campaign._id,
+    });
+    await user.save({ session });
+
+    await session.commitTransaction();
+
+    res.status(200).json({
+      message: 'Donation successful',
+      transaction: transaction,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(400).json({
+      error: 'Failed to process donation',
+      details: error.message,
+    });
+  } finally {
+    session.endSession();
   }
 };

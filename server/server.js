@@ -10,7 +10,7 @@ import { connectMongoDB } from './services/index.js';
 import {
   eventRouter,
   jobRouter,
-  donationRouter,
+  donationCampaignRouter,
   authRouter,
   connectionRouter,
   userRouter,
@@ -57,7 +57,7 @@ app.use(authenticateToken);
 app.use('/media', mediaUploadRouter);
 app.use('/events', eventRouter);
 app.use('/jobs', jobRouter);
-app.use('/donations', donationRouter);
+app.use('/donationcampaigns', donationCampaignRouter);
 app.use('/connections', connectionRouter);
 app.use('/users', userRouter);
 app.use('/chat', chatRouter);

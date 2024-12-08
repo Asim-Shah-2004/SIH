@@ -99,7 +99,7 @@ const ProfileScreen = ({ route }) => {
       // Fetch user data based on route.params.id
       console.log('Fetching user data for:', route.params._id);
       try {
-        const response = await axios.get(`${SERVER_URL}/users/${id}`, {
+        const response = await axios.get(`${SERVER_URL}/users/fetch/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log('User data:', response.data);

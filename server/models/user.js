@@ -54,7 +54,10 @@ const userSchema = new mongoose.Schema({
   },
   connections: { type: [requestSchema], default: [] },
   receivedRequests: { type: [requestSchema], default: [] },
-  sentRequests: { type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }], default: [] },
+  sentRequests: {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+    default: [],
+  },
   notifications: { type: [String], default: [] },
   bio: { type: String },
   interests: { type: [String], required: true },
@@ -66,6 +69,18 @@ const userSchema = new mongoose.Schema({
     },
   ],
   about: { type: String },
+  donationHistory: [
+    {
+      transactionId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Transaction',
+      },
+      campaignId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'DonationCampaign',
+      },
+    },
+  ],
   createdAt: { type: Date, default: Date.now },
 });
 

@@ -1,6 +1,5 @@
 import { SERVER_URL } from '@env';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useState, useEffect, useContext } from 'react';
 import {
@@ -14,6 +13,7 @@ import {
   Modal,
 } from 'react-native';
 
+import PaymentModal from '../components/events/PaymentModal';
 import { AuthContext } from '../providers/CustomProvider';
 // import { donationCampaigns } from '../constants/donations/donationData';
 
@@ -36,15 +36,27 @@ const DonationPortal = ({ navigation }) => {
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCause, setSelectedCause] = useState({});
   const { role } = useContext(AuthContext);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const { token } = useContext(AuthContext);
+
+  const fetchDonationHistory = async () => {
+    try {
+      const response = await axios.get(`${SERVER_URL}/users/donations`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setDonationHistory(response.data);
+    } catch (error) {
+      console.error('Error fetching donation history:', error);
+      alert('Failed to load donation history. Please try again later.');
+    }
+  };
 
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-          throw new Error('Token not found');
-        }
-        const response = await axios.get(`${SERVER_URL}/donations`, {
+        const response = await axios.get(`${SERVER_URL}/donationcampaigns`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -58,49 +70,47 @@ const DonationPortal = ({ navigation }) => {
     };
 
     fetchCampaigns();
-  }, []); // Empty dependency array to run only on mount
+  }, []);
+
+  useEffect(() => {
+    fetchDonationHistory();
+  }, []);
 
   const handleDonation = (amount) => {
     if (amount && !isNaN(amount) && amount > 0) {
-      const newDonation = {
-        amount,
-        date: new Date().toLocaleString(),
-        cause: {
-          id: selectedCause.id,
-          title: selectedCause.title,
-          category: selectedCause.category,
-        },
-      };
-
-      // Update donation history
-      setDonationHistory([...donationHistory, newDonation]);
-
-      // Update campaign data
-      setCampaigns((prevCampaigns) => {
-        return prevCampaigns.map((campaign) => {
-          if (campaign.id === selectedCause.id) {
-            return {
-              ...campaign,
-              raised: campaign.raised + Number(amount),
-              donors: campaign.donors + 1,
-            };
-          }
-          return campaign;
-        });
-      });
-
-      // Update selected cause
-      setSelectedCause((prev) => ({
-        ...prev,
-        raised: prev.raised + Number(amount),
-        donors: prev.donors + 1,
-      }));
-
-      setDonationAmount('');
-      alert('Thank you for your donation!');
+      setPaymentModalOpen(true);
     } else {
       alert('Please enter a valid donation amount');
     }
+  };
+
+  const handlePaymentComplete = ({ amount, itemId, transaction }) => {
+    // Refresh donation history from server to get latest data
+    fetchDonationHistory();
+
+    // Update campaign data
+    setCampaigns((prevCampaigns) => {
+      return prevCampaigns.map((campaign) => {
+        if (campaign.id === itemId) {
+          return {
+            ...campaign,
+            raised: campaign.raised + Number(amount),
+            donors: campaign.donors + 1,
+          };
+        }
+        return campaign;
+      });
+    });
+
+    // Update selected cause
+    setSelectedCause((prev) => ({
+      ...prev,
+      raised: prev.raised + Number(amount),
+      donors: prev.donors + 1,
+    }));
+
+    setDonationAmount('');
+    setPaymentModalOpen(false);
   };
 
   const selectCause = (item) => {
@@ -198,55 +208,57 @@ const DonationPortal = ({ navigation }) => {
     <View className="mb-2 rounded-lg bg-white p-4 shadow-md">
       <Text className="font-bold text-green-600">{formatIndianNumber(Number(item.amount))}</Text>
       <View className="mt-1 flex-row justify-between">
-        <Text className="text-xs text-gray-500">{item.date}</Text>
+        <Text className="text-xs text-gray-500">
+          {new Date(item.transactionDate).toLocaleString()}
+        </Text>
         <View className="rounded-full bg-blue-100 px-2 py-1">
-          <Text className="text-xs font-medium text-blue-700">{item.cause.title}</Text>
+          <Text className="text-xs font-medium text-blue-700">{item.transactionMethod}</Text>
         </View>
       </View>
+      <Text className="mt-1 text-xs text-gray-500">Transaction ID: {item.user}</Text>
     </View>
   );
 
   return (
     <View className="flex-1 bg-gray-50">
       {/* Modern Donation Input with Indian Format */}
-      <View className="px-4 pb-4 pt-6">
+      <View className="px-4 pb-2 pt-4">
         {role === 'alumni' ? (
-          <View className="rounded-2xl border border-gray-100 bg-white p-4 shadow-lg">
-            <View className="mb-3 flex-row items-center justify-between">
-              <View>
-                <Text className="text-xl font-bold text-gray-900">Make a Donation</Text>
-                {/* <Text className="text-sm text-gray-600">Selected Cause: {selectedCause.title}</Text> */}
-              </View>
+          <View className="rounded-xl border border-gray-100 bg-white p-3 shadow-lg">
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-lg font-bold text-gray-900">Make a Donation</Text>
               <TouchableOpacity
-                className="rounded-xl bg-gray-100 p-3"
+                className="rounded-lg bg-gray-100 p-2"
                 onPress={() => setShowHistory(true)}>
-                <MaterialCommunityIcons name="history" size={24} color="#4B5563" />
+                <MaterialCommunityIcons name="history" size={20} color="#4B5563" />
               </TouchableOpacity>
             </View>
             <View className="flex-row gap-2">
-              <View className="flex-1 flex-row items-center rounded-xl border border-gray-200 bg-gray-50 px-4">
-                <Text className="text-2xl text-gray-400">₹</Text>
-                <TextInput
-                  className="ml-2 h-14 flex-1 text-2xl font-medium text-gray-900"
-                  placeholder="Enter amount"
-                  keyboardType="numeric"
-                  value={donationAmount}
-                  onChangeText={(text) => setDonationAmount(text)}
-                />
+              <View className="flex-1 flex-row items-center justify-between rounded-lg border border-gray-200 bg-gray-50 px-3">
+                <View className="flex-row items-center">
+                  <Text className="text-xl text-gray-400">₹</Text>
+                  <TextInput
+                    className="ml-2 h-12 w-36 text-xl font-medium text-gray-900"
+                    placeholder="Enter Amount"
+                    keyboardType="numeric"
+                    value={donationAmount}
+                    onChangeText={(text) => setDonationAmount(text)}
+                  />
+                </View>
+                {donationAmount ? (
+                  <Text className="text-sm text-gray-500">
+                    {formatIndianNumber(Number(donationAmount))}
+                  </Text>
+                ) : null}
               </View>
               <TouchableOpacity
-                className="rounded-xl bg-blue-500 px-6"
+                className="rounded-lg bg-blue-500 px-4"
                 onPress={() => handleDonation(donationAmount)}>
-                <View className="h-14 items-center justify-center">
-                  <Text className="text-base font-bold text-white">Donate</Text>
+                <View className="h-12 items-center justify-center">
+                  <Text className="text-md font-bold text-white">Donate</Text>
                 </View>
               </TouchableOpacity>
             </View>
-            {donationAmount ? (
-              <Text className="mt-2 text-sm text-gray-400">
-                {formatIndianNumber(Number(donationAmount))}
-              </Text>
-            ) : null}
           </View>
         ) : (
           <TouchableOpacity
@@ -254,6 +266,27 @@ const DonationPortal = ({ navigation }) => {
             className="mx-4 my-4 rounded-lg bg-blue-600 px-5 py-3">
             <Text className="text-center font-bold text-white">Post a New Donation</Text>
           </TouchableOpacity>
+        )}
+
+        {/* Add Selected Cause Display */}
+        {selectedCause.id && (
+          <View className="mt-3 rounded-xl border border-blue-100 bg-blue-50 p-3">
+            <Text className="mb-1 text-sm font-medium text-gray-600">Selected Campaign:</Text>
+            <View className="flex-row items-center justify-between">
+              <View className="flex-1">
+                <Text className="text-base font-bold text-gray-900">{selectedCause.title}</Text>
+                <Text className="text-sm text-gray-600">
+                  {formatIndianNumber(selectedCause.raised)} raised of{' '}
+                  {formatIndianNumber(selectedCause.goal)}
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => setSelectedCause({})}
+                className="rounded-full bg-white p-2">
+                <MaterialCommunityIcons name="close" size={16} color="#4B5563" />
+              </TouchableOpacity>
+            </View>
+          </View>
         )}
       </View>
 
@@ -280,6 +313,11 @@ const DonationPortal = ({ navigation }) => {
                 keyExtractor={(_, index) => index.toString()}
                 showsVerticalScrollIndicator={false}
                 contentContainerClassName="pb-6"
+                decelerationRate="normal"
+                bounces
+                removeClippedSubviews
+                maxToRenderPerBatch={10}
+                initialNumToRender={5}
               />
             ) : (
               <View className="flex-1 items-center justify-center">
@@ -299,8 +337,28 @@ const DonationPortal = ({ navigation }) => {
           renderItem={renderDonationGoal}
           keyExtractor={(item) => item.id}
           showsVerticalScrollIndicator={false}
+          decelerationRate="normal"
+          bounces
+          bouncesZoom
+          maintainVisibleContentPosition={{
+            minIndexForVisible: 0,
+          }}
+          removeClippedSubviews
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          initialNumToRender={3}
         />
       </View>
+
+      <PaymentModal
+        open={paymentModalOpen}
+        onClose={() => setPaymentModalOpen(false)}
+        onPaymentComplete={handlePaymentComplete}
+        type="donation"
+        amount={donationAmount}
+        title={selectedCause.title}
+        itemId={selectedCause.id}
+      />
     </View>
   );
 };

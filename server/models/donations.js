@@ -41,6 +41,7 @@ const donationCampaignSchema = new mongoose.Schema({
   taxBenefits: { type: String },
   minimumDonation: { type: Number, required: true },
   suggestedDonations: { type: [Number], required: true },
+  transactions: { type: [mongoose.Schema.Types.ObjectId], ref: 'Transaction' },
 });
 
 const DonationCampaign = mongoose.model(

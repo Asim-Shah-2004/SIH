@@ -14,13 +14,17 @@ export const sendConnectionRequest = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    if (sender.sentRequests.some((req) => req._id.toString() === targetUserId)) {
+    if (
+      sender.sentRequests.some((req) => req._id.toString() === targetUserId)
+    ) {
       return res
         .status(400)
         .json({ message: 'Connection request already sent' });
     }
 
-    if (sender.connections.some((conn) => conn._id.toString() === targetUserId)) {
+    if (
+      sender.connections.some((conn) => conn._id.toString() === targetUserId)
+    ) {
       return res.status(400).json({ message: 'Users are already connected' });
     }
 
@@ -28,23 +32,23 @@ export const sendConnectionRequest = async (req, res) => {
       User.findByIdAndUpdate(senderId, {
         $addToSet: { sentRequests: targetUserId },
       }),
-      User.findByIdAndUpdate(
-        targetUserId,
-        {
-          $addToSet: {
-            receivedRequests: {
-              _id: senderId,
-              fullName: sender.fullName,
-              bio: sender.bio,
-              profilePhoto: sender.profilePhoto || null
-            },
-            notifications: `${sender.fullName} sent you a connection request`,
+      User.findByIdAndUpdate(targetUserId, {
+        $addToSet: {
+          receivedRequests: {
+            _id: senderId,
+            fullName: sender.fullName,
+            bio: sender.bio,
+            profilePhoto: sender.profilePhoto || null,
           },
+          notifications: `${sender.fullName} sent you a connection request`,
         },
-      )
+      }),
     ]);
     const updatedSender = await User.findById(senderId);
-    res.json({ message: 'Connection request sent successfully', user: updatedSender });
+    res.json({
+      message: 'Connection request sent successfully',
+      user: updatedSender,
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -65,7 +69,11 @@ export const acceptConnectionRequest = async (req, res) => {
     }
 
     // Check if the request exists in receivedRequests
-    if (!accepter.receivedRequests.some((req) => req._id.toString() === requesterId)) {
+    if (
+      !accepter.receivedRequests.some(
+        (req) => req._id.toString() === requesterId
+      )
+    ) {
       return res.status(400).json({ message: 'No pending request found' });
     }
 
@@ -85,18 +93,22 @@ export const acceptConnectionRequest = async (req, res) => {
       }),
 
       // Update the requester's data
-      User.findByIdAndUpdate(requesterId, {
-        $pull: { sentRequests: accepterId }, // Remove the request from sentRequests
-        $addToSet: {
-          connections: {
-            _id: accepterId,
-            fullName: accepter.fullName,
-            bio: accepter.bio,
-            profilePhoto: accepter.profilePhoto || null,
+      User.findByIdAndUpdate(
+        requesterId,
+        {
+          $pull: { sentRequests: accepterId }, // Remove the request from sentRequests
+          $addToSet: {
+            connections: {
+              _id: accepterId,
+              fullName: accepter.fullName,
+              bio: accepter.bio,
+              profilePhoto: accepter.profilePhoto || null,
+            },
+            notifications: `${accepter.fullName} accepted your connection request`,
           },
-          notifications: `${accepter.fullName} accepted your connection request`,
         },
-      }, { new: true }),
+        { new: true }
+      ),
     ]);
 
     const updatedAccepter = await User.findById(accepterId);
@@ -105,7 +117,6 @@ export const acceptConnectionRequest = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 
 export const rejectConnectionRequest = async (req, res) => {
   try {
@@ -122,7 +133,11 @@ export const rejectConnectionRequest = async (req, res) => {
     }
 
     // Check if the request exists in receivedRequests
-    if (!rejecter.receivedRequests.some((req) => req._id.toString() === requesterId)) {
+    if (
+      !rejecter.receivedRequests.some(
+        (req) => req._id.toString() === requesterId
+      )
+    ) {
       return res.status(400).json({ message: 'No pending request found' });
     }
 
@@ -133,12 +148,16 @@ export const rejectConnectionRequest = async (req, res) => {
       }),
 
       // Remove the request from requester's sentRequests and notify
-      User.findByIdAndUpdate(requesterId, {
-        $pull: { sentRequests: rejecterId },
-        $addToSet: {
-          notifications: `${rejecter.fullName} declined your connection request`,
+      User.findByIdAndUpdate(
+        requesterId,
+        {
+          $pull: { sentRequests: rejecterId },
+          $addToSet: {
+            notifications: `${rejecter.fullName} declined your connection request`,
+          },
         },
-      }, { new: true }),
+        { new: true }
+      ),
     ]);
     const updatedRejecter = await User.findById(rejecterId);
     res.json({ message: 'Connection request rejected', user: updatedRejecter });
@@ -146,7 +165,6 @@ export const rejectConnectionRequest = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
 
 export const getConnections = async (req, res) => {
   try {

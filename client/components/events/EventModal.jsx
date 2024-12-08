@@ -125,6 +125,10 @@ const EventModal = ({ open, onClose, event }) => {
         open={paymentModalOpen}
         onClose={() => setPaymentModalOpen(false)}
         onPaymentComplete={handlePaymentComplete}
+        type="event"
+        amount={event.price}
+        title={event.title}
+        itemId={event.id}
       />
     </>
   );

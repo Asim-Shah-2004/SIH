@@ -20,7 +20,7 @@ const LoadingScreen = ({ loading, setLoading }) => {
       const decodedToken = jwtDecode(token);
       const id = decodedToken.id;
 
-      const response = await axios.get(`${SERVER_URL}/users/${id}`, {
+      const response = await axios.get(`${SERVER_URL}/users/fetch/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUser(response.data);
