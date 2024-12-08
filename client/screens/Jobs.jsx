@@ -2,42 +2,50 @@ import { SERVER_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { useState, useMemo, useEffect } from 'react';
-import { View, FlatList, TouchableOpacity, Text, ActivityIndicator } from 'react-native';
+import { View, FlatList, TouchableOpacity, Text, ActivityIndicator, RefreshControl } from 'react-native';
 
 import JobCard from '../components/jobs/JobCard';
-// import { jobsData } from '../constants/jobs/jobData';
 import { DEFAULT_ALUMNI_DATA as profileData } from '../constants/profileData';
 
 const JobPortal = ({ navigation }) => {
   const [skills, setSkills] = useState(profileData.skills);
   const [jobsData, setJobsData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // State to track refreshing
 
-  useEffect(() => {
-    const fetchJobs = async () => {
-      try {
-        const token = await AsyncStorage.getItem('token');
+  // Fetch jobs function
+  const fetchJobs = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
 
-        if (!token) {
-          throw new Error('Token not found');
-        }
-
-        setLoading(true);
-        const response = await axios.get(`${SERVER_URL}/jobs`, {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add the token here
-          },
-        }); // Use this if testing on physical device
-        setJobsData(response.data); // Assuming the backend returns an array of jobs
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching jobs:', error);
-        setLoading(false);
+      if (!token) {
+        throw new Error('Token not found');
       }
-    };
 
+      setLoading(true);
+      const response = await axios.get(`${SERVER_URL}/jobs`, {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the token here
+        },
+      });
+      setJobsData(response.data); // Assuming the backend returns an array of jobs
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching jobs:', error);
+      setLoading(false);
+    }
+  };
+
+  // Call fetchJobs on mount
+  useEffect(() => {
     fetchJobs();
   }, []);
+
+  // Pull to refresh handler
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchJobs().finally(() => setRefreshing(false)); // Reset refreshing state after fetching
+  };
 
   const sortedJobs = useMemo(() => {
     return [...jobsData].sort((a, b) => {
@@ -50,14 +58,14 @@ const JobPortal = ({ navigation }) => {
   const renderJob = ({ item }) => <JobCard item={item} userSkills={skills} />;
 
   const openPostJobPage = () => {
-    // For now, just log to simulate the action of opening a new page
     console.log('Open a new page to post a job');
     navigation.navigate('NewJob');
   };
+
   if (loading) {
     return (
       <View className="flex-1 items-center justify-center bg-gray-100">
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#000" />
         <Text className="mt-4 text-gray-600">Loading jobs...</Text>
       </View>
     );
@@ -72,11 +80,18 @@ const JobPortal = ({ navigation }) => {
         <Text className="text-center font-bold text-white">Post a New Job</Text>
       </TouchableOpacity>
 
+      {/* FlatList with Pull to Refresh */}
       <FlatList
         data={sortedJobs}
         renderItem={renderJob}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ padding: 16 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing} // Display refresh spinner when refreshing
+            onRefresh={onRefresh} // Trigger onRefresh handler when user pulls to refresh
+          />
+        }
       />
     </View>
   );
