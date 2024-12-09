@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-
+import { ML_URL } from '@env';
 import UserCard from '../../utils/UserCard'; // Importing the UserCard component
 // import { connectHandler } from '../../utils/connectHandler';
 
@@ -17,7 +17,7 @@ const AlumniRecommendations = () => {
     const getRecommendations = async () => {
       try {
         const response = await axios.post(
-          'http://192.168.1.6:8000/api/get_comprehensive_recommendations/',
+          `${ML_URL}/api/get_comprehensive_recommendations/`,
           {
             email: 'raywridesh@example.org',
           }

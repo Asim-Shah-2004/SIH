@@ -1,4 +1,4 @@
-import { ML_SERVER_URL } from '@env';
+import { ML_URL } from '@env';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as DocumentPicker from 'expo-document-picker';
 import { useState } from 'react';
@@ -50,7 +50,7 @@ const RegisterScreen = ({ navigation }) => {
         });
 
         try {
-          const response = await fetch(`${ML_SERVER_URL}/api/upload-resume/`, {
+          const response = await fetch(`${ML_URL}/api/upload-resume/`, {
             method: 'POST',
             body: formData,
             headers: {

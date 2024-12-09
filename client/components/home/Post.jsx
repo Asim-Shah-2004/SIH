@@ -5,10 +5,15 @@ import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react
 import Markdown from 'react-native-markdown-display';
 
 const Post = ({ postData }) => {
-  const [showAllComments, setShowAllComments] = useState(false);
+  const [showComments, setShowComments] = useState(false);
+
+  const handleComments = (show) => {
+    setShowComments(!show);
+  };
 
   // Format date to relative time
   const getRelativeTime = (date) => {
+    if (!date) return 'unknown';
     const now = new Date();
     const posted = new Date(date);
     const diff = Math.floor((now - posted) / 1000); // seconds
@@ -21,6 +26,7 @@ const Post = ({ postData }) => {
 
   // Get reaction counts
   const getReactionCounts = () => {
+    if (!postData?.reactions) return {};
     const counts = {};
     postData.reactions.forEach((reaction) => {
       counts[reaction.type] = (counts[reaction.type] || 0) + 1;
@@ -41,33 +47,35 @@ const Post = ({ postData }) => {
       {/* Post Header */}
       <View className="flex-row items-center p-4">
         <Image
-          source={{ uri: `https://ui-avatars.com/api/?name=User&background=random` }}
+          source={{ uri: postData?.connection_info?.profile_picture || `https://ui-avatars.com/api/?name=User&background=random` }}
           className="h-12 w-12 rounded-full"
         />
         <View className="ml-3 flex-1">
           <Text className="text-base font-semibold text-gray-800">
-            User {postData.userId.slice(-4)}
+            {postData?.connection_info?.name || `User ${postData?.post_id?.slice(-4)}`}
           </Text>
-          <Text className="text-sm text-gray-500">{getRelativeTime(postData.createdAt)}</Text>
+          <Text className="text-sm text-gray-500">{getRelativeTime(postData?.createdAt)}</Text>
         </View>
       </View>
 
       {/* Post Content */}
-      <View className="mt-3 px-4">
-        <Markdown
-          style={{
-            body: { fontSize: 15, lineHeight: 22, color: '#374151' },
-            heading1: { fontSize: 24, fontWeight: 'bold', marginVertical: 12 },
-            heading2: { fontSize: 20, fontWeight: 'bold', marginVertical: 10 },
-            link: { color: '#0a66c2' },
-            list: { marginLeft: 20 },
-          }}>
-          {postData.text}
-        </Markdown>
-      </View>
+      {postData?.text && (
+        <View className="mt-3 px-4">
+          <Markdown
+            style={{
+              body: { fontSize: 15, lineHeight: 22, color: '#374151' },
+              heading1: { fontSize: 24, fontWeight: 'bold', marginVertical: 12 },
+              heading2: { fontSize: 20, fontWeight: 'bold', marginVertical: 10 },
+              link: { color: '#0a66c2' },
+              list: { marginLeft: 20 },
+            }}>
+            {postData.text}
+          </Markdown>
+        </View>
+      )}
 
       {/* Media Content */}
-      {postData.media && (
+      {/* {postData?.media?.length > 0 && (
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3">
           {postData.media.map((item, index) => (
             <View key={index} className="mx-4 mb-3">
@@ -80,7 +88,32 @@ const Post = ({ postData }) => {
             </View>
           ))}
         </ScrollView>
+      )} */}
+
+      {true && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-3">
+          {/* Placeholder Media Items */}
+          {[1, 2, 3, 4, 5].map((item, index) => (
+            <View key={index} className="mx-4 mb-3">
+              {index < 3 ? (
+                // Placeholder Images
+                <Image
+                  source={{
+                    uri: `https://via.placeholder.com/300x200?text=Image+${index + 1}`,
+                  }}
+                  className="h-[100px] w-[150px] rounded-lg"
+                />
+              ) : (
+                // Placeholder Videos
+                <View className="h-[100px] w-[150px] rounded-lg bg-gray-300 flex items-center justify-center">
+                  <Text className="text-white">Video {index - 2}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+        </ScrollView>
       )}
+
 
       {/* Reactions & Stats */}
       <View className="border-t border-gray-200 p-4">
@@ -93,9 +126,11 @@ const Post = ({ postData }) => {
               </View>
             ))}
           </View>
-          <Text className="ml-auto text-gray-500">
-            {postData.comments.length} comments • {postData.shares.length} shares
+
+          <Text className="ml-auto text-gray-500" onPress={() => handleComments(showComments)}>
+            {postData?.comments?.length || 0} comments • {postData?.shares?.length || 0} shares
           </Text>
+
         </View>
       </View>
 
@@ -116,38 +151,10 @@ const Post = ({ postData }) => {
       </View>
 
       {/* Comments Section */}
-      {postData.comments.length > 0 && (
-        <View className="bg-gray-50 p-4">
-          <FlatList
-            data={showAllComments ? postData.comments : postData.comments.slice(0, 2)}
-            renderItem={({ item }) => (
-              <View className="mb-3">
-                <View className="flex-row items-center">
-                  <Image
-                    source={{ uri: `https://ui-avatars.com/api/?name=User&background=random` }}
-                    className="h-8 w-8 rounded-full"
-                  />
-                  <View className="ml-2 flex-1">
-                    <Text className="font-medium">User {item.userId.slice(-4)}</Text>
-                    <Text>{item.text}</Text>
-                    <View className="mt-1 flex-row">
-                      <Text className="text-xs text-gray-500">
-                        {getRelativeTime(item.createdAt)} • {item.likes.length} likes
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )}
-          />
-          {postData.comments.length > 2 && (
-            <TouchableOpacity onPress={() => setShowAllComments(!showAllComments)}>
-              <Text className="font-medium text-blue-600">
-                {showAllComments ? 'Show less' : `View all ${postData.comments.length} comments`}
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
+      {postData.comments && showComments && (
+        <Text className="p-4 text-gray-500 border-t border-gray-200">
+          Comments will be displayed here
+        </Text>
       )}
     </LinearGradient>
   );

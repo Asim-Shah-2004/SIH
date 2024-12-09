@@ -1,4 +1,4 @@
-import { ML_SERVER_URL } from '@env';
+import { ML_URL } from '@env';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,6 +13,9 @@ const NewPost = ({ onSubmitPost, user }) => {
   const [emotion, setEmotion] = useState('');
   const [AI, setAI] = useState(false);
   const [prompt, setPrompt] = useState('');
+  const [loading1, setLoading1] = useState(false);
+  const [loading2, setLoading2] = useState(false);
+  const [stack, setStack] = useState([]);
 
   const suggestions = [
     'Make this more professional',
@@ -30,26 +33,40 @@ const NewPost = ({ onSubmitPost, user }) => {
 
   const analyzeEmotion = async () => {
     try {
-      const response = await axios.post(`${ML_SERVER_URL}/api/analyze_emotion/`, {
+      setLoading1(true);
+      const response = await axios.post(`${ML_URL}/api/analyze_emotion/`, {
         post: newPost,
       });
       console.log('Emotion Analysis Response:', response.data);
       setEmotion(response.data.emotions[0].label);
     } catch (error) {
       console.error('Error analyzing emotion:', error);
+    } finally {
+      setLoading1(false);
     }
   };
 
   const rewriteText = async () => {
     try {
-      const response = await axios.post(`${ML_SERVER_URL}/api/rewrite/`, {
-        post: newPost,
+      setLoading2(true);
+      const response = await axios.post(`${ML_URL}/api/rewrite/`, {
+        post: newPost || '',
         style: prompt,
       });
       console.log('Rewrite Response:', response.data);
+      setStack([...stack, newPost]);
       setNewPost(response.data.rewritten_text);
     } catch (error) {
       console.error('Error rewriting text:', error);
+    } finally {
+      setLoading2(false);
+    }
+  };
+
+  const undoRewrite = () => {
+    if (stack.length > 0) {
+      setNewPost(stack.pop());
+      setStack([...stack]);
     }
   };
 
@@ -158,7 +175,7 @@ const NewPost = ({ onSubmitPost, user }) => {
 
       {media.length > 0 && <View className="my-4">{renderMediaPreview()}</View>}
 
-      {newPost && renderMarkdownPreview()}
+      {/* {newPost && renderMarkdownPreview()} */}
 
       <View className="mt-3 flex-row items-center justify-between">
         <View className="flex-row">
@@ -178,9 +195,8 @@ const NewPost = ({ onSubmitPost, user }) => {
         </View>
 
         <TouchableOpacity
-          className={`rounded-full px-6 py-2 ${
-            !newPost.trim() && media.length === 0 ? 'bg-black/50' : 'bg-black'
-          }`}
+          className={`rounded-full px-6 py-2 ${!newPost.trim() && media.length === 0 ? 'bg-black/50' : 'bg-black'
+            }`}
           onPress={handleSubmit}
           disabled={!newPost.trim() && media.length === 0}>
           <Text className="text-sm font-semibold text-white">Post</Text>
@@ -190,6 +206,14 @@ const NewPost = ({ onSubmitPost, user }) => {
       {AI && (
         <View className="mt-2 space-y-4">
           {/* Analyze Emotion Section */}
+          <View className="bg-yellow-50 p-2 border-l-4 border-yellow-500 rounded-lg shadow-lg flex-row items-center gap-1">
+            <Text className="text-yellow-500 text-xl">💡</Text>
+            <Text className="text-sm font-medium text-gray-800">
+              Try writing something in the Post to analyze emotion or Generate Post entirely by AI.
+            </Text>
+          </View>
+
+
           <View className="flex-row items-center justify-between rounded-lg bg-gray-50 p-3">
             <TouchableOpacity
               className={`rounded-lg px-4 py-2 ${newPost ? 'bg-blue-500' : 'bg-gray-300'}`}
@@ -200,7 +224,7 @@ const NewPost = ({ onSubmitPost, user }) => {
               </Text>
             </TouchableOpacity>
             <Text className="text-sm font-medium text-gray-700">
-              {emotion || 'No emotion detected'}
+              {loading1 ? 'Loading...' : emotion || 'No emotion detected'}
             </Text>
           </View>
 
@@ -227,9 +251,20 @@ const NewPost = ({ onSubmitPost, user }) => {
               placeholderTextColor="#657786"
             />
             <TouchableOpacity
-              className="rounded-lg bg-green-500 px-4 py-3 shadow-sm"
-              onPress={rewriteText}>
-              <Text className="text-center text-sm font-medium text-white">Rewrite with AI</Text>
+              className={`rounded-lg mb-2 ${prompt ? 'bg-green-500' : 'bg-gray-300'} px-4 py-3 shadow-sm`}
+              onPress={prompt ? rewriteText : null} // Only trigger rewriteText if prompt is set
+              disabled={!prompt} // Disable the button when prompt is not set
+            >
+              <Text className={`text-center text-sm font-medium ${prompt ? 'text-white' : 'text-gray-500'}`}>
+                {loading2 ? 'Generating Response...' : 'Write with AI'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className={`rounded-lg px-4 py-3 shadow-sm ${stack.length === 0 ? 'bg-gray-500' : 'bg-black'}`}
+              onPress={stack ? undoRewrite : null} // Only trigger undoRewrite if stack is not empty
+              disabled={stack.length === 0} // Disable the button when stack is empty
+            >
+              <Text className="text-center text-sm font-medium text-white">Discard Response</Text>
             </TouchableOpacity>
           </View>
         </View>

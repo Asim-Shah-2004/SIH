@@ -1,34 +1,47 @@
-import { useState, useEffect } from 'react';
-import { FlatList, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { FlatList, StyleSheet, View, Text } from 'react-native';
 
 import NewPost from '../components/home/NewPost';
 import Post from '../components/home/Post';
-import { posts } from '../constants/posts/postData';
+import axios from 'axios';
+import { ML_URL } from '@env';
 
 const Home = () => {
-  const [postData, setPostData] = useState([]);
-
+  const [posts, setPosts] = React.useState();
+  const [loading, setLoading] = React.useState(true);
   useEffect(() => {
-    setPostData(posts);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const email = "raymond.salinas@company.com"; // Replace with the actual email
+        const response = await axios.get(`${ML_URL}/api/quantum_recommend_posts`, {
+          params: { email }
+        });
+        setPosts(response.data.recommendations);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   const handleSubmitPost = (content) => {
-    const post = {
-      userId: Date.now(),
-      content,
-      timestamp: new Date().toISOString(),
-    };
-    setPostData([post, ...postData]);
   };
 
   return (
-    <FlatList
-      ListHeaderComponent={<NewPost onSubmitPost={handleSubmitPost} />}
-      data={postData}
-      renderItem={({ item }) => <Post key={item.userId} postData={item} />}
-      keyExtractor={(item) => item.userId.toString()}
-      contentContainerStyle={styles.container}
-    />
+    <View>
+      <NewPost onSubmitPost={handleSubmitPost} />
+      {loading && <Text>Loading...</Text>}
+      {posts && (<FlatList
+        data={posts}
+        renderItem={({ item }) => <Post key={item.post_id} postData={item} />}
+        keyExtractor={(item) => item.post_id.toString()}
+        contentContainerStyle={styles.container}
+      />)}
+    </View>
   );
 };
 

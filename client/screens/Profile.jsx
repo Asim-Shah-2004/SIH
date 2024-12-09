@@ -1,298 +1,151 @@
-import { SERVER_URL } from '@env';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { View, Text, ScrollView, Image } from 'react-native';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
-import { Image, Pressable, Text, View, FlatList, Linking } from 'react-native';
-
-import Post from '../components/home/Post';
-import Badge from '../components/profile/Badge';
-import Card from '../components/profile/Card';
-import LinkText from '../components/profile/LinkText';
-import ReadMore from '../components/profile/ReadMore';
-import StatItem from '../components/profile/StatItem';
-import { myPost } from '../constants/posts/myPost';
-import { DEFAULT_ALUMNI_DATA } from '../constants/profileData';
-
-const getSocialIcon = (platform) => {
-  const iconSize = 20;
-  const iconColor = 'text-primary';
-  switch (platform.toLowerCase()) {
-    case 'github':
-      return <Feather name="github" size={iconSize} className={iconColor} />;
-    case 'linkedin':
-      return <Feather name="linkedin" size={iconSize} className={iconColor} />;
-    case 'twitter':
-      return <Feather name="twitter" size={iconSize} className={iconColor} />;
-    case 'portfolio':
-      return <Feather name="globe" size={iconSize} className={iconColor} />;
-    default:
-      return <Feather name="link-2" size={iconSize} className={iconColor} />;
-  }
-};
-
-const PostsSection = ({ myPost }) => {
-  const [showAllPosts, setShowAllPosts] = useState(false);
-  const [editingPostId, setEditingPostId] = useState(null);
-
-  const handleEdit = (postId) => {
-    setEditingPostId(postId);
-    // Add your edit logic here
-  };
-
-  const handleDelete = (postId) => {
-    // Add your delete logic here
-    console.log('Deleting post:', postId);
-  };
-
-  const postsToShow = showAllPosts ? myPost : myPost.slice(0, 1);
-
-  const renderItem = ({ item }) => (
-    <View className="mb-4 rounded-lg bg-white p-4 shadow-md">
-      <Post key={item.userId} postData={item} />
-      {editingPostId === item.userId && (
-        <Text className="mt-2 text-sm text-gray-600">Edit Mode for Post {item.userId}</Text>
-      )}
-      <View className="mt-4 flex-row items-center justify-between">
-        <Pressable
-          onPress={() => handleEdit(item.userId)}
-          className="mr-2 flex-1 rounded-md bg-blue-500 py-2">
-          <Text className="text-center text-white">Edit</Text>
-        </Pressable>
-        <Pressable
-          onPress={() => handleDelete(item.userId)}
-          className="ml-2 flex-1 rounded-md bg-red-500 py-2">
-          <Text className="text-center text-white">Delete</Text>
-        </Pressable>
-      </View>
-    </View>
-  );
-
-  const ListFooterComponent = () =>
-    !showAllPosts && (
-      <Pressable onPress={() => setShowAllPosts(true)} className="mt-4 rounded-md bg-gray-200 p-2">
-        <Text className="text-center text-blue-500">See All Posts</Text>
-      </Pressable>
-    );
-
-  return (
-    <FlatList
-      data={postsToShow}
-      renderItem={renderItem}
-      keyExtractor={(item) => item.userId.toString()}
-      ListFooterComponent={ListFooterComponent}
-    />
-  );
-};
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SERVER_URL } from '@env';
 
 const ProfileScreen = ({ route }) => {
-  const [activeSection, setActiveSection] = useState('about');
-  const data = { ...DEFAULT_ALUMNI_DATA };
+  const [user, setUser] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const id = route.params._id;
       const token = await AsyncStorage.getItem('token');
       if (!token) {
         throw new Error('Token not found');
       }
-      // Fetch user data based on route.params.id
-      console.log('Fetching user data for:', route.params._id);
       try {
         const response = await axios.get(`${SERVER_URL}/users/fetch/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log('User data:', response.data);
-        console.log(response.data.fullName);
+        setUser(response.data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.log('Error fetching user data:', error);
+        setError("Couldn't fetch user data");
       }
+      setLoading(false);
     };
 
     fetchData();
   }, []);
 
-  const renderHeader = () => (
-    <>
-      {/* Cover Section */}
-      <View className="relative h-40">
-        <Image
-          source={{ uri: data.coverPhoto }}
-          className="h-full w-full bg-gray-100"
-          style={{ opacity: 0.95 }}
-        />
-        <View className="absolute right-4 top-6 flex-row space-x-3">
-          <Pressable className="rounded-full bg-white/90 p-3 shadow">
-            <Feather name="share-2" size={20} className="text-text" />
-          </Pressable>
-          <Pressable className="rounded-full bg-white/90 p-3 shadow">
-            <Feather name="settings" size={20} className="text-text" />
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Profile Info Card */}
-      <View className="mx-4 -mt-20 rounded-xl bg-background p-5 shadow-lg">
-        <Image
-          source={{ uri: data.profilePicture }}
-          className="h-28 w-28 rounded-xl border-4 border-background shadow-sm"
-        />
-
-        <View className="mt-3 space-y-1">
-          <Text className="text-2xl font-bold text-text">{data.name}</Text>
-          <Text className="text-text/60 text-base">{data.position}</Text>
-          <Text className="text-text/60 text-sm">{`${data.location.city}, ${data.location.country}`}</Text>
-        </View>
-
-        <View className="mt-6 flex-row justify-between">
-          <StatItem icon="users" count={data.stats.followers} label="Followers" />
-          <StatItem icon="user-plus" count={data.stats.following} label="Following" />
-          <StatItem icon="file-text" count={data.stats.posts} label="Posts" />
-        </View>
-
-        <View className="mt-6 flex-row gap-3">
-          <Pressable className="flex-1 flex-row items-center justify-center space-x-2 rounded-lg bg-primary p-3">
-            <Feather name="user" size={16} className="text-white" />
-            <Text className="text-base font-medium text-white">Connect</Text>
-          </Pressable>
-          <Pressable className="flex-row items-center justify-center space-x-2 rounded-lg border-2 border-primary p-3">
-            <Feather name="send" size={16} className="text-primary" />
-            <Text className="text-base font-medium text-primary">Message</Text>
-          </Pressable>
-        </View>
-      </View>
-
-      {/* Sections */}
-      <View className="mt-4 px-4">
-        <View className="flex-row flex-wrap gap-2">
-          {['About', 'Experience', 'Posts', 'Skills'].map((section) => (
-            <Pressable
-              key={section}
-              onPress={() => setActiveSection(section.toLowerCase())}
-              className={`rounded-full px-4 py-2 ${
-                activeSection === section.toLowerCase()
-                  ? 'bg-primary'
-                  : 'border border-gray-200 bg-white'
-              }`}>
-              <Text
-                className={`text-base font-medium ${
-                  activeSection === section.toLowerCase() ? 'text-white' : 'text-text/60'
-                }`}>
-                {section}
-              </Text>
-            </Pressable>
-          ))}
-        </View>
-      </View>
-    </>
-  );
-
-  const renderContent = () => (
-    <View className="p-4">
-      {activeSection === 'about' && (
-        <View className="space-y-6">
-          <View>
-            <Text className="mb-2 text-lg font-semibold text-text">About</Text>
-            <ReadMore numberOfLines={3} className="text-text/80 text-base leading-relaxed">
-              <LinkText text={data.bio} />
-            </ReadMore>
-          </View>
-
-          <View className="rounded-xl bg-white p-4 shadow">
-            <Text className="mb-4 text-lg font-semibold text-text">Contact Information</Text>
-            {[
-              { icon: Feather, name: 'mail', value: data.email },
-              { icon: Feather, name: 'phone', value: data.phone },
-              { icon: Feather, name: 'calendar', value: `Batch of ${data.batch}` },
-            ].map((item, i) => (
-              <View key={i} className="mb-3 flex-row items-center space-x-3">
-                <item.icon name={item.name} size={20} className="text-primary" />
-                <LinkText text={item.value} className="text-text/80 text-base" />
-              </View>
-            ))}
-          </View>
-
-          <View className="rounded-xl bg-white p-5 shadow-lg">
-            <Text className="mb-4 text-lg font-semibold text-text">Social Links</Text>
-            {Object.entries(data.socialLinks).map(([platform, url], i) => (
-              <Pressable
-                key={i}
-                onPress={() => Linking.openURL(url.startsWith('http') ? url : `https://${url}`)}
-                className="mb-4 flex-row items-center space-x-4">
-                <View className="bg-primary/10 rounded-full p-3">{getSocialIcon(platform)}</View>
-                <Text className="flex-1 text-base font-medium text-text">{platform}</Text>
-                <Feather name="link-2" size={16} className="text-primary" />
-              </Pressable>
-            ))}
-          </View>
-        </View>
-      )}
-
-      {activeSection === 'posts' && (
-        <View className="space-y-4">
-          <Text className="text-lg font-semibold text-text">Posts</Text>
-          <PostsSection myPost={myPost} />
-        </View>
-      )}
-
-      {activeSection === 'experience' && (
-        <View className="space-y-4">
-          {data.workExperience.map((work, index) => (
-            <Card
-              key={index}
-              icon={<Feather name="briefcase" size={18} className="text-primary" />}
-              title={work.position}
-              subtitle={work.company}
-              meta={work.duration}
-              description={work.description}
-            />
-          ))}
-        </View>
-      )}
-
-      {activeSection === 'skills' && (
-        <View className="space-y-6">
-          <View>
-            <Text className="mb-4 text-lg font-semibold text-text">Skills</Text>
-            <View className="flex-row flex-wrap gap-2">
-              {data.skills.map((skill, index) => (
-                <Badge key={index} className="bg-primary/10">
-                  <Text className="text-sm font-medium text-primary">{skill}</Text>
-                </Badge>
-              ))}
-            </View>
-          </View>
-
-          <View className="rounded-xl bg-white p-5 shadow-md">
-            <Text className="mb-4 text-lg font-semibold text-text">Certifications</Text>
-            {data.certifications.map((cert, index) => (
-              <View key={index} className="mb-3 flex-row items-center justify-between">
-                <View className="flex-row items-center space-x-3">
-                  <MaterialCommunityIcons name="medal" size={20} className="text-primary" />
-                  <Text className="text-base font-medium text-text">{cert.name}</Text>
-                </View>
-                <Text className="text-text/60 text-sm">{cert.year}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
-      )}
+  const Section = ({ title, children }) => (
+    <View className="mb-4 rounded-xl bg-white p-4 shadow-md">
+      <Text className="mb-3 text-xl font-semibold text-gray-800">{title}</Text>
+      {children}
     </View>
   );
 
-  return (
-    <FlatList
-      className="flex-1 bg-gray-50"
-      ListHeaderComponent={() => (
-        <>
-          {renderHeader()}
-          {renderContent()}
-        </>
-      )}
-      data={[]} // Empty data array since we're only using header
-      renderItem={() => null}
-    />
+  const InfoItem = ({ icon, text }) => (
+    <View className="mb-2 flex-row items-center">
+      <Ionicons name={icon} size={20} color="#666" className="mr-2" />
+      <Text className="ml-2 text-gray-700">{text}</Text>
+    </View>
   );
+
+  if (loading) {
+    return <Text>Loading</Text>;
+  }
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+
+  return (
+    user && (
+      <ScrollView className="flex-1 bg-gray-100">
+        {/* Cover Photo */}
+        <View className="h-40 bg-blue-500" />
+
+        {/* Profile Header */}
+        <View className="-mt-20 px-4">
+          <View className="rounded-xl bg-white p-4 shadow-lg">
+            <View className="-mt-24 items-center">
+              {user.profilePhoto && (
+                <Image
+                  source={{ uri: `${user.profilePhoto}` }}
+                  className="mb-2 h-32 w-32 rounded-full border-4 border-white shadow-lg"
+                />
+              )}
+              <Text className="mt-2 text-2xl font-bold text-gray-900">{user.fullName}</Text>
+              <Text className="mt-1 px-4 text-center text-gray-600">{user.bio}</Text>
+            </View>
+
+            {/* Quick Info */}
+            <View className="mt-4 flex-row justify-around border-t border-gray-200 pt-4">
+              <InfoItem icon="mail-outline" text={user.email} />
+              <InfoItem icon="call-outline" text={user.phone} />
+            </View>
+          </View>
+        </View>
+
+        {/* Main Content */}
+        <View className="mt-4 px-4">
+          {/* Education */}
+          <Section title="Education">
+            {user.education.map((edu, index) => (
+              <View key={index} className="mb-3 border-b border-gray-100 pb-3">
+                <Text className="text-lg font-bold text-gray-800">{edu.degree}</Text>
+                <Text className="text-gray-600">{edu.institution}</Text>
+                <Text className="text-sm text-gray-500">Class of {edu.yearOfGraduation}</Text>
+              </View>
+            ))}
+          </Section>
+
+          {/* Skills */}
+          <Section title="Skills">
+            <View className="-m-1 flex-row flex-wrap">
+              {user.skills.map((skill, index) => (
+                <View key={index} className="m-1 rounded-full bg-blue-100 px-4 py-2">
+                  <Text className="text-blue-800">{skill}</Text>
+                </View>
+              ))}
+            </View>
+          </Section>
+
+          {/* Languages */}
+          <Section title="Languages">
+            <View className="-m-1 flex-row flex-wrap">
+              {user.languages.map((language, index) => (
+                <View key={index} className="m-1 rounded-full bg-green-100 px-4 py-2">
+                  <Text className="text-green-800">{language}</Text>
+                </View>
+              ))}
+            </View>
+          </Section>
+
+          {/* Interests */}
+          <Section title="Interests">
+            <View className="-m-1 flex-row flex-wrap">
+              {user.interests.map((interest, index) => (
+                <View key={index} className="m-1 rounded-full bg-purple-100 px-4 py-2">
+                  <Text className="text-purple-800">{interest}</Text>
+                </View>
+              ))}
+            </View>
+          </Section>
+
+          {/* Work Experience */}
+          {user.workExperience.length > 0 && (
+            <Section title="Work Experience">
+              {user.workExperience.map((work, index) => (
+                <View key={index} className="mb-3 border-b border-gray-100 pb-3">
+                  <Text className="text-gray-800">{work}</Text>
+                </View>
+              ))}
+            </Section>
+          )}
+        </View>
+
+        {/* Bottom Padding */}
+        <View className="h-10" />
+      </ScrollView>
+    ));
 };
 
 export default ProfileScreen;
