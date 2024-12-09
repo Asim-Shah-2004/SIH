@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'resume_autofill',
     'rewriteAI',
     'recommendation',
+    'chat_pdf',
     'recommendation_post'
 ]
 
