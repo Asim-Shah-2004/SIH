@@ -17,6 +17,7 @@ import {
   mediaGetRouter,
   mediaUploadRouter,
   chatRouter,
+  postRouter,
 } from './routers/index.js';
 import { socketAuthMiddleware } from './middleware/socketAuthMiddleware.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
@@ -61,6 +62,7 @@ app.use('/donationcampaigns', donationCampaignRouter);
 app.use('/connections', connectionRouter);
 app.use('/users', userRouter);
 app.use('/chat', chatRouter);
+app.use('/posts', postRouter);
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>');

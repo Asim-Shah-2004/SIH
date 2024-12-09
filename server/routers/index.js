@@ -6,6 +6,7 @@ import connectionRouter from './connectionRouter.js';
 import userRouter from './userRouter.js';
 import { mediaGetRouter, mediaUploadRouter } from './mediaRouter.js';
 import chatRouter from './chatRouter.js';
+import postRouter from "./postRouter.js";
 
 export {
   eventRouter,
@@ -17,4 +18,5 @@ export {
   mediaUploadRouter,
   chatRouter,
   donationCampaignRouter,
+  postRouter,
 };
