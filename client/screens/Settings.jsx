@@ -47,8 +47,8 @@ const Settings = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Profile</Text>
-        <SettingItem icon="person-outline" title="Edit Profile" onPress={() => { }} />
-        <SettingItem icon="key-outline" title="Change Password" onPress={() => { }} />
+        <SettingItem icon="person-outline" title="Edit Profile" onPress={() => {}} />
+        <SettingItem icon="key-outline" title="Change Password" onPress={() => {}} />
       </View>
 
       <View style={styles.section}>
@@ -82,9 +82,9 @@ const Settings = ({ navigation }) => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>General</Text>
-        <SettingItem icon="document-outline" title="Terms of Service" onPress={() => { }} />
-        <SettingItem icon="shield-outline" title="Privacy Policy" onPress={() => { }} />
-        <SettingItem icon="information-circle-outline" title="About" onPress={() => { }} />
+        <SettingItem icon="document-outline" title="Terms of Service" onPress={() => {}} />
+        <SettingItem icon="shield-outline" title="Privacy Policy" onPress={() => {}} />
+        <SettingItem icon="information-circle-outline" title="About" onPress={() => {}} />
       </View>
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>

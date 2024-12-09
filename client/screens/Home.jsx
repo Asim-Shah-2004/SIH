@@ -1,14 +1,14 @@
 import { ML_URL } from '@env';
 import axios from 'axios';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
 
 import NewPost from '../components/home/NewPost';
 import Post from '../components/home/Post';
 
 const Home = () => {
-  const [posts, setPosts] = React.useState();
-  const [loading, setLoading] = React.useState(true);
+  const [posts, setPosts] = useState();
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);

@@ -7,6 +7,7 @@ import * as MediaLibrary from 'expo-media-library';
 import * as Sharing from 'expo-sharing';
 import { useState, useEffect } from 'react';
 import { View, Text, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 import Animated, {
   withSpring,
   useAnimatedStyle,
@@ -172,9 +173,41 @@ const MessageBubble = ({
         } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border-accent/10 border'}`}>
         {renderUploadingState()}
         {type === 'text' && (
-          <Text className={`${sender === user.email ? 'text-white' : 'text-text'} text-[15px]`}>
+          <Markdown
+            markdownit={MarkdownIt({ linkify: true }).disable(['fence', 'table', 'image'])}
+            style={{
+              body: {
+                color: sender === user.email ? '#ffffff' : '#000000',
+                fontSize: 15,
+              },
+              link: {
+                color: sender === user.email ? '#ffffff' : '#2563eb',
+                textDecorationLine: 'underline',
+              },
+              heading1: {
+                marginTop: 4,
+                marginBottom: 4,
+                color: sender === user.email ? '#ffffff' : '#000000',
+                fontSize: 20,
+                fontWeight: 'bold',
+              },
+              heading2: {
+                marginTop: 4,
+                marginBottom: 4,
+                color: sender === user.email ? '#ffffff' : '#000000',
+                fontSize: 18,
+                fontWeight: 'bold',
+              },
+              code_block: {
+                backgroundColor:
+                  sender === user.email ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
+                padding: 4,
+                borderRadius: 4,
+                fontFamily: 'monospace',
+              },
+            }}>
             {text}
-          </Text>
+          </Markdown>
         )}
         {type === 'image' && (
           <Image

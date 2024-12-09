@@ -5,7 +5,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
-import Markdown from 'react-native-markdown-display';
+import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 
 const NewPost = ({ onSubmitPost, user }) => {
   const [newPost, setNewPost] = useState('');
@@ -152,7 +152,9 @@ const NewPost = ({ onSubmitPost, user }) => {
   const renderMarkdownPreview = () => (
     <View className="mt-3 rounded-lg bg-gray-50 p-3">
       <Text className="mb-2 text-sm font-medium text-gray-600">Preview:</Text>
-      <Markdown>{newPost}</Markdown>
+      <Markdown markdownit={MarkdownIt({ linkify: true }).disable(['fence', 'table', 'image'])}>
+        {newPost}
+      </Markdown>
     </View>
   );
 

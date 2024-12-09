@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Audio } from 'expo-av';
 import * as ImagePicker from 'expo-image-picker';
 import * as MediaLibrary from 'expo-media-library';
-import { useState, useRef, useEffect, useContext } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { View, ScrollView, Text } from 'react-native';
 
 import DateSeparator from '../components/message/DateSeparator';
