@@ -335,8 +335,8 @@ class PersistentFAISSRecommendationEngine:
                     'postId': str(post['_id']),
                     'text': post.get('text', ''),
                     'authorId': str(post['userId']),
-                    'FullName': author_details['fullName'],
-                    'ProfilePhoto': author_details['profilePhoto'],
+                    'fullName': author_details['fullName'],
+                    'profilePhoto': author_details['profilePhoto'],
                     'total_score': semantic_score * 1 + interaction_score * 0.3,
                     'media': post.get('media', []),
                     'likes': {
