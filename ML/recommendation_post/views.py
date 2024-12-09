@@ -84,46 +84,6 @@ class PersistentFAISSRecommendationEngine:
         os.unlink(tmp_file.name)
         
         return index
-    def _serialize_faiss_index(self, index):
-        """
-        Serialize FAISS index to a binary format
-        """
-        # Create a temporary file
-        import tempfile
-        
-        # Use a temporary file to write the index
-        with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-            faiss.write_index(index, tmp_file.name)
-        
-        # Read the file contents
-        with open(tmp_file.name, 'rb') as f:
-            serialized_index = f.read()
-        
-        # Clean up the temporary file
-        import os
-        os.unlink(tmp_file.name)
-        
-        return serialized_index
-
-    def _deserialize_faiss_index(self, serialized_index):
-        """
-        Deserialize FAISS index from binary format
-        """
-        # Create a temporary file
-        import tempfile
-        
-        # Write serialized index to a temporary file
-        with tempfile.NamedTemporaryFile(delete=False, mode='wb') as tmp_file:
-            tmp_file.write(serialized_index)
-        
-        # Read the index from the temporary file
-        index = faiss.read_index(tmp_file.name)
-        
-        # Clean up the temporary file
-        import os
-        os.unlink(tmp_file.name)
-        
-        return index
     
     def _manage_faiss_index(self):
         """
@@ -157,47 +117,71 @@ class PersistentFAISSRecommendationEngine:
         # Build new index if no valid existing index
         self._rebuild_faiss_index()
     
-    def _rebuild_faiss_index(self):
+    def _rebuild_faiss_index(self, incremental=False):
         """
-        Rebuild the FAISS index from scratch
+        Rebuild the FAISS index from scratch or incrementally
+        
+        :param incremental: If True, only add new posts since last index creation
         """
-        # Fetch all posts with text
-        posts = list(self.posts_collection.find({
-            'text': {'$exists': True, '$ne': ''}
-        }).limit(20000))  # Increased limit
+        # Fetch base query for posts
+        query = {'text': {'$exists': True, '$ne': ''}}
+        
+        # If incremental, only fetch posts after last index creation
+        if incremental:
+            last_index = self.index_collection.find_one({'type': 'post_semantic_index'})
+            if last_index and 'created_at' in last_index:
+                query['createdAt'] = {'$gt': last_index['created_at']}
+        
+        # Fetch posts (limit increased for safety)
+        posts = list(self.posts_collection.find(query).limit(20000))
+        
+        # If no new posts and incremental, return early
+        if not posts and incremental:
+            return False
         
         # Extract and embed texts
         texts = [post.get('text', '') for post in posts]
         embeddings = self.embedding_model.encode(texts)
         
-        # Create FAISS index
-        dimension = embeddings.shape[1]
-        index = faiss.IndexFlatL2(dimension)  # L2 distance (Euclidean)
+        # If not incremental or first build, create a new index
+        if not hasattr(self, 'faiss_index') or not incremental:
+            dimension = embeddings.shape[1]
+            index = faiss.IndexFlatL2(dimension)
+            existing_post_ids = []
+        else:
+            # For incremental updates, use existing index
+            index = self.faiss_index
+            existing_post_ids = self.post_ids
         
         # Convert embeddings to float32 for FAISS
         embeddings_float32 = embeddings.astype('float32')
         
-        # Add embeddings to index
+        # Add new embeddings to index
         index.add(embeddings_float32)
+        
+        # Combine post IDs
+        all_post_ids = existing_post_ids + [str(post['_id']) for post in posts]
         
         # Serialize and store index in MongoDB
         serialized_index = self._serialize_faiss_index(index)
         
-        # Store index in MongoDB
+        # Store updated index in MongoDB
         self.index_collection.update_one(
             {'type': 'post_semantic_index'},
             {'$set': {
                 'index_data': Binary(serialized_index),
-                'post_ids': [str(post['_id']) for post in posts],
+                'post_ids': all_post_ids,
                 'created_at': datetime.now(),
-                'total_posts': len(posts)
+                'total_posts': len(all_post_ids)
             }},
             upsert=True
         )
         
         # Set instance variables
         self.faiss_index = index
-        self.post_ids = [str(post['_id']) for post in posts]
+        self.post_ids = all_post_ids
+        
+        return True
     
     def _compute_interaction_score(self, post):
         """
@@ -324,7 +308,37 @@ def quantum_recommend_posts(request):
                 'error': 'An error occurred while fetching recommendations'
             }, status=500)
 
-
+@csrf_exempt
+def update_faiss_index(request):
+    """
+    Route to trigger FAISS index update
+    """
+    if request.method == 'POST':
+        try:
+            # Get MongoDB URL from environment variable
+            mongo_url = os.getenv("MONGO_URL")
+            
+            # Create recommendation engine
+            recommender = PersistentFAISSRecommendationEngine(mongo_url)
+            
+            # Rebuild the index
+            recommender._rebuild_faiss_index()
+            
+            return JsonResponse({
+                'status': 'success',
+                'message': 'FAISS index updated successfully'
+            })
+        
+        except Exception as e:
+            print(f"Error updating index: {e}")
+            return JsonResponse({
+                'status': 'error',
+                'message': str(e)
+            }, status=500)
+    
+    return JsonResponse({
+        'error': 'Only POST method is allowed'
+    }, status=405)
 
 
 class MongoJSONEncoder(json.JSONEncoder):
