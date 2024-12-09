@@ -20,7 +20,7 @@ class MongoJSONEncoder(json.JSONEncoder):
         return super().default(obj)
 
 class PersistentFAISSRecommendationEngine:
-    def __init__(self, mongo_url=None, max_recommendations=10):
+    def __init__(self, mongo_url=None, max_recommendations=5):
         # MongoDB Connection
         if not mongo_url:
             mongo_url = os.getenv("MONGO_URL")
@@ -247,8 +247,8 @@ class PersistentFAISSRecommendationEngine:
                     }
                 
                 return {
-                    'user_id': str(user['_id']),
-                    'name': user.get('fullName', 'Unknown'),
+                    'userId': str(user['_id']),
+                    'fullName': user.get('fullName', 'Unknown'),
                     'email': user.get('email', ''),
                     'profilePhoto': user.get('profilePhoto', ''),
                     **connection_info
@@ -263,7 +263,25 @@ class PersistentFAISSRecommendationEngine:
                     interactions, 
                     key=lambda x: (-x['is_connection'], -x.get('interaction_strength', 0))
                 )
-            
+            author_cache = {}
+            def get_author_details(user_id):
+                """
+                Retrieve author details efficiently using a cache
+                """
+                user_id_str = str(user_id)
+                if user_id_str not in author_cache:
+                    author = self.users_collection.find_one({'_id': ObjectId(user_id)})
+                    if author:
+                        author_cache[user_id_str] = {
+                            'fullName': author.get('fullName', 'Unknown'),
+                            'profilePhoto': author.get('profilePhoto', '')
+                        }
+                    else:
+                        author_cache[user_id_str] = {
+                            'fullName': 'Unknown',
+                            'profilePhoto': ''
+                        }
+                return author_cache[user_id_str]
             # Process recommendations
             recommendations = []
             seen_post_ids = set()
@@ -281,7 +299,7 @@ class PersistentFAISSRecommendationEngine:
                 
                 if not post or post['userId'] == current_user['_id']:
                     continue
-                
+                author_details = get_author_details(post['userId'])
                 # Process likes with connection info
                 likes_details = []
                 for like_user_id in post.get('likes', []):
@@ -314,9 +332,11 @@ class PersistentFAISSRecommendationEngine:
                 interaction_score = self._compute_interaction_score(post)
                 
                 recommendation = {
-                    'post_id': str(post['_id']),
+                    'postId': str(post['_id']),
                     'text': post.get('text', ''),
-                    'author_id': str(post['userId']),
+                    'authorId': str(post['userId']),
+                    'authorFullName': author_details['fullName'],
+                    'authorProfilePhoto': author_details['profilePhoto'],
                     'total_score': semantic_score * 1 + interaction_score * 0.3,
                     'media': post.get('media', []),
                     'likes': {
@@ -364,7 +384,7 @@ def quantum_recommend_posts(request):
 
         try:
             # Create recommendation engine
-            recommender = PersistentFAISSRecommendationEngine(mongo_url, max_recommendations=10)
+            recommender = PersistentFAISSRecommendationEngine(mongo_url, max_recommendations=5)
             
             # Find user by email
             current_user = recommender.users_collection.find_one({"email": user_email})
