@@ -317,9 +317,7 @@ class PersistentFAISSRecommendationEngine:
                     'post_id': str(post['_id']),
                     'text': post.get('text', ''),
                     'author_id': str(post['userId']),
-                    'semantic_score': semantic_score,
-                    'interaction_score': interaction_score,
-                    'total_score': semantic_score * 0.7 + interaction_score * 0.3,
+                    'total_score': semantic_score * 1 + interaction_score * 0.3,
                     'media': post.get('media', []),
                     'likes': {
                         'total': len(likes_details),
