@@ -1,17 +1,16 @@
-from django.shortcuts import render
+import os
+import io
+import json
+import numpy as np
+import faiss
+import pickle
+from sentence_transformers import SentenceTransformer
 from django.http import JsonResponse
 from pymongo import MongoClient
-from bson import ObjectId
-import numpy as np
-import networkx as nx
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import cosine_similarity
-from scipy.stats import entropy
+from bson import Binary, ObjectId
 from datetime import datetime, timedelta
 from django.views.decorators.csrf import csrf_exempt
-import random
-import os
-import json
+
 class MongoJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, ObjectId):
@@ -20,409 +19,277 @@ class MongoJSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         return super().default(obj)
 
-class QuantumRecommendationEngine:
-    def __init__(self, mongo_url=None):
+class PersistentFAISSRecommendationEngine:
+    def __init__(self, mongo_url=None, max_recommendations=10):
         # MongoDB Connection
         if not mongo_url:
-            mongo_url = os.getenv("MONGO_URL", 
-                "mongodb+srv://IPL_AUCTION_24:IPLAuction2024DontGuessAlsoUseVim@cluster0.ilknu4v.mongodb.net/SIH")
+            mongo_url = os.getenv("MONGO_URL")
         
         try:
-            client = MongoClient(mongo_url)
-            self.db = client['SIH']
+            # MongoDB Connection
+            self.client = MongoClient(mongo_url)
+            self.db = self.client['SIH']
             self.users_collection = self.db['users3']
             self.posts_collection = self.db['post3']
-            self.interactions_collection = self.db['interactions']  # New collection for tracking interactions
+            self.index_collection = self.db['faiss_indices']  # New collection for index storage
+            
+            # Embedding Model
+            self.embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+            self.max_recommendations = max_recommendations
+            
+            # Prepare or Load FAISS Index
+            self._manage_faiss_index()
+        
         except Exception as e:
-            print(f"MongoDB Connection Error: {e}")
+            print(f"Initialization Error: {e}")
             raise
-        
-        # Quantum-inspired recommendation components
-        self.social_graph = None
-        self.interaction_entropy_map = {}
-        self.global_vectorizer = None
     
-    def _prepare_global_vectorizer(self):
+    def _serialize_faiss_index(self, index):
         """
-        Prepare a global TF-IDF vectorizer with all available text
+        Serialize FAISS index to a binary format
         """
-        # Collect all post texts
-        all_texts = [post.get('text', '') for post in self.posts_collection.find({})]
+        # Create a temporary file
+        import tempfile
         
-        # Ensure at least one text exists
-        if not all_texts:
-            all_texts = ['default text']
+        # Use a temporary file to write the index
+        with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+            faiss.write_index(index, tmp_file.name)
         
-        # Clean and filter texts
-        all_texts = [text for text in all_texts if text and isinstance(text, str)]
+        # Read the file contents
+        with open(tmp_file.name, 'rb') as f:
+            serialized_index = f.read()
         
-        # Create and fit vectorizer
-        self.global_vectorizer = TfidfVectorizer(stop_words='english')
-        self.global_vectorizer.fit(all_texts)
+        # Clean up the temporary file
+        import os
+        os.unlink(tmp_file.name)
+        
+        return serialized_index
+
+    def _deserialize_faiss_index(self, serialized_index):
+        """
+        Deserialize FAISS index from binary format
+        """
+        # Create a temporary file
+        import tempfile
+        
+        # Write serialized index to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, mode='wb') as tmp_file:
+            tmp_file.write(serialized_index)
+        
+        # Read the index from the temporary file
+        index = faiss.read_index(tmp_file.name)
+        
+        # Clean up the temporary file
+        import os
+        os.unlink(tmp_file.name)
+        
+        return index
+    def _serialize_faiss_index(self, index):
+        """
+        Serialize FAISS index to a binary format
+        """
+        # Create a temporary file
+        import tempfile
+        
+        # Use a temporary file to write the index
+        with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
+            faiss.write_index(index, tmp_file.name)
+        
+        # Read the file contents
+        with open(tmp_file.name, 'rb') as f:
+            serialized_index = f.read()
+        
+        # Clean up the temporary file
+        import os
+        os.unlink(tmp_file.name)
+        
+        return serialized_index
+
+    def _deserialize_faiss_index(self, serialized_index):
+        """
+        Deserialize FAISS index from binary format
+        """
+        # Create a temporary file
+        import tempfile
+        
+        # Write serialized index to a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, mode='wb') as tmp_file:
+            tmp_file.write(serialized_index)
+        
+        # Read the index from the temporary file
+        index = faiss.read_index(tmp_file.name)
+        
+        # Clean up the temporary file
+        import os
+        os.unlink(tmp_file.name)
+        
+        return index
     
-    def _quantum_similarity_scoring(self, current_user, potential_post):
+    def _manage_faiss_index(self):
         """
-        Quantum-inspired similarity scoring with robust feature extraction
+        Manage FAISS index: check existing, update if needed, or create new
         """
-        # Ensure global vectorizer is prepared
-        if self.global_vectorizer is None:
-            self._prepare_global_vectorizer()
+        # Look for existing index
+        existing_index = self.index_collection.find_one({
+            'type': 'post_semantic_index'
+        })
         
-        # Validate inputs
-        if not current_user or not potential_post:
-            return 0
+        current_time = datetime.now()
         
-        # Fetch current user's posts
-        current_user_posts = list(self.posts_collection.find({'userId': current_user['_id']}))
+        if existing_index:
+            # Check index age
+            index_age = current_time - existing_index.get('created_at', current_time)
+            
+            # Recreate index if older than 7 days
+            if index_age > timedelta(days=7):
+                self._rebuild_faiss_index()
+                return
+            
+            # Deserialize and load existing index
+            try:
+                self.faiss_index = self._deserialize_faiss_index(existing_index['index_data'])
+                self.post_ids = existing_index['post_ids']
+                return
+            except Exception as e:
+                print(f"Error loading existing index: {e}")
+                # Fall back to rebuilding
         
-        # Prepare texts
-        user_texts = [str(post.get('text', '')) for post in current_user_posts if post.get('text')]
-        post_text = str(potential_post.get('text', ''))
+        # Build new index if no valid existing index
+        self._rebuild_faiss_index()
+    
+    def _rebuild_faiss_index(self):
+        """
+        Rebuild the FAISS index from scratch
+        """
+        # Fetch all posts with text
+        posts = list(self.posts_collection.find({
+            'text': {'$exists': True, '$ne': ''}
+        }).limit(20000))  # Increased limit
         
-        # Handle case with no user texts or empty post text
-        if not user_texts or not post_text.strip():
-            return 0
+        # Extract and embed texts
+        texts = [post.get('text', '') for post in posts]
+        embeddings = self.embedding_model.encode(texts)
         
+        # Create FAISS index
+        dimension = embeddings.shape[1]
+        index = faiss.IndexFlatL2(dimension)  # L2 distance (Euclidean)
+        
+        # Convert embeddings to float32 for FAISS
+        embeddings_float32 = embeddings.astype('float32')
+        
+        # Add embeddings to index
+        index.add(embeddings_float32)
+        
+        # Serialize and store index in MongoDB
+        serialized_index = self._serialize_faiss_index(index)
+        
+        # Store index in MongoDB
+        self.index_collection.update_one(
+            {'type': 'post_semantic_index'},
+            {'$set': {
+                'index_data': Binary(serialized_index),
+                'post_ids': [str(post['_id']) for post in posts],
+                'created_at': datetime.now(),
+                'total_posts': len(posts)
+            }},
+            upsert=True
+        )
+        
+        # Set instance variables
+        self.faiss_index = index
+        self.post_ids = [str(post['_id']) for post in posts]
+    
+    def _compute_interaction_score(self, post):
+        """
+        Compute a quick interaction score
+        """
+        likes = len(post.get('likes', []))
+        comments = len(post.get('comments', []))
+        
+        # Temporal decay
+        post_age = (datetime.now() - post.get('createdAt', datetime.now())).days
+        recency_factor = max(0, 1 - (post_age * 0.1))
+        
+        return (likes * 2 + comments * 3) * recency_factor
+    
+    def semantic_recommendations(self, current_user):
+        """
+        Generate semantic recommendations using persistent FAISS index
+        """
         try:
-            # Transform texts using vectorizer
-            user_features = self.global_vectorizer.transform(user_texts)
-            post_features = self.global_vectorizer.transform([post_text])
+            # Get user's text for semantic search
+            user_posts = list(self.posts_collection.find({'userId': current_user['_id']}))
+            if not user_posts:
+                return []
             
-            # Ensure user features is not empty
-            if user_features.shape[0] == 0:
-                return 0
+            # Use first post or combined text for user embedding
+            user_text = ' '.join([post.get('text', '') for post in user_posts])
+            user_embedding = self.embedding_model.encode([user_text])[0]
             
-            # Compute mean user features, handling potential shape issues
-            user_mean_features = np.asarray(user_features.mean(axis=0)).reshape(1, -1)
+            # Convert to float32
+            user_embedding = user_embedding.astype('float32').reshape(1, -1)
             
-            # Compute cosine similarity
-            text_similarity = cosine_similarity(user_mean_features, post_features)[0][0]
+            # Search FAISS index
+            k = min(self.max_recommendations * 3, len(self.post_ids))
+            distances, indices = self.faiss_index.search(user_embedding, k)
+            
+            # Process and score recommendations
+            recommendations = []
+            seen_post_ids = set()
+            
+            for dist, idx in zip(distances[0], indices[0]):
+                if idx >= len(self.post_ids):
+                    continue
+                
+                post_id = self.post_ids[idx]
+                if post_id in seen_post_ids:
+                    continue
+                
+                # Fetch full post details
+                post = self.posts_collection.find_one({'_id': ObjectId(post_id)})
+                
+                if not post or post['userId'] == current_user['_id']:
+                    continue
+                
+                # Compute recommendation score
+                semantic_score = 1.0 / (1.0 + dist)  # Convert distance to similarity
+                interaction_score = self._compute_interaction_score(post)
+                
+                recommendation = {
+                    'post_id': str(post['_id']),
+                    'text': post.get('text', ''),
+                    'author_id': str(post['userId']),
+                    'semantic_score': semantic_score,
+                    'interaction_score': interaction_score,
+                    'total_score': semantic_score * 0.7 + interaction_score * 0.3,
+                    'media': post.get('media', []),
+                    'likes': post.get('likes', []),
+                    'comments': post.get('comments', []),
+                    'created_at': post.get('createdAt')
+                }
+                
+                recommendations.append(recommendation)
+                seen_post_ids.add(post_id)
+                
+                if len(recommendations) >= self.max_recommendations:
+                    break
+            
+            # Sort recommendations by total score
+            recommendations.sort(key=lambda x: x['total_score'], reverse=True)
+            return recommendations[:self.max_recommendations]
+        
         except Exception as e:
-            print(f"Detailed Similarity computation error: {e}")
-            text_similarity = 0
-        
-        # Social graph proximity
-        if not self.social_graph:
-            self._construct_social_influence_network()
-        
-        # Compute path length and centrality in social graph
-        try:
-            # Check if source and target exist in graph
-            if current_user['_id'] in self.social_graph and potential_post['userId'] in self.social_graph:
-                path_length = nx.shortest_path_length(
-                    self.social_graph, 
-                    source=current_user['_id'], 
-                    target=potential_post['userId']
-                )
-            else:
-                path_length = len(self.social_graph.nodes)  # Maximum possible distance
-        except nx.NetworkXNoPath:
-            path_length = len(self.social_graph.nodes)  # Maximum possible distance
-        
-        # Social graph proximity score (inverse of path length)
-        social_proximity_score = 1 / (path_length + 1)
-        
-        # Interaction entropy influence
-        if current_user['_id'] not in self.interaction_entropy_map:
-            self.interaction_entropy_map[current_user['_id']] = self._compute_interaction_entropy(current_user['_id'])
-        
-        user_entropy = self.interaction_entropy_map[current_user['_id']]
-        
-        # Temporal decay with exponential falloff
-        post_age = (datetime.now() - potential_post.get('createdAt', datetime.now())).days
-        temporal_relevance = np.exp(-0.1 * post_age)
-        
-        # Quantum-inspired scoring: non-linear combination with entropy-based randomness
-        quantum_score = (
-            0.4 * text_similarity + 
-            0.3 * social_proximity_score + 
-            0.2 * temporal_relevance + 
-            0.1 * (user_entropy + random.random())  # Add controlled randomness
-        )
-        
-        return quantum_score
-    
-    def _construct_social_influence_network(self):
-        """
-        Create a complex social graph that captures multidimensional relationships
-        Using networkx to model sophisticated social interactions
-        """
-        G = nx.DiGraph()
-        
-        # Gather all users and their interactions
-        users = list(self.users_collection.find({}))
-        
-        for user in users:
-            G.add_node(user['_id'], attributes=user)
-            
-            # Add connections with weighted edges
-            for connection in user.get('connections', []):
-                # Multiple edge attributes to capture relationship complexity
-                try:
-                    G.add_edge(
-                        user['_id'], 
-                        connection['_id'], 
-                        weight=connection.get('interaction_strength', 1),
-                        interaction_type=connection.get('type', 'generic'),
-                        timestamp=connection.get('last_interaction')
-                    )
-                except Exception as e:
-                    print(f"Error adding connection to graph: {e}")
-        
-        self.social_graph = G
-        return G
-    
-    def _compute_interaction_entropy(self, user_id):
-        """
-        Measure the randomness and unpredictability of user interactions
-        Higher entropy suggests more diverse and exploratory behavior
-        """
-        user_posts = list(self.posts_collection.find({'userId': user_id}))
-        
-        # Collect interaction types
-        interaction_types = []
-        for post in user_posts:
-            interaction_types.extend([
-                'like' if post.get('likes') and len(post.get('likes', [])) > 0 else 'no_like',
-                'comment' if post.get('comments') and len(post.get('comments', [])) > 0 else 'no_comment'
-            ])
-        
-        # Handle case with no interactions
-        if not interaction_types:
-            return 0
-        
-        # Compute Shannon entropy to measure interaction diversity
-        interaction_counts = {}
-        for itype in interaction_types:
-            interaction_counts[itype] = interaction_counts.get(itype, 0) + 1
-        
-        probabilities = [count/len(interaction_types) for count in interaction_counts.values()]
-        return entropy(probabilities)
-    def _compute_interaction_priority(self, post, current_user):
-        """
-        Compute priority score based on recent interactions with the post
-        Includes likes, comments, shares, and interaction recency
-        """
-        interaction_signals = {
-            'likes': [],
-            'comments': [],
-            'shares': []
-        }
+            print(f"Recommendation Error: {e}")
+            return []
 
-        # Fetch interactions for this specific post
-        interactions = list(self.interactions_collection.find({
-            'postId': post['_id'],
-            'interactionType': {'$in': ['like', 'comment', 'share']}
-        }))
-
-        for interaction in interactions:
-            interaction_user = self.users_collection.find_one({'_id': interaction['userId']})
-
-            # Classify interaction type and extract user details
-            interaction_details = {
-                'userId': str(interaction['userId']),
-                'userName': interaction_user.get('fullName', 'Unknown'),
-                'userProfilePic': interaction_user.get('profilePhoto'),
-                'timestamp': interaction.get('timestamp', datetime.now()),
-                'type': interaction.get('interactionType')
-            }
-
-            # Categorize interactions
-            if interaction['interactionType'] == 'like':
-                interaction_signals['likes'].append(interaction_details)
-            elif interaction['interactionType'] == 'comment':
-                interaction_signals['comments'].append(interaction_details)
-            elif interaction['interactionType'] == 'share':
-                interaction_signals['shares'].append(interaction_details)
-
-        # Compute interaction priority
-        priority_score = 0
-        connection_interaction_multiplier = 1.5  # Higher priority for connections
-
-        # Likes priority
-        for like in interaction_signals['likes']:
-            is_connection = any(
-                str(conn.get('_id', '')) == like['userId']
-                for conn in current_user.get('connections', [])
-            )
-            priority_score += (2 if is_connection else 1)
-
-        # Comments priority (higher weight)
-        for comment in interaction_signals['comments']:
-            is_connection = any(
-                str(conn.get('_id', '')) == comment['userId']
-                for conn in current_user.get('connections', [])
-            )
-            priority_score += (3 if is_connection else 1.5)
-
-        # Shares priority (highest weight)
-        for share in interaction_signals['shares']:
-            is_connection = any(
-                str(conn.get('_id', '')) == share['userId']
-                for conn in current_user.get('connections', [])
-            )
-            priority_score += (4 if is_connection else 2)
-
-        # Temporal decay for interactions
-        recency_factor = np.exp(-0.1 * (datetime.now() - post.get('createdAt', datetime.now())).days)
-        priority_score *= recency_factor
-
-        return {
-            'priority_score': priority_score,
-            'interaction_signals': interaction_signals
-        }
-    def advanced_quantum_recommendation(self, current_user):
-        """
-        Hyper-advanced recommendation using quantum-inspired multi-dimensional scoring
-        Incorporates detailed interaction signals and complex social dynamics
-        """
-        # Get user's connections
-        user_connections = current_user.get('connections', [])
-        connection_ids = [conn['_id'] for conn in user_connections if isinstance(conn, dict) and '_id' in conn]
-        
-        # Find posts from user's connections first
-        connection_posts = list(self.posts_collection.find({
-            'userId': {'$in': connection_ids},
-            '_id': {'$ne': current_user['_id']}
-        }))
-        
-        # Find posts from outside user's immediate network
-        other_posts = list(self.posts_collection.find({
-            'userId': {'$nin': connection_ids + [current_user['_id']]}
-        }))
-        
-        # Comprehensive post scoring and processing
-        all_scored_posts = []
-        
-        # Process connection posts with priority
-        for post in connection_posts:
-            try:
-                # Compute quantum similarity score
-                quantum_score = self._quantum_similarity_scoring(current_user, post)
-                
-                # Compute interaction priority
-                interaction_data = self._compute_interaction_priority(post, current_user)
-                
-                # Find connection details
-                post_author_id = str(post['userId'])
-                author_details = self.users_collection.find_one({'_id': post['userId']})
-                
-                # Construct comprehensive post data
-                comprehensive_post = {
-                    'post': post,
-                    'quantum_score': quantum_score,
-                    'interaction_priority': interaction_data['priority_score'],
-                    'interaction_signals': interaction_data['interaction_signals'],
-                    'is_connection_post': True,
-                    'connection_info': {
-                        '_id': post_author_id,
-                        'name': author_details.get('fullName'),
-                        'email': author_details.get('email'),
-                        'profile_picture': author_details.get('profilePhoto'),
-                        'occupation': author_details.get('workExperience'),
-                    },
-                }
-                
-                all_scored_posts.append(comprehensive_post)
-            
-            except Exception as e:
-                print(f"Processing error for connection post {post.get('_id')}: {e}")
-        
-        # Process other posts
-        for post in other_posts:
-            try:
-                # Compute quantum similarity score
-                quantum_score = self._quantum_similarity_scoring(current_user, post)
-                
-                # Compute interaction priority
-                interaction_data = self._compute_interaction_priority(post, current_user)
-                
-                # Find author details
-                author_details = self.users_collection.find_one({'_id': post['userId']})
-                
-                # Construct comprehensive post data
-                comprehensive_post = {
-                    'post': post,
-                    'quantum_score': quantum_score,
-                    'interaction_priority': interaction_data['priority_score'],
-                    'interaction_signals': interaction_data['interaction_signals'],
-                    'is_connection_post': False,
-                    'connection_info': None 
-                }
-                
-                all_scored_posts.append(comprehensive_post)
-            
-            except Exception as e:
-                print(f"Processing error for other post {post.get('_id')}: {e}")
-        
-        # Advanced multi-dimensional sorting
-        all_scored_posts.sort(
-            key=lambda x: (
-                x.get('is_connection_post', False),  # Priority to connection posts
-                x.get('interaction_priority', 0),    # High interaction priority
-                x.get('quantum_score', 0)            # Quantum similarity score
-            ), 
-            reverse=True
-        )
-        
-        # Prepare refined recommendation output
-        recommended_posts = []
-        for post_data in all_scored_posts:
-            recommendation = {
-                'post_id': str(post_data['post']['_id']),
-                'text': post_data['post'].get('text', ''),
-                'author_id': str(post_data['post']['userId']),
-                'quantum_score': post_data['quantum_score'],
-                'interaction_priority': post_data['interaction_priority'],
-                'is_connection_post': post_data['is_connection_post'],
-                'media': post_data['post'].get('media', []),  # Add media field
-                'connection_info': post_data['connection_info'],
-                'likes': post_data['post'].get('likes', []),
-                'comments': post_data['post'].get('comments', []),
-                'shares': post_data['post'].get('shares', []),
-                'reactions': post_data['post'].get('reactions', []),
-                'created_at': post_data['post'].get('createdAt'),
-                            'interaction_signals': {
-                    'likes': [
-                        {
-                            'user_id': like['userId'],
-                            'user_name': like['userName'],
-                            'profile_picture': like['userProfilePic'],
-                            'timestamp': like['timestamp']
-                        } for like in post_data['interaction_signals']['likes']
-                    ],
-                    'comments': [
-                        {
-                            'user_id': comment['userId'],
-                            'user_name': comment['userName'],
-                            'profile_picture': comment['userProfilePic'],
-                            'timestamp': comment['timestamp']
-                        } for comment in post_data['interaction_signals']['comments']
-                    ],
-                    'shares': [
-                        {
-                            'user_id': share['userId'],
-                            'user_name': share['userName'],
-                            'profile_picture': share['userProfilePic'],
-                            'timestamp': share['timestamp']
-                        } for share in post_data['interaction_signals']['shares']
-                    ]
-                }
-            }
-            recommended_posts.append(recommendation)
-        
-        return recommended_posts
-# Modified quantum_recommend_posts view
 def quantum_recommend_posts(request):
-    """Django view for quantum post recommendations"""
+    """
+    Django view for persistent FAISS-powered semantic recommendations
+    """
     if request.method == 'GET':
-        # Use email for user lookup
-        # Strip any whitespace or newline characters
+        # User email lookup
         user_email = request.GET.get('email', '').strip()
         
-        print(f"Received email: {user_email}")
-
-        # Validate email
         if not user_email:
             return JsonResponse({
                 'error': 'Email is required'
@@ -432,8 +299,8 @@ def quantum_recommend_posts(request):
         mongo_url = os.getenv("MONGO_URL")
 
         try:
-            # Create recommendation engine with optional mongo_url
-            recommender = QuantumRecommendationEngine(mongo_url)
+            # Create recommendation engine
+            recommender = PersistentFAISSRecommendationEngine(mongo_url, max_recommendations=10)
             
             # Find user by email
             current_user = recommender.users_collection.find_one({"email": user_email})
@@ -443,8 +310,8 @@ def quantum_recommend_posts(request):
                     'error': 'User not found'
                 }, status=404)
             
-            # Get quantum recommendations
-            recommendations = recommender.advanced_quantum_recommendation(current_user)
+            # Get semantic recommendations
+            recommendations = recommender.semantic_recommendations(current_user)
             
             # Use custom JSON encoder to handle ObjectId serialization
             return JsonResponse({
@@ -452,11 +319,10 @@ def quantum_recommend_posts(request):
             })
         
         except Exception as e:
-            print(f"Error in quantum recommendations: {e}")
+            print(f"Error in recommendations: {e}")
             return JsonResponse({
                 'error': 'An error occurred while fetching recommendations'
             }, status=500)
-        
 
 
 
