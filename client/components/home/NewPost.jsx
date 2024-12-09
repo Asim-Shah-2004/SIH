@@ -195,8 +195,9 @@ const NewPost = ({ onSubmitPost, user }) => {
         </View>
 
         <TouchableOpacity
-          className={`rounded-full px-6 py-2 ${!newPost.trim() && media.length === 0 ? 'bg-black/50' : 'bg-black'
-            }`}
+          className={`rounded-full px-6 py-2 ${
+            !newPost.trim() && media.length === 0 ? 'bg-black/50' : 'bg-black'
+          }`}
           onPress={handleSubmit}
           disabled={!newPost.trim() && media.length === 0}>
           <Text className="text-sm font-semibold text-white">Post</Text>
@@ -206,13 +207,12 @@ const NewPost = ({ onSubmitPost, user }) => {
       {AI && (
         <View className="mt-2 space-y-4">
           {/* Analyze Emotion Section */}
-          <View className="bg-yellow-50 p-2 border-l-4 border-yellow-500 rounded-lg shadow-lg flex-row items-center gap-1">
-            <Text className="text-yellow-500 text-xl">💡</Text>
+          <View className="flex-row items-center gap-1 rounded-lg border-l-4 border-yellow-500 bg-yellow-50 p-2 shadow-lg">
+            <Text className="text-xl text-yellow-500">💡</Text>
             <Text className="text-sm font-medium text-gray-800">
               Try writing something in the Post to analyze emotion or Generate Post entirely by AI.
             </Text>
           </View>
-
 
           <View className="flex-row items-center justify-between rounded-lg bg-gray-50 p-3">
             <TouchableOpacity
@@ -251,11 +251,12 @@ const NewPost = ({ onSubmitPost, user }) => {
               placeholderTextColor="#657786"
             />
             <TouchableOpacity
-              className={`rounded-lg mb-2 ${prompt ? 'bg-green-500' : 'bg-gray-300'} px-4 py-3 shadow-sm`}
+              className={`mb-2 rounded-lg ${prompt ? 'bg-green-500' : 'bg-gray-300'} px-4 py-3 shadow-sm`}
               onPress={prompt ? rewriteText : null} // Only trigger rewriteText if prompt is set
               disabled={!prompt} // Disable the button when prompt is not set
             >
-              <Text className={`text-center text-sm font-medium ${prompt ? 'text-white' : 'text-gray-500'}`}>
+              <Text
+                className={`text-center text-sm font-medium ${prompt ? 'text-white' : 'text-gray-500'}`}>
                 {loading2 ? 'Generating Response...' : 'Write with AI'}
               </Text>
             </TouchableOpacity>

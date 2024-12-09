@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
-const Post = ({ postData }) => {
+import CommentModal from './CommentModal';
+
+const Post = ({ postData, updateComments }) => {
   const [showComments, setShowComments] = useState(false);
 
   const handleComments = (show) => {
@@ -47,7 +49,11 @@ const Post = ({ postData }) => {
       {/* Post Header */}
       <View className="flex-row items-center p-4">
         <Image
-          source={{ uri: postData?.connection_info?.profile_picture || `https://ui-avatars.com/api/?name=User&background=random` }}
+          source={{
+            uri:
+              postData?.connection_info?.profile_picture ||
+              `https://ui-avatars.com/api/?name=User&background=random`,
+          }}
           className="h-12 w-12 rounded-full"
         />
         <View className="ml-3 flex-1">
@@ -105,7 +111,7 @@ const Post = ({ postData }) => {
                 />
               ) : (
                 // Placeholder Videos
-                <View className="h-[100px] w-[150px] rounded-lg bg-gray-300 flex items-center justify-center">
+                <View className="flex h-[100px] w-[150px] items-center justify-center rounded-lg bg-gray-300">
                   <Text className="text-white">Video {index - 2}</Text>
                 </View>
               )}
@@ -113,7 +119,6 @@ const Post = ({ postData }) => {
           ))}
         </ScrollView>
       )}
-
 
       {/* Reactions & Stats */}
       <View className="border-t border-gray-200 p-4">
@@ -130,7 +135,6 @@ const Post = ({ postData }) => {
           <Text className="ml-auto text-gray-500" onPress={() => handleComments(showComments)}>
             {postData?.comments?.length || 0} comments • {postData?.shares?.length || 0} shares
           </Text>
-
         </View>
       </View>
 
@@ -140,7 +144,7 @@ const Post = ({ postData }) => {
           <Feather name="thumbs-up" size={20} color="#6b7280" />
           <Text className="ml-1.5 text-gray-500">Like</Text>
         </TouchableOpacity>
-        <TouchableOpacity className="flex-row items-center">
+        <TouchableOpacity className="flex-row items-center" onPress={() => setShowComments(true)}>
           <Feather name="message-circle" size={20} color="#6b7280" />
           <Text className="ml-1.5 text-gray-500">Comment</Text>
         </TouchableOpacity>
@@ -150,12 +154,13 @@ const Post = ({ postData }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Comments Section */}
-      {postData.comments && showComments && (
-        <Text className="p-4 text-gray-500 border-t border-gray-200">
-          Comments will be displayed here
-        </Text>
-      )}
+      {/* Comment Modal */}
+      <CommentModal
+        isVisible={showComments}
+        onClose={() => setShowComments(false)}
+        postData={postData}
+        updateComments={updateComments}
+      />
     </LinearGradient>
   );
 };
