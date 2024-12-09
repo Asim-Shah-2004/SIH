@@ -2,17 +2,20 @@ import { Ionicons } from '@expo/vector-icons';
 import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
 import { useState, useCallback } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import * as FileSystem from 'expo-file-system';
 import { useAuth } from '../providers/AuthProvider';
 
 const MyProfile = () => {
-  const { user, updateUser  } = useAuth();
+  const { user, updateUser } = useAuth();
   const [editedUser, setEditedUser] = useState(user);
   const [isEditing, setIsEditing] = useState({
     basic: false,
     education: false,
     skills: false,
-    workExperience: false
+    workExperience: false,
+    photo: false  // Add this line
   });
+  const [newSkill, setNewSkill] = useState(''); // Add this line for local state
 
   const showSaveReminder = useCallback(() => {
     ToastAndroid.show('Remember to save your changes!', ToastAndroid.SHORT);
@@ -31,7 +34,8 @@ const MyProfile = () => {
         basic: false,
         education: false,
         skills: false,
-        workExperience: false
+        workExperience: false,
+        photo: false  // Add this line
       });
       // Alert.alert('Success', 'Profile updated successfully');
     } catch (error) {
@@ -41,18 +45,36 @@ const MyProfile = () => {
   };
 
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      handleUserChange({
-        ...editedUser,
-        profilePhoto: result.assets[0].uri
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+        base64: true, // Enable base64
       });
+
+      if (!result.canceled) {
+        // Get base64 directly if available, otherwise read the file
+        let base64Image;
+        if (result.assets[0].base64) {
+          base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        } else {
+          const base64 = await FileSystem.readAsStringAsync(result.assets[0].uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          base64Image = `data:image/jpeg;base64,${base64}`;
+        }
+
+        handleUserChange({
+          ...editedUser,
+          profilePhoto: base64Image
+        });
+        setIsEditing(prev => ({ ...prev, photo: true })); // Add this line
+      }
+    } catch (error) {
+      console.error('Error picking image:', error);
+      ToastAndroid.show('Failed to process image', ToastAndroid.SHORT);
     }
   };
 
@@ -248,13 +270,18 @@ const MyProfile = () => {
               </View>
               <View className="mt-2">
                 <EditableField
-                  value=""
+                  value={newSkill}
                   onChangeText={(text) => {
+                    setNewSkill(text);
                     if (text.endsWith(' ')) {
-                      handleUserChange({
-                        ...editedUser,
-                        skills: [...editedUser.skills, text.trim()]
-                      });
+                      const skillToAdd = text.trim();
+                      if (skillToAdd) {
+                        handleUserChange({
+                          ...editedUser,
+                          skills: [...editedUser.skills, skillToAdd]
+                        });
+                        setNewSkill(''); // Reset the input after adding
+                      }
                     }
                   }}
                   placeholder="Add skill (press space to add)"
