@@ -5,9 +5,11 @@ import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
-import Markdown, { MarkdownIt } from 'react-native-markdown-display';
 
-const NewPost = ({ onSubmitPost, user }) => {
+import Post from './Post';
+import { useAuth } from '../../providers/AuthProvider';
+
+const NewPost = ({ onSubmitPost }) => {
   const [newPost, setNewPost] = useState('');
   const [media, setMedia] = useState([]);
   const [emotion, setEmotion] = useState('');
@@ -16,6 +18,8 @@ const NewPost = ({ onSubmitPost, user }) => {
   const [loading1, setLoading1] = useState(false);
   const [loading2, setLoading2] = useState(false);
   const [stack, setStack] = useState([]);
+  const [showPreview, setShowPreview] = useState(false);
+  const { user } = useAuth();
 
   const suggestions = [
     'Make this more professional',
@@ -149,20 +153,11 @@ const NewPost = ({ onSubmitPost, user }) => {
     );
   };
 
-  const renderMarkdownPreview = () => (
-    <View className="mt-3 rounded-lg bg-gray-50 p-3">
-      <Text className="mb-2 text-sm font-medium text-gray-600">Preview:</Text>
-      <Markdown markdownit={MarkdownIt({ linkify: true }).disable(['fence', 'table', 'image'])}>
-        {newPost}
-      </Markdown>
-    </View>
-  );
-
   return (
     <View className="border-b border-gray-200 bg-white p-4">
       <View className="flex-row items-start">
         <Image
-          source={{ uri: user?.avatar || 'https://via.placeholder.com/40' }}
+          source={{ uri: user?.profilePhoto || 'https://via.placeholder.com/40' }}
           className="mr-3 h-10 w-10 rounded-full"
         />
         <TextInput
@@ -194,6 +189,13 @@ const NewPost = ({ onSubmitPost, user }) => {
             <Ionicons name="sparkles-outline" size={24} color="#4a4a4a" />
             <Text className="text-sm font-medium text-gray-700">AI Helper</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity
+            className="flex-row items-center rounded-lg bg-gray-50 px-3"
+            onPress={() => setShowPreview(!showPreview)}>
+            <Ionicons name="eye-outline" size={24} color="#4a4a4a" />
+            <Text className="text-sm font-medium text-gray-700">Preview</Text>
+          </TouchableOpacity>
         </View>
 
         <TouchableOpacity
@@ -205,6 +207,25 @@ const NewPost = ({ onSubmitPost, user }) => {
           <Text className="text-sm font-semibold text-white">Post</Text>
         </TouchableOpacity>
       </View>
+
+      {showPreview && (
+        <View className="mt-4 rounded-lg border border-gray-200">
+          <Post
+            post={{
+              postId: 'preview',
+              authorId: user._id,
+              fullName: user.fullName,
+              profilePhoto: user.profilePhoto,
+              text: newPost,
+              media,
+              comments: { total: 0, details: [] },
+              likes: { total: 0, details: [] },
+              timestamp: new Date(),
+            }}
+            preview
+          />
+        </View>
+      )}
 
       {AI && (
         <View className="mt-2 space-y-4">

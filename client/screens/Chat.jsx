@@ -117,8 +117,12 @@ const ChatScreen = () => {
                 />
               </View>
               <View className="ml-4 flex-1">
-                <Text className="text-lg font-semibold text-text">{item.otherParticipantName}</Text>
-                <Text className="mt-1 text-highlight">{item.lastMessage}</Text>
+                <Text className="text-lg font-semibold text-text" numberOfLines={1}>
+                  {item.otherParticipantName}
+                </Text>
+                <Text className="mt-1 text-highlight" numberOfLines={1}>
+                  {item.lastMessage}
+                </Text>
               </View>
               <View className="items-end">
                 <Text className="text-sm text-highlight">

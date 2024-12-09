@@ -174,36 +174,66 @@ const MessageBubble = ({
         {renderUploadingState()}
         {type === 'text' && (
           <Markdown
-            markdownit={MarkdownIt({ linkify: true }).disable(['fence', 'table', 'image'])}
+            markdownit={MarkdownIt({ linkify: true }).disable([
+              'hr',
+              'blockquote',
+              'fence',
+              'table',
+              'image',
+            ])}
             style={{
-              body: {
-                color: sender === user.email ? '#ffffff' : '#000000',
+              text: {
                 fontSize: 15,
               },
+              body: {
+                fontSize: 15,
+              },
+              paragraph: {
+                flexWrap: 'wrap',
+                flexDirection: 'row',
+                alignItems: 'flex-start',
+                marginBottom: 4,
+              },
               link: {
-                color: sender === user.email ? '#ffffff' : '#2563eb',
+                color: '#2563eb',
                 textDecorationLine: 'underline',
               },
               heading1: {
                 marginTop: 4,
                 marginBottom: 4,
-                color: sender === user.email ? '#ffffff' : '#000000',
                 fontSize: 20,
                 fontWeight: 'bold',
               },
               heading2: {
                 marginTop: 4,
                 marginBottom: 4,
-                color: sender === user.email ? '#ffffff' : '#000000',
                 fontSize: 18,
                 fontWeight: 'bold',
               },
               code_block: {
-                backgroundColor:
-                  sender === user.email ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
                 padding: 4,
                 borderRadius: 4,
                 fontFamily: 'monospace',
+              },
+              bullet_list: {
+                color: '#fff',
+              },
+              ordered_list: {
+                color: '#fff',
+              },
+            }}
+            rules={{
+              textgroup: (node, children) => {
+                return (
+                  <Text
+                    className={`${sender === user.email ? 'text-white' : 'text-text'} `}
+                    key={node.key}>
+                    {children}
+                  </Text>
+                );
+              },
+              text: (node) => {
+                return <Text key={node.key}>{node.content}</Text>;
               },
             }}>
             {text}

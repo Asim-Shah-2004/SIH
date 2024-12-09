@@ -17,6 +17,7 @@ const Home = () => {
         const response = await axios.get(`${ML_URL}/api/quantum_recommend_posts`, {
           params: { email },
         });
+
         setPosts(response.data.recommendations);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -28,13 +29,20 @@ const Home = () => {
     fetchData();
   }, []);
 
+  // TODO: Implement handleSubmitPost
   const handleSubmitPost = (content) => {};
 
   const updatePostComments = (postId, newComment) => {
     setPosts((currentPosts) =>
       currentPosts.map((post) =>
-        post.post_id === postId
-          ? { ...post, comments: [newComment, ...(post.comments || [])] }
+        post.postId === postId
+          ? {
+              ...post,
+              comments: {
+                total: post.comments.total + 1,
+                details: [newComment, ...(post.comments?.details || [])],
+              },
+            }
           : post
       )
     );
@@ -47,10 +55,10 @@ const Home = () => {
       {posts && (
         <FlatList
           data={posts}
-          renderItem={({ item }) => (
-            <Post key={item.post_id} postData={item} updateComments={updatePostComments} />
+          renderItem={({ item: post }) => (
+            <Post key={post.postId} post={post} updateComments={updatePostComments} />
           )}
-          keyExtractor={(item) => item.post_id.toString()}
+          keyExtractor={(item) => item.postId}
           contentContainerStyle={styles.container}
         />
       )}

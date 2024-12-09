@@ -18,7 +18,7 @@ import {
 
 import { useAuth } from '../../providers/AuthProvider';
 
-const CommentModal = ({ isVisible, onClose, postData, updateComments }) => {
+const CommentModal = ({ isVisible, onClose, post, updateComments }) => {
   const [newComment, setNewComment] = useState('');
   const panY = useRef(new Animated.Value(0)).current;
   const { user, token } = useAuth();
@@ -72,16 +72,16 @@ const CommentModal = ({ isVisible, onClose, postData, updateComments }) => {
       // });
 
       const newCommentObj = {
+        email: user.email,
+        fullName: user.fullName,
+        profilePhoto: user.profilePhoto,
         text: newComment,
+        timestamp: new Date().toISOString(),
         userId: user.fullName,
-        author: {
-          imageUrl: user.profilePicture,
-        },
-        createdAt: new Date().toISOString(),
       };
 
       // Update the comments in parent components
-      updateComments(postData.post_id, newCommentObj);
+      updateComments(post.postId, newCommentObj);
       setNewComment('');
     } catch (error) {
       console.error('Error posting comment:', error);
@@ -103,15 +103,16 @@ const CommentModal = ({ isVisible, onClose, postData, updateComments }) => {
 
   // Sort comments to show user's comments first
   const sortedComments = useMemo(() => {
-    if (!postData.comments) return [];
-    return [...postData.comments].sort((a, b) => {
+    if (!post.comments?.details) return [];
+
+    return [...post.comments.details].sort((a, b) => {
       // User's comments first
-      if (a.userId === user?.fullName && b.userId !== user?.fullName) return -1;
-      if (a.userId !== user?.fullName && b.userId === user?.fullName) return 1;
+      if (a.userId === user._id && b.userId !== user._id) return -1;
+      if (a.userId !== user._id && b.userId === user._id) return 1;
       // Then sort by date
-      return new Date(b.createdAt) - new Date(a.createdAt);
+      return new Date(b.timestamp) - new Date(a.timestamp);
     });
-  }, [postData.comments, user?.fullName]);
+  }, [post.comments, user._id]);
 
   const handleClose = () => {
     panY.setValue(0);
@@ -149,18 +150,17 @@ const CommentModal = ({ isVisible, onClose, postData, updateComments }) => {
                   <View className="flex-row items-start">
                     <Image
                       source={{
-                        uri:
-                          comment?.author?.profileImage || 'https://ui-avatars.com/api/?name=User',
+                        uri: comment?.profilePhoto || 'https://ui-avatars.com/api/?name=User',
                       }}
                       className="h-8 w-8 rounded-full"
                     />
                     <View className="ml-3 flex-1">
                       <Text className="font-semibold text-gray-900">
-                        {comment.userId || 'User'}
+                        {comment.fullName || 'User'}
                       </Text>
                       <Text className="text-gray-600">{comment.text}</Text>
                       <Text className="mt-1 text-xs text-gray-400">
-                        {getRelativeTime(comment.createdAt)}
+                        {getRelativeTime(comment.timestamp)}
                       </Text>
                     </View>
                   </View>
