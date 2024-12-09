@@ -320,7 +320,7 @@ class PersistentFAISSRecommendationEngine:
                             comment_details = {
                                 **comment_user_info,
                                 'text': comment.get('text', ''),
-                                'created_at': comment.get('createdAt', '')
+                                'timestamp': comment.get('createdAt', '')
                             }
                             comments_details.append(comment_details)
                     except Exception as e:
@@ -335,8 +335,8 @@ class PersistentFAISSRecommendationEngine:
                     'postId': str(post['_id']),
                     'text': post.get('text', ''),
                     'authorId': str(post['userId']),
-                    'authorFullName': author_details['fullName'],
-                    'authorProfilePhoto': author_details['profilePhoto'],
+                    'FullName': author_details['fullName'],
+                    'ProfilePhoto': author_details['profilePhoto'],
                     'total_score': semantic_score * 1 + interaction_score * 0.3,
                     'media': post.get('media', []),
                     'likes': {
@@ -347,7 +347,7 @@ class PersistentFAISSRecommendationEngine:
                         'total': len(comments_details),
                         'details': comments_details
                     },
-                    'created_at': post.get('createdAt')
+                    'timestamp': post.get('createdAt')
                 }
                 
                 # Optionally, process reactions and shares similarly if they exist
