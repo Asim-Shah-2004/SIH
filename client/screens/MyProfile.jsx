@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
-import { useState } from 'react';
+import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert, ToastAndroid } from 'react-native';
+import { useState, useCallback } from 'react';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../providers/AuthProvider';
 
@@ -14,6 +14,15 @@ const MyProfile = () => {
     workExperience: false
   });
 
+  const showSaveReminder = useCallback(() => {
+    ToastAndroid.show('Remember to save your changes!', ToastAndroid.SHORT);
+  }, []);
+
+  const handleUserChange = (updatedUser) => {
+    setEditedUser(updatedUser);
+    showSaveReminder();
+  };
+
   const handleSave = async () => {
     try {
       console.log('Updated User Object:', editedUser); // Add this line to see the updated user object
@@ -24,7 +33,7 @@ const MyProfile = () => {
         skills: false,
         workExperience: false
       });
-      Alert.alert('Success', 'Profile updated successfully');
+      // Alert.alert('Success', 'Profile updated successfully');
     } catch (error) {
       console.error('Error updating profile:', error); // Add error logging
       Alert.alert('Error', 'Failed to update profile');
@@ -40,10 +49,10 @@ const MyProfile = () => {
     });
 
     if (!result.canceled) {
-      setEditedUser(prev => ({
-        ...prev,
+      handleUserChange({
+        ...editedUser,
         profilePhoto: result.assets[0].uri
-      }));
+      });
     }
   };
 
@@ -122,12 +131,12 @@ const MyProfile = () => {
               <View className="w-full px-4">
                 <EditableField
                   value={editedUser.bio}
-                  onChangeText={(text) => setEditedUser(prev => ({ ...prev, bio: text }))}
+                  onChangeText={(text) => handleUserChange({ ...editedUser, bio: text })}
                   placeholder="Bio"
                 />
                 <EditableField
                   value={editedUser.phone}
-                  onChangeText={(text) => setEditedUser(prev => ({ ...prev, phone: text }))}
+                  onChangeText={(text) => handleUserChange({ ...editedUser, phone: text })}
                   placeholder="Phone"
                 />
               </View>
@@ -157,7 +166,7 @@ const MyProfile = () => {
                     onChangeText={(text) => {
                       const newEducation = [...editedUser.education];
                       newEducation[index] = { ...edu, degree: text };
-                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                      handleUserChange({ ...editedUser, education: newEducation });
                     }}
                     placeholder="Degree"
                   />
@@ -166,7 +175,7 @@ const MyProfile = () => {
                     onChangeText={(text) => {
                       const newEducation = [...editedUser.education];
                       newEducation[index] = { ...edu, institution: text };
-                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                      handleUserChange({ ...editedUser, education: newEducation });
                     }}
                     placeholder="Institution"
                   />
@@ -175,14 +184,14 @@ const MyProfile = () => {
                     onChangeText={(text) => {
                       const newEducation = [...editedUser.education];
                       newEducation[index] = { ...edu, yearOfGraduation: text };
-                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                      handleUserChange({ ...editedUser, education: newEducation });
                     }}
                     placeholder="Year of Graduation"
                   />
                   <TouchableOpacity
                     onPress={() => {
                       const newEducation = editedUser.education.filter((_, i) => i !== index);
-                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                      handleUserChange({ ...editedUser, education: newEducation });
                     }}
                     className="bg-red-500 p-2 rounded-md mt-2"
                   >
@@ -192,10 +201,10 @@ const MyProfile = () => {
               ))}
               <TouchableOpacity
                 onPress={() => {
-                  setEditedUser(prev => ({
-                    ...prev,
-                    education: [...prev.education, { degree: '', institution: '', yearOfGraduation: '' }]
-                  }));
+                  handleUserChange({
+                    ...editedUser,
+                    education: [...editedUser.education, { degree: '', institution: '', yearOfGraduation: '' }]
+                  });
                 }}
                 className="bg-blue-500 p-2 rounded-md"
               >
@@ -227,7 +236,7 @@ const MyProfile = () => {
                       <TouchableOpacity
                         onPress={() => {
                           const newSkills = editedUser.skills.filter((_, i) => i !== index);
-                          setEditedUser(prev => ({ ...prev, skills: newSkills }));
+                          handleUserChange({ ...editedUser, skills: newSkills });
                         }}
                         className="ml-2"
                       >
@@ -242,10 +251,10 @@ const MyProfile = () => {
                   value=""
                   onChangeText={(text) => {
                     if (text.endsWith(' ')) {
-                      setEditedUser(prev => ({
-                        ...prev,
-                        skills: [...prev.skills, text.trim()]
-                      }));
+                      handleUserChange({
+                        ...editedUser,
+                        skills: [...editedUser.skills, text.trim()]
+                      });
                     }
                   }}
                   placeholder="Add skill (press space to add)"
@@ -296,14 +305,14 @@ const MyProfile = () => {
                     onChangeText={(text) => {
                       const newWork = [...editedUser.workExperience];
                       newWork[index] = text;
-                      setEditedUser(prev => ({ ...prev, workExperience: newWork }));
+                      handleUserChange({ ...editedUser, workExperience: newWork });
                     }}
                     placeholder="Work Experience"
                   />
                   <TouchableOpacity
                     onPress={() => {
                       const newWork = editedUser.workExperience.filter((_, i) => i !== index);
-                      setEditedUser(prev => ({ ...prev, workExperience: newWork }));
+                      handleUserChange({ ...editedUser, workExperience: newWork });
                     }}
                     className="bg-red-500 p-2 rounded-md mt-2"
                   >
@@ -313,10 +322,10 @@ const MyProfile = () => {
               ))}
               <TouchableOpacity
                 onPress={() => {
-                  setEditedUser(prev => ({
-                    ...prev,
-                    workExperience: [...prev.workExperience, '']
-                  }));
+                  handleUserChange({
+                    ...editedUser,
+                    workExperience: [...editedUser.workExperience, '']
+                  });
                 }}
                 className="bg-blue-500 p-2 rounded-md"
               >
