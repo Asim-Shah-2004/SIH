@@ -2,4 +2,5 @@
 *pyc
 /myenv/
 /spam/offensive_words.txt
-media/
+media/pdfs/
+media/resumes/
