@@ -49,6 +49,16 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
+  const updateUser = async (updatedUserData) => {
+    try {
+      setUser(updatedUserData);
+      return true;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  };
+
   if (loading) {
     return (
       <View className="h-full w-full bg-white">
@@ -71,6 +81,7 @@ export const AuthProvider = ({ children }) => {
         setUser,
         token,
         setToken,
+        updateUser,
       }}>
       {children}
     </AuthContext.Provider>

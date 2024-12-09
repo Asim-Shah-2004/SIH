@@ -1,14 +1,68 @@
 import { Ionicons } from '@expo/vector-icons';
-import { View, Text, ScrollView, Image } from 'react-native';
-
+import { View, Text, ScrollView, Image, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { useState } from 'react';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../providers/AuthProvider';
 
 const MyProfile = () => {
-  const { user } = useAuth();
+  const { user, updateUser  } = useAuth();
+  const [editedUser, setEditedUser] = useState(user);
+  const [isEditing, setIsEditing] = useState({
+    basic: false,
+    education: false,
+    skills: false,
+    workExperience: false
+  });
 
-  const Section = ({ title, children }) => (
+  const handleSave = async () => {
+    try {
+      console.log('Updated User Object:', editedUser); // Add this line to see the updated user object
+      await updateUser(editedUser);
+      setIsEditing({
+        basic: false,
+        education: false,
+        skills: false,
+        workExperience: false
+      });
+      Alert.alert('Success', 'Profile updated successfully');
+    } catch (error) {
+      console.error('Error updating profile:', error); // Add error logging
+      Alert.alert('Error', 'Failed to update profile');
+    }
+  };
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setEditedUser(prev => ({
+        ...prev,
+        profilePhoto: result.assets[0].uri
+      }));
+    }
+  };
+
+  const Section = ({ title, children, editable, section }) => (
     <View className="mb-4 rounded-xl bg-white p-4 shadow-md">
-      <Text className="mb-3 text-xl font-semibold text-gray-800">{title}</Text>
+      <View className="flex-row justify-between items-center mb-3">
+        <Text className="text-xl font-semibold text-gray-800">{title}</Text>
+        {editable && (
+          <TouchableOpacity 
+            onPress={() => setIsEditing(prev => ({ ...prev, [section]: !prev[section] }))}
+          >
+            <Ionicons 
+              name={isEditing[section] ? "save-outline" : "create-outline"} 
+              size={24} 
+              color="#666" 
+            />
+          </TouchableOpacity>
+        )}
+      </View>
       {children}
     </View>
   );
@@ -20,6 +74,15 @@ const MyProfile = () => {
     </View>
   );
 
+  const EditableField = ({ value, onChangeText, placeholder }) => (
+    <TextInput
+      value={value}
+      onChangeText={onChangeText}
+      className="border border-gray-300 rounded-md p-2 mb-2"
+      placeholder={placeholder}
+    />
+  );
+
   return (
     <ScrollView className="flex-1 bg-gray-100">
       {/* Cover Photo */}
@@ -29,20 +92,54 @@ const MyProfile = () => {
       <View className="-mt-20 px-4">
         <View className="rounded-xl bg-white p-4 shadow-lg">
           <View className="-mt-24 items-center">
-            {user.profilePhoto && (
+            <TouchableOpacity onPress={pickImage}>
               <Image
-                source={{ uri: `${user.profilePhoto}` }}
+                source={{ uri: editedUser.profilePhoto }}
                 className="mb-2 h-32 w-32 rounded-full border-4 border-white shadow-lg"
               />
-            )}
-            <Text className="mt-2 text-2xl font-bold text-gray-900">{user.fullName}</Text>
-            <Text className="mt-1 px-4 text-center text-gray-600">{user.bio}</Text>
-          </View>
+              <View className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-2">
+                <Ionicons name="camera" size={20} color="white" />
+              </View>
+            </TouchableOpacity>
 
-          {/* Quick Info */}
-          <View className="mt-4 flex-row justify-around border-t border-gray-200 pt-4">
-            <InfoItem icon="mail-outline" text={user.email} />
-            <InfoItem icon="call-outline" text={user.phone} />
+            <Text className="mt-2 text-2xl font-bold text-gray-900">{editedUser.fullName}</Text>
+            
+            {/* Add edit button for basic info */}
+            <View className="w-full items-end">
+              <TouchableOpacity 
+                onPress={() => setIsEditing(prev => ({ ...prev, basic: !prev.basic }))}
+                className="p-2"
+              >
+                <Ionicons 
+                  name={isEditing.basic ? "save-outline" : "create-outline"} 
+                  size={24} 
+                  color="#666" 
+                />
+              </TouchableOpacity>
+            </View>
+
+            {isEditing.basic ? (
+              <View className="w-full px-4">
+                <EditableField
+                  value={editedUser.bio}
+                  onChangeText={(text) => setEditedUser(prev => ({ ...prev, bio: text }))}
+                  placeholder="Bio"
+                />
+                <EditableField
+                  value={editedUser.phone}
+                  onChangeText={(text) => setEditedUser(prev => ({ ...prev, phone: text }))}
+                  placeholder="Phone"
+                />
+              </View>
+            ) : (
+              <View className="w-full px-4">
+                <Text className="mt-1 text-center text-gray-600">{editedUser.bio}</Text>
+                <View className="mt-4 flex-row justify-around border-t border-gray-200 pt-4">
+                  <InfoItem icon="mail-outline" text={editedUser.email} />
+                  <InfoItem icon="call-outline" text={editedUser.phone} />
+                </View>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -50,25 +147,120 @@ const MyProfile = () => {
       {/* Main Content */}
       <View className="mt-4 px-4">
         {/* Education */}
-        <Section title="Education">
-          {user.education.map((edu, index) => (
-            <View key={index} className="mb-3 border-b border-gray-100 pb-3">
-              <Text className="text-lg font-bold text-gray-800">{edu.degree}</Text>
-              <Text className="text-gray-600">{edu.institution}</Text>
-              <Text className="text-sm text-gray-500">Class of {edu.yearOfGraduation}</Text>
-            </View>
-          ))}
+        <Section title="Education" editable section="education">
+          {isEditing.education ? (
+            <>
+              {editedUser.education.map((edu, index) => (
+                <View key={index} className="mb-3">
+                  <EditableField
+                    value={edu.degree}
+                    onChangeText={(text) => {
+                      const newEducation = [...editedUser.education];
+                      newEducation[index] = { ...edu, degree: text };
+                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                    }}
+                    placeholder="Degree"
+                  />
+                  <EditableField
+                    value={edu.institution}
+                    onChangeText={(text) => {
+                      const newEducation = [...editedUser.education];
+                      newEducation[index] = { ...edu, institution: text };
+                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                    }}
+                    placeholder="Institution"
+                  />
+                  <EditableField
+                    value={edu.yearOfGraduation.toString()}
+                    onChangeText={(text) => {
+                      const newEducation = [...editedUser.education];
+                      newEducation[index] = { ...edu, yearOfGraduation: text };
+                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                    }}
+                    placeholder="Year of Graduation"
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      const newEducation = editedUser.education.filter((_, i) => i !== index);
+                      setEditedUser(prev => ({ ...prev, education: newEducation }));
+                    }}
+                    className="bg-red-500 p-2 rounded-md mt-2"
+                  >
+                    <Text className="text-white text-center">Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              <TouchableOpacity
+                onPress={() => {
+                  setEditedUser(prev => ({
+                    ...prev,
+                    education: [...prev.education, { degree: '', institution: '', yearOfGraduation: '' }]
+                  }));
+                }}
+                className="bg-blue-500 p-2 rounded-md"
+              >
+                <Text className="text-white text-center">Add Education</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {user.education.map((edu, index) => (
+                <View key={index} className="mb-3 border-b border-gray-100 pb-3">
+                  <Text className="text-lg font-bold text-gray-800">{edu.degree}</Text>
+                  <Text className="text-gray-600">{edu.institution}</Text>
+                  <Text className="text-sm text-gray-500">Class of {edu.yearOfGraduation}</Text>
+                </View>
+              ))}
+            </>
+          )}
         </Section>
 
         {/* Skills */}
-        <Section title="Skills">
-          <View className="-m-1 flex-row flex-wrap">
-            {user.skills.map((skill, index) => (
-              <View key={index} className="m-1 rounded-full bg-blue-100 px-4 py-2">
-                <Text className="text-blue-800">{skill}</Text>
+        <Section title="Skills" editable section="skills">
+          {isEditing.skills ? (
+            <>
+              <View className="-m-1 flex-row flex-wrap">
+                {editedUser.skills.map((skill, index) => (
+                  <View key={index} className="m-1">
+                    <View className="flex-row items-center bg-blue-100 rounded-full px-4 py-2">
+                      <Text className="text-blue-800">{skill}</Text>
+                      <TouchableOpacity
+                        onPress={() => {
+                          const newSkills = editedUser.skills.filter((_, i) => i !== index);
+                          setEditedUser(prev => ({ ...prev, skills: newSkills }));
+                        }}
+                        className="ml-2"
+                      >
+                        <Ionicons name="close-circle" size={20} color="red" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+              <View className="mt-2">
+                <EditableField
+                  value=""
+                  onChangeText={(text) => {
+                    if (text.endsWith(' ')) {
+                      setEditedUser(prev => ({
+                        ...prev,
+                        skills: [...prev.skills, text.trim()]
+                      }));
+                    }
+                  }}
+                  placeholder="Add skill (press space to add)"
+                />
+              </View>
+            </>
+          ) : (
+            <View className="-m-1 flex-row flex-wrap">
+              {user.skills.map((skill, index) => (
+                <View key={index} className="m-1 rounded-full bg-blue-100 px-4 py-2">
+                  <Text className="text-blue-800">{skill}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </Section>
 
         {/* Languages */}
@@ -94,16 +286,70 @@ const MyProfile = () => {
         </Section>
 
         {/* Work Experience */}
-        {user.workExperience.length > 0 && (
-          <Section title="Work Experience">
-            {user.workExperience.map((work, index) => (
-              <View key={index} className="mb-3 border-b border-gray-100 pb-3">
-                <Text className="text-gray-800">{work}</Text>
-              </View>
-            ))}
-          </Section>
-        )}
+        <Section title="Work Experience" editable section="workExperience">
+          {isEditing.workExperience ? (
+            <>
+              {editedUser.workExperience.map((work, index) => (
+                <View key={index} className="mb-3">
+                  <EditableField
+                    value={work}
+                    onChangeText={(text) => {
+                      const newWork = [...editedUser.workExperience];
+                      newWork[index] = text;
+                      setEditedUser(prev => ({ ...prev, workExperience: newWork }));
+                    }}
+                    placeholder="Work Experience"
+                  />
+                  <TouchableOpacity
+                    onPress={() => {
+                      const newWork = editedUser.workExperience.filter((_, i) => i !== index);
+                      setEditedUser(prev => ({ ...prev, workExperience: newWork }));
+                    }}
+                    className="bg-red-500 p-2 rounded-md mt-2"
+                  >
+                    <Text className="text-white text-center">Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+              <TouchableOpacity
+                onPress={() => {
+                  setEditedUser(prev => ({
+                    ...prev,
+                    workExperience: [...prev.workExperience, '']
+                  }));
+                }}
+                className="bg-blue-500 p-2 rounded-md"
+              >
+                <Text className="text-white text-center">Add Work Experience</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              {user.workExperience.length > 0 && (
+                <>
+                  {user.workExperience.map((work, index) => (
+                    <View key={index} className="mb-3 border-b border-gray-100 pb-3">
+                      <Text className="text-gray-800">{work}</Text>
+                    </View>
+                  ))}
+                </>
+              )}
+            </>
+          )}
+        </Section>
       </View>
+
+      {/* Save Button */}
+      {Object.values(isEditing).some(Boolean) && (
+        <View className="px-4 mb-10">
+          <TouchableOpacity
+            onPress={handleSave}
+            className="bg-blue-500 p-4 rounded-xl"
+          >
+            <Text className="text-white text-center font-bold text-lg">Save Changes</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* Bottom Padding */}
       <View className="h-10" />
