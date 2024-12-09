@@ -199,8 +199,14 @@ class PersistentFAISSRecommendationEngine:
     def semantic_recommendations(self, current_user):
         """
         Generate semantic recommendations using persistent FAISS index
+        with connection and interaction details
         """
         try:
+            # Create a dictionary of connections for easy lookup
+            current_user_connections = {
+                str(conn['_id']): conn for conn in current_user.get('connections', [])
+            }
+            
             # Get user's text for semantic search
             user_posts = list(self.posts_collection.find({'userId': current_user['_id']}))
             if not user_posts:
@@ -217,7 +223,48 @@ class PersistentFAISSRecommendationEngine:
             k = min(self.max_recommendations * 3, len(self.post_ids))
             distances, indices = self.faiss_index.search(user_embedding, k)
             
-            # Process and score recommendations
+            # Helper function to process user interactions
+            def process_user_interactions(user_id):
+                # Convert user_id to string for dictionary lookup
+                user_id_str = str(user_id)
+                
+                # Find the user
+                user = self.users_collection.find_one({'_id': user_id})
+                if not user:
+                    return None
+                
+                # Check connection status and get interaction strength
+                connection_info = None
+                if user_id_str in current_user_connections:
+                    connection_info = {
+                        'is_connection': True,
+                        'interaction_strength': current_user_connections[user_id_str].get('interaction_strength', 0)
+                    }
+                else:
+                    connection_info = {
+                        'is_connection': False,
+                        'interaction_strength': 0  # Set to 0 for sorting purposes
+                    }
+                
+                return {
+                    'user_id': str(user['_id']),
+                    'name': user.get('fullName', 'Unknown'),
+                    'email': user.get('email', ''),
+                    'profilePhoto': user.get('profilePhoto', ''),
+                    **connection_info
+                }
+            
+            # Sorting function for interactions
+            def sort_interactions(interactions):
+                # Sort by:
+                # 1. Connection status (connected first)
+                # 2. Interaction strength (descending)
+                return sorted(
+                    interactions, 
+                    key=lambda x: (-x['is_connection'], -x.get('interaction_strength', 0))
+                )
+            
+            # Process recommendations
             recommendations = []
             seen_post_ids = set()
             
@@ -235,6 +282,33 @@ class PersistentFAISSRecommendationEngine:
                 if not post or post['userId'] == current_user['_id']:
                     continue
                 
+                # Process likes with connection info
+                likes_details = []
+                for like_user_id in post.get('likes', []):
+                    try:
+                        like_user_info = process_user_interactions(like_user_id)
+                        if like_user_info:
+                            likes_details.append(like_user_info)
+                    except Exception as e:
+                        print(f"Error processing like user {like_user_id}: {e}")
+                likes_details = sort_interactions(likes_details)
+                
+                # Process comments with connection info
+                comments_details = []
+                for comment in post.get('comments', []):
+                    try:
+                        comment_user_info = process_user_interactions(comment['userId'])
+                        if comment_user_info:
+                            comment_details = {
+                                **comment_user_info,
+                                'text': comment.get('text', ''),
+                                'created_at': comment.get('createdAt', '')
+                            }
+                            comments_details.append(comment_details)
+                    except Exception as e:
+                        print(f"Error processing comment user {comment['userId']}: {e}")
+                comments_details = sort_interactions(comments_details)
+                
                 # Compute recommendation score
                 semantic_score = 1.0 / (1.0 + dist)  # Convert distance to similarity
                 interaction_score = self._compute_interaction_score(post)
@@ -247,10 +321,18 @@ class PersistentFAISSRecommendationEngine:
                     'interaction_score': interaction_score,
                     'total_score': semantic_score * 0.7 + interaction_score * 0.3,
                     'media': post.get('media', []),
-                    'likes': post.get('likes', []),
-                    'comments': post.get('comments', []),
+                    'likes': {
+                        'total': len(likes_details),
+                        'details': likes_details
+                    },
+                    'comments': {
+                        'total': len(comments_details),
+                        'details': comments_details
+                    },
                     'created_at': post.get('createdAt')
                 }
+                
+                # Optionally, process reactions and shares similarly if they exist
                 
                 recommendations.append(recommendation)
                 seen_post_ids.add(post_id)
@@ -775,6 +857,257 @@ def generate_connection_interaction_strength(request):
             }, status=400)
         except Exception as e:
             print(f"Error in connection interaction strength generation: {e}")
+            return JsonResponse({
+                'error': 'An unexpected error occurred'
+            }, status=500)
+    
+    return JsonResponse({
+        'error': 'Method not allowed'
+    }, status=405)
+
+
+
+@csrf_exempt
+def get_user_connections(request):
+    """
+    Django view to retrieve detailed connection information for a user
+    """
+    if request.method == 'GET':
+        try:
+            # Get user ID from query parameters
+            user_id = request.GET.get('user_id')
+            print(user_id)
+            if not user_id:
+                return JsonResponse({
+                    'error': 'User ID is required'
+                }, status=400)
+            
+            # Convert to ObjectId if needed
+            try:
+                user_id = ObjectId(user_id)
+            except:
+                return JsonResponse({
+                    'error': 'Invalid user ID format'
+                }, status=400)
+            
+            # MongoDB Connection (assuming same connection as other methods)
+            client = MongoClient(os.getenv("MONGO_URL"))
+            db = client['SIH']
+            users_collection = db['users3']
+            
+            # Find the user
+            user = users_collection.find_one({'_id': user_id})
+            
+            if not user:
+                return JsonResponse({
+                    'error': 'User not found'
+                }, status=404)
+            
+            # Prepare connections details
+            connection_details = []
+            
+            # Check if connections exist
+            if user.get('connections'):
+                print("user connections are:",user['connections'])
+                for connection in user['connections']:
+                    
+                    
+                    connection_info = {
+                        'name': connection.get('fullName', 0),
+                        'interaction_strength': connection.get('interaction_strength', 0),
+                        
+                    }
+                    
+                    connection_details.append(connection_info)
+            
+            
+            return JsonResponse({
+                'total_connections': len(connection_details),
+                'connections': connection_details
+            })
+        
+        except Exception as e:
+            print(f"Error retrieving user connections: {e}")
+            return JsonResponse({
+                'error': 'An unexpected error occurred'
+            }, status=500)
+    
+    return JsonResponse({
+        'error': 'Method not allowed'
+    }, status=405)
+
+
+@csrf_exempt
+def get_post_details(request):
+    """
+    Django view to retrieve comprehensive post details including 
+    likes, comments, reactions, shares, and connection details
+    Sorted by connection status and interaction strength
+    """
+    if request.method == 'GET':
+        try:
+            # Get post ID from query parameters
+            post_id = request.GET.get('post_id')
+            
+            # Validate post ID
+            if not post_id:
+                return JsonResponse({
+                    'error': 'Post ID is required'
+                }, status=400)
+            
+            # Convert to ObjectId
+            try:
+                post_id = ObjectId(post_id)
+            except:
+                return JsonResponse({
+                    'error': 'Invalid post ID format'
+                }, status=400)
+            
+            # MongoDB Connection
+            client = MongoClient(os.getenv("MONGO_URL"))
+            db = client['SIH']
+            posts_collection = db['post3']
+            users_collection = db['users3']
+            
+            # Find the post
+            post = posts_collection.find_one({'_id': post_id})
+            if not post:
+                return JsonResponse({
+                    'error': 'Post not found'
+                }, status=404)
+            
+            # Get post owner details
+            try:
+                post_owner = users_collection.find_one({'_id': post['userId']})
+                owner_info = {
+                    'user_id': str(post_owner['_id']),
+                    'name': post_owner.get('fullName', 'Unknown'),
+                    'email': post_owner.get('email', '')
+                }
+                
+                # Create a dictionary of connections for easy lookup
+                owner_connections = {
+                    str(conn['_id']): conn for conn in post_owner.get('connections', [])
+                }
+            except:
+                owner_info = {
+                    'user_id': '',
+                    'name': 'Unknown',
+                    'email': ''
+                }
+                owner_connections = {}
+            
+            # Helper function to process user interactions
+            def process_user_interactions(user_id):
+                # Convert user_id to string for dictionary lookup
+                user_id_str = str(user_id)
+                
+                # Find the user
+                user = users_collection.find_one({'_id': user_id})
+                if not user:
+                    return None
+                
+                # Check connection status and get interaction strength
+                connection_info = None
+                if user_id_str in owner_connections:
+                    connection_info = {
+                        'is_connection': True,
+                        'interaction_strength': owner_connections[user_id_str].get('interaction_strength', 0)
+                    }
+                else:
+                    connection_info = {
+                        'is_connection': False,
+                        'interaction_strength': 0  # Set to 0 for sorting purposes
+                    }
+                
+                return {
+                    'user_id': str(user['_id']),
+                    'name': user.get('fullName', 'Unknown'),
+                    'email': user.get('email', ''),
+                    **connection_info
+                }
+            
+            # Sorting function for interactions
+            def sort_interactions(interactions):
+                # Sort by:
+                # 1. Connection status (connected first)
+                # 2. Interaction strength (descending)
+                return sorted(
+                    interactions, 
+                    key=lambda x: (-x['is_connection'], -x.get('interaction_strength', 0))
+                )
+            
+            # Process likes
+            likes_details = []
+            for like_user_id in post.get('likes', []):
+                try:
+                    like_user_info = process_user_interactions(like_user_id)
+                    if like_user_info:
+                        likes_details.append(like_user_info)
+                except Exception as e:
+                    print(f"Error processing like user {like_user_id}: {e}")
+            likes_details = sort_interactions(likes_details)
+            
+            # Process comments
+            comments_details = []
+            for comment in post.get('comments', []):
+                try:
+                    comment_user_info = process_user_interactions(comment['userId'])
+                    if comment_user_info:
+                        comment_details = {
+                            **comment_user_info,
+                            'text': comment.get('text', ''),
+                            'created_at': comment.get('createdAt', '')
+                        }
+                        comments_details.append(comment_details)
+                except Exception as e:
+                    print(f"Error processing comment user {comment['userId']}: {e}")
+            comments_details = sort_interactions(comments_details)
+            
+            # Process reactions
+            reactions_details = []
+            for reaction in post.get('reactions', []):
+                try:
+                    reaction_user_info = process_user_interactions(reaction['userId'])
+                    if reaction_user_info:
+                        reaction_details = {
+                            **reaction_user_info,
+                            'reaction_type': reaction.get('type', '')
+                        }
+                        reactions_details.append(reaction_details)
+                except Exception as e:
+                    print(f"Error processing reaction user {reaction['userId']}: {e}")
+            reactions_details = sort_interactions(reactions_details)
+            
+            # Process shares
+            shares_details = []
+            for share_user_id in post.get('shares', []):
+                try:
+                    share_user_info = process_user_interactions(share_user_id)
+                    if share_user_info:
+                        shares_details.append(share_user_info)
+                except Exception as e:
+                    print(f"Error processing share user {share_user_id}: {e}")
+            shares_details = sort_interactions(shares_details)
+            
+            # Prepare response
+            response_data = {
+                'post_id': str(post['_id']),
+                'owner': owner_info,
+                'total_likes': len(likes_details),
+                'likes': likes_details,
+                'total_comments': len(comments_details),
+                'comments': comments_details,
+                'total_reactions': len(reactions_details),
+                'reactions': reactions_details,
+                'total_shares': len(shares_details),
+                'shares': shares_details
+            }
+            
+            return JsonResponse(response_data)
+        
+        except Exception as e:
+            print(f"Error retrieving post details: {e}")
             return JsonResponse({
                 'error': 'An unexpected error occurred'
             }, status=500)
