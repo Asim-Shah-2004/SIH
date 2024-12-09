@@ -20,7 +20,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [reqSet, setReqSet] = useState(new Set());
-  const [recommendations, setRecommendations] = useState([]);
 
   useEffect(() => {
     const checkAuthStatus = async () => {
@@ -83,8 +82,6 @@ export const AuthProvider = ({ children }) => {
         token,
         setToken,
         updateUser,
-        recommendations,
-        setRecommendations,
       }}>
       {children}
     </AuthContext.Provider>

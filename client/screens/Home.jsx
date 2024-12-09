@@ -1,19 +1,39 @@
-import { useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { ML_URL } from '@env';
+import axios from 'axios';
+import { useState, useEffect } from 'react';
+import { FlatList, StyleSheet, View, Text } from 'react-native';
 
 import NewPost from '../components/home/NewPost';
 import Post from '../components/home/Post';
-import { useAuth } from '../providers/AuthProvider';
 
 const Home = () => {
-  const { recommendations, setRecommendations } = useAuth();
+  const [posts, setPosts] = useState();
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const email = 'raymond.salinas@company.com'; // Replace with the actual email
+        const response = await axios.get(`${ML_URL}/api/quantum_recommend_posts`, {
+          params: { email },
+        });
 
-  const handleSubmitPost = (content) => {
-    // TODO: Implement handleSubmitPost
-  };
+        setPosts(response.data.recommendations);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // TODO: Implement handleSubmitPost
+  const handleSubmitPost = (content) => {};
 
   const updatePostComments = (postId, newComment) => {
-    setRecommendations((currentPosts) =>
+    setPosts((currentPosts) =>
       currentPosts.map((post) =>
         post.postId === postId
           ? {
@@ -31,14 +51,17 @@ const Home = () => {
   return (
     <View>
       <NewPost onSubmitPost={handleSubmitPost} />
-      <FlatList
-        data={recommendations}
-        renderItem={({ item: post }) => (
-          <Post key={post.postId} post={post} updateComments={updatePostComments} />
-        )}
-        keyExtractor={(item) => item.postId}
-        contentContainerStyle={styles.container}
-      />
+      {loading && <Text>Loading...</Text>}
+      {posts && (
+        <FlatList
+          data={posts}
+          renderItem={({ item: post }) => (
+            <Post key={post.postId} post={post} updateComments={updatePostComments} />
+          )}
+          keyExtractor={(item) => item.postId}
+          contentContainerStyle={styles.container}
+        />
+      )}
     </View>
   );
 };
