@@ -1,19 +1,6 @@
 import mongoose from 'mongoose';
 import crypto from 'crypto';
 
-const updateSchema = new mongoose.Schema({
-  date: { type: Date, required: true },
-  message: { type: String, required: true },
-  image: { type: String },
-});
-
-const testimonialSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  message: { type: String, required: true },
-  image: { type: String },
-  year: { type: String },
-});
-
 const campaignManagerSchema = new mongoose.Schema({
   name: { type: String, required: true },
   role: { type: String, required: true },
@@ -35,11 +22,8 @@ const donationCampaignSchema = new mongoose.Schema({
   deadline: { type: Date, required: true },
   impact: { type: String, required: true },
   category: { type: String, required: true },
-  updates: [updateSchema],
-  testimonials: [testimonialSchema],
   campaignManager: { type: campaignManagerSchema, required: true },
   taxBenefits: { type: String },
-  minimumDonation: { type: Number, required: true },
   suggestedDonations: { type: [Number], required: true },
   transactions: { type: [mongoose.Schema.Types.ObjectId], ref: 'Transaction' },
 });

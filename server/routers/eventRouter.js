@@ -5,6 +5,7 @@ import {
   addEvent,
   updateEvent,
   deleteEvent,
+  registerForEvent,
 } from '../controllers/eventController.js';
 
 const eventRouter = express.Router();
@@ -14,5 +15,6 @@ eventRouter.get('/:id', getEventById);
 eventRouter.post('/', addEvent);
 eventRouter.put('/:id', updateEvent);
 eventRouter.delete('/:id', deleteEvent);
+eventRouter.post('/:id/register', registerForEvent);
 
 export default eventRouter;

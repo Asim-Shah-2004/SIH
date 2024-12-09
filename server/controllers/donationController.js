@@ -123,3 +123,32 @@ export const donateToCampaign = async (req, res) => {
     session.endSession();
   }
 };
+
+export const getDonors = async (req, res) => {
+  try {
+    console.log('getDonors');
+
+    const { id } = req.params;
+    console.log(id);
+
+    const campaign = await DonationCampaign.findById(id).populate({
+      path: 'transactions',
+      select: 'amount transactionDate transactionMethod',
+      populate: {
+        path: 'user',
+        select: '_id fullName profilePhoto',
+      },
+    });
+    console.log(campaign);
+    res.status(200).json(campaign.transactions);
+  }
+  catch (error) {
+    res.status(400).json({
+      error: 'Failed to get donor',
+      details: error.message,
+    });
+  }
+}
+
+
+
