@@ -30,19 +30,17 @@ const Home = () => {
   }, []);
 
   // TODO: Implement handleSubmitPost
-  const handleSubmitPost = (content) => {};
-
   const updatePostComments = (postId, newComment) => {
     setPosts((currentPosts) =>
       currentPosts.map((post) =>
         post.postId === postId
           ? {
-              ...post,
-              comments: {
-                total: post.comments.total + 1,
-                details: [newComment, ...(post.comments?.details || [])],
-              },
-            }
+            ...post,
+            comments: {
+              total: post.comments.total + 1,
+              details: [newComment, ...(post.comments?.details || [])],
+            },
+          }
           : post
       )
     );
@@ -50,7 +48,7 @@ const Home = () => {
 
   return (
     <View>
-      <NewPost onSubmitPost={handleSubmitPost} />
+      <NewPost />
       {loading && <Text>Loading...</Text>}
       {posts && (
         <FlatList

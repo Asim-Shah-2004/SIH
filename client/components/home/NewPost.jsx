@@ -5,11 +5,13 @@ import * as ImagePicker from 'expo-image-picker';
 import * as VideoThumbnails from 'expo-video-thumbnails';
 import { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { SERVER_URL } from '@env'
 
 import Post from './Post';
 import { useAuth } from '../../providers/AuthProvider';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const NewPost = ({ onSubmitPost }) => {
+const NewPost = () => {
   const [newPost, setNewPost] = useState('');
   const [media, setMedia] = useState([]);
   const [emotion, setEmotion] = useState('');
@@ -74,16 +76,29 @@ const NewPost = ({ onSubmitPost }) => {
     }
   };
 
-  const handleSubmit = () => {
-    if (newPost.trim() || media.length > 0) {
-      onSubmitPost({
+  const handleSubmit = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        throw new Error('Invalid token')
+      }
+      const response = await axios.post(`${SERVER_URL}/posts/`, {
         text: newPost,
-        media,
-      });
-      setNewPost('');
-      setMedia([]);
+        media
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      })
+      console.log(response.data);
+      setMedia([])
+      setNewPost('')
+    }
+    catch (err) {
+      console.error('Error submitting post:', err);
     }
   };
+
 
   const pickMedia = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -199,12 +214,11 @@ const NewPost = ({ onSubmitPost }) => {
         </View>
 
         <TouchableOpacity
-          className={`rounded-full px-6 py-2 ${
-            !newPost.trim() && media.length === 0 ? 'bg-black/50' : 'bg-black'
-          }`}
+          className={`rounded-full px-6 py-2 ${!newPost.trim() && media.length === 0 ? 'bg-black/50' : 'bg-black'
+            }`}
           onPress={handleSubmit}
           disabled={!newPost.trim() && media.length === 0}>
-          <Text className="text-sm font-semibold text-white">Post</Text>
+          <Text className="text-sm font-semibold text-white" onPress={handleSubmit}>Post</Text>
         </TouchableOpacity>
       </View>
 

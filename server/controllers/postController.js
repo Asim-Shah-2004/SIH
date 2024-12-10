@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import {Post} from "../models/index.js";
+import { Post } from "../models/index.js";
 
 export const createPost = async (req, res) => {
   try {
@@ -8,7 +8,7 @@ export const createPost = async (req, res) => {
       text: req.body.text,
       media: req.body.media || [],
     });
-    
+
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
   } catch (error) {
@@ -19,9 +19,9 @@ export const createPost = async (req, res) => {
 export const getPosts = async (req, res) => {
   try {
     const { userId, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
-    
+
     const query = userId ? { userId: mongoose.Types.ObjectId(userId) } : {};
-    
+
     const posts = await Post.aggregate([
       { $match: query },
       { $sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 } },
@@ -58,9 +58,9 @@ export const getPostById = async (req, res) => {
     const post = await Post.findById(req.params.id)
       .populate('userId', 'username profilePicture')
       .populate('comments.userId', 'username profilePicture');
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
-    
+
     res.status(200).json(post);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -70,9 +70,9 @@ export const getPostById = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
-    
+
     if (post.userId.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to update this post' });
     }
@@ -91,9 +91,9 @@ export const updatePost = async (req, res) => {
 export const deletePost = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
-    
+
     if (post.userId.toString() !== req.user.id) {
       return res.status(403).json({ message: 'Not authorized to delete this post' });
     }
@@ -108,7 +108,7 @@ export const deletePost = async (req, res) => {
 export const addComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     const newComment = {
@@ -129,11 +129,11 @@ export const addComment = async (req, res) => {
 export const updateComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     const comment = post.comments.id(req.params.commentId);
-    
+
     if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
     if (comment.userId.toString() !== req.user.id) {
@@ -153,15 +153,15 @@ export const updateComment = async (req, res) => {
 export const deleteComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     const comment = post.comments.id(req.params.commentId);
-    
+
     if (!comment) return res.status(404).json({ message: 'Comment not found' });
 
     if (
-      comment.userId.toString() !== req.user.id && 
+      comment.userId.toString() !== req.user.id &&
       post.userId.toString() !== req.user.id
     ) {
       return res.status(403).json({ message: 'Not authorized to delete this comment' });
@@ -179,7 +179,7 @@ export const deleteComment = async (req, res) => {
 export const toggleLike = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     const likeIndex = post.likes.findIndex(
@@ -202,7 +202,7 @@ export const toggleLike = async (req, res) => {
 export const addReaction = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
-    
+
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
     const existingReactionIndex = post.reactions.findIndex(
