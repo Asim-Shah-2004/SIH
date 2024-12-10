@@ -1,8 +1,8 @@
-import { ML_URL } from '@env';
+import { ML_URL, SERVER_URL } from '@env';
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 import { FlatList, StyleSheet, View, Text } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import NewPost from '../components/home/NewPost';
 import Post from '../components/home/Post';
 
@@ -11,14 +11,22 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const fetchData = async () => {
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        throw new Error('Token not found');
+      }
       setLoading(true);
       try {
-        const email = 'raymond.salinas@company.com'; // Replace with the actual email
-        const response = await axios.get(`${ML_URL}/api/quantum_recommend_posts`, {
-          params: { email },
+        // const email = 'raymond.salinas@company.com'; // Replace with the actual email
+        // const response = await axios.get(`${ML_URL}/api/quantum_recommend_posts`, {
+        //   params: { email },
+        // });
+
+        const response2 = await axios.get(`${SERVER_URL}/posts`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        setPosts(response.data.recommendations);
+        setPosts(response2.data);
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {

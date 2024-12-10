@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Post } from "../models/index.js";
+import { Post, User } from "../models/index.js";
 
 export const createPost = async (req, res) => {
   try {
@@ -10,6 +10,9 @@ export const createPost = async (req, res) => {
     });
 
     const savedPost = await newPost.save();
+    const user = await User.findById(req.user.id);
+    user.posts.push(savedPost._id);
+    await user.save();
     res.status(201).json(savedPost);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -18,35 +21,7 @@ export const createPost = async (req, res) => {
 
 export const getPosts = async (req, res) => {
   try {
-    const { userId, sortBy = 'createdAt', sortOrder = 'desc' } = req.query;
-
-    const query = userId ? { userId: mongoose.Types.ObjectId(userId) } : {};
-
-    const posts = await Post.aggregate([
-      { $match: query },
-      { $sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 } },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'userId',
-          foreignField: '_id',
-          as: 'user'
-        }
-      },
-      { $unwind: '$user' },
-      {
-        $project: {
-          text: 1,
-          media: 1,
-          likes: 1,
-          comments: 1,
-          createdAt: 1,
-          'user.username': 1,
-          'user.profilePicture': 1
-        }
-      }
-    ]);
-
+    const posts = await Post.find()
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: error.message });

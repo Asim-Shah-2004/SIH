@@ -81,7 +81,22 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
-  createdAt: { type: Date, default: Date.now },
+  posts:
+  {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    default: [],
+  },
+  likes:
+  {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    default: [],
+  },
+  comments:
+  {
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
+    default: [],
+  },
+  createdAt: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', userSchema);
