@@ -9,13 +9,285 @@ import {
   SafeAreaView,
   Linking,
   Modal,
-  Pressable
+  Pressable,
+  TextInput, 
+  Alert
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Haptics from 'expo-haptics';
-
+import axios from "axios"
 import { useAuth } from '../providers/AuthProvider';
+import { SERVER_URL } from '@env';
+
+const ChangePasswordModal = ({ 
+  isVisible, 
+  onClose, 
+  onChangePassword,
+  onForgotPassword 
+}) => {
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleChangePassword = async () => {
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Error', 'New passwords do not match');
+      return;
+    }
+  
+    try {
+      const token = await AsyncStorage.getItem('token');
+    
+      if (!token) {
+        Alert.alert('Error', 'No authentication token found. Please log in again.');
+        return;
+      }
+    
+      const verifyResponse = await axios.post(`${SERVER_URL}/users/verifyPassword`, 
+        { password: oldPassword },
+        { 
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
+      );
+    
+      if (verifyResponse.data.success) {
+        const changeResponse = await axios.post(`${SERVER_URL}/users/changePassword`, 
+          { newPassword },
+          { 
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            } 
+          }
+        );
+    
+        if (changeResponse.data.success) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          
+          Alert.alert(
+            'Success', 
+            'Your password has been changed successfully',
+            [{ text: 'OK', onPress: () => onClose() }]
+          );
+  
+          // Reset password fields
+          setOldPassword('');
+          setNewPassword('');
+          setConfirmPassword('');
+        } else {
+          throw new Error('Password change failed');
+        }
+      }
+    } catch (error) {
+      console.error('Password change error:', error);
+    
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      
+      if (error.response) {
+        switch (error.response.status) {
+          case 401:
+            Alert.alert('Error', 'Current password is incorrect');
+            break;
+          case 400:
+            Alert.alert('Error', 'Invalid password. Please try again.');
+            break;
+          default:
+            Alert.alert('Error', error.response.data.message || 'Failed to change password');
+        }
+      } else if (error.request) {
+        Alert.alert('Error', 'No response from server. Please check your connection.');
+      } else {
+        Alert.alert('Error', error.message || 'An unexpected error occurred');
+      }
+    }
+  };
+
+  const PasswordInput = ({ 
+    placeholder, 
+    value, 
+    onChangeText, 
+    showPassword, 
+    onToggleVisibility 
+  }) => (
+    <View style={styles.passwordInputContainer}>
+      <View style={styles.passwordInputWrapper}>
+        <Ionicons 
+          name="lock-closed-outline" 
+          size={22} 
+          color="#8E8E93" 
+          style={styles.inputIcon}
+        />
+        <TextInput
+          placeholder={placeholder}
+          placeholderTextColor="#8E8E93"
+          secureTextEntry={!showPassword}
+          value={value}
+          onChangeText={onChangeText}
+          style={styles.passwordInput}
+        />
+        <TouchableOpacity 
+          onPress={onToggleVisibility}
+          style={styles.passwordVisibilityToggle}
+        >
+          <Ionicons 
+            name={showPassword ? "eye-off-outline" : "eye-outline"} 
+            size={22} 
+            color="#8E8E93" 
+          />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  return (
+    <Modal 
+      visible={isVisible} 
+      animationType="slide" 
+      presentationStyle="formSheet"
+      transparent={true}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <TouchableOpacity 
+              onPress={onClose} 
+              style={styles.closeButton}
+            >
+              <Ionicons name="close" size={24} color="#000" />
+            </TouchableOpacity>
+            <Text style={styles.pageTitle}>Change Password</Text>
+          </View>
+
+          <View style={styles.modalContent}>
+            <PasswordInput 
+              placeholder="Current Password"
+              value={oldPassword}
+              onChangeText={setOldPassword}
+              showPassword={showOldPassword}
+              onToggleVisibility={() => setShowOldPassword(!showOldPassword)}
+            />
+
+            <View style={styles.softDivider} />
+
+            <PasswordInput 
+              placeholder="New Password"
+              value={newPassword}
+              onChangeText={setNewPassword}
+              showPassword={showNewPassword}
+              onToggleVisibility={() => setShowNewPassword(!showNewPassword)}
+            />
+
+            <View style={styles.softDivider} />
+
+            <PasswordInput 
+              placeholder="Confirm New Password"
+              value={confirmPassword}
+              onChangeText={setConfirmPassword}
+              showPassword={showConfirmPassword}
+              onToggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
+            />
+
+            <TouchableOpacity 
+              style={styles.changePasswordButton} 
+              onPress={handleChangePassword}
+            >
+              <Text style={styles.changePasswordButtonText}>
+                Change Password
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.forgotPasswordLink}
+              onPress={onForgotPassword}
+            >
+              <Text style={styles.forgotPasswordText}>
+                Forgot Password?
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+// Add these styles to the existing styles object
+const additionalStyles = {
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    width: '90%',
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalContent: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  passwordInputContainer: {
+    marginVertical: 10,
+  },
+  passwordInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(142, 142, 147, 0.12)',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    height: 50,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
+    color: '#000',
+  },
+  passwordVisibilityToggle: {
+    padding: 5,
+  },
+  changePasswordButton: {
+    backgroundColor: '#0A84FF',
+    paddingVertical: 13,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  changePasswordButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  forgotPasswordLink: {
+    alignItems: 'center',
+    marginTop: 15,
+  },
+  forgotPasswordText: {
+    color: '#0A84FF',
+    fontSize: 15,
+    fontWeight: '500',
+  },
+};
+
+// Merge the additional styles with the existing styles
+
 
 // Internal Terms of Service Component
 const TermsOfServiceScreen = ({ isVisible, onClose }) => {
@@ -228,8 +500,78 @@ const Settings = ({ navigation }) => {
   const [modalStates, setModalStates] = useState({
     termsOfService: false,
     privacyPolicy: false,
-    helpSupport: false
+    helpSupport: false,
+    changePassword: false
   });
+
+
+  const handlePasswordChange = async (oldPassword, newPassword) => {
+    try {
+
+      const token = await AsyncStorage.getItem('token')
+
+      if (!token) throw new Error('Token not found');
+
+      // First, verify the old password
+      const verifyResponse = await axios.post(`http://localhost:3000/user/verifyPassword`, 
+        { password: oldPassword },
+        { 
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } 
+        }
+      );
+
+      console.log(verifyResponse)
+
+      // If verification is successful, proceed to change password
+      if (verifyResponse.data.success) {
+        const changeResponse = await axios.post(`http://localhost:3000/user/changePassword`, 
+          { newPassword },
+          { 
+            headers: { 
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            } 
+          }
+        );
+
+        // Success scenario
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        
+        Alert.alert(
+          'Success', 
+          'Your password has been changed successfully',
+          [{ text: 'OK', onPress: () => toggleModal('changePassword') }]
+        );
+      }
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      
+      // Handle different error scenarios
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        switch (error.response.status) {
+          case 401:
+            Alert.alert('Error', 'Current password is incorrect');
+            break;
+          case 400:
+            Alert.alert('Error', 'Invalid password. Please try again.');
+            break;
+          default:
+            Alert.alert('Error', 'Failed to change password. Please try again.');
+        }
+      } else if (error.request) {
+        // The request was made but no response was received
+        Alert.alert('Error', 'No response from server. Please check your connection.');
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        Alert.alert('Error', 'An unexpected error occurred.');
+      }
+    }
+  };
 
   const { setRole, setIsLoggedIn, setToken } = useAuth();
 
@@ -328,6 +670,7 @@ const Settings = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+
       <ScrollView 
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollViewContent}
@@ -343,11 +686,22 @@ const Settings = ({ navigation }) => {
           <View style={styles.softDivider} />
           <SettingItem 
             icon="lock-closed-outline" 
-            title="Security" 
-            description="Password and authentication"
-            onPress={() => navigation.navigate('Security')}
+            title="Change Password" 
+            description="Manage account security"
+            onPress={() => toggleModal('changePassword')}
           />
         </SettingsSection>
+
+        <ChangePasswordModal
+        isVisible={modalStates.changePassword}
+        onClose={() => toggleModal('changePassword')}
+        onChangePassword={handlePasswordChange}
+        onForgotPassword={() => {
+          // Close change password modal and open help & support
+          toggleModal('changePassword');
+          toggleModal('helpSupport');
+        }}
+      />
 
         {/* Notifications Section */}
         <SettingsSection title="Notifications">
@@ -586,5 +940,7 @@ const styles = StyleSheet.create({
 //     navigate: PropTypes.func.isRequired,
 //   }).isRequired,
 // };
+
+Object.assign(styles, additionalStyles);
 
 export default Settings;
