@@ -15,8 +15,10 @@ const EventsPage = () => {
   const [loading, setLoading] = useState(true); // To handle loading state
   const [error, setError] = useState(null); // To handle errors
   const { role } = useAuth();
+  
 
   const fetchEvents = async () => {
+    
     try {
       const token = await AsyncStorage.getItem('token');
 
@@ -74,7 +76,7 @@ const EventsPage = () => {
           </ScrollView>
         </>
       )}
-      <EventModal open={!!selectedEvent} onClose={handleCloseModal} event={selectedEvent} />
+      <EventModal open={!!selectedEvent} onClose={handleCloseModal} event={selectedEvent} role={role} />
     </View>
   );
 };
