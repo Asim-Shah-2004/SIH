@@ -3,6 +3,7 @@ import os
 import json
 import logging
 import traceback
+import random
 import pdfplumber
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
@@ -10,6 +11,7 @@ from django.conf import settings
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
+from datetime import datetime
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -35,52 +37,51 @@ class ResumeComprehensiveExtractor:
         # Comprehensive prompt template to extract multiple pieces of information
         self.prompt = PromptTemplate(
     template="""
-    Extract the following comprehensive information from the resume text. 
-    If certain details are missing, return null or an empty string.
-    Return JSON strictly matching this structure:
+    Extract detailed information from the resume text following this comprehensive schema:
 
     {{
-        "personal_info": {{
-            "full_name": "Complete full name",
-            "email": "Professional email address",
-            "phone": "Primary contact phone number",
-            "linkedin": "LinkedIn profile URL (if available)",
-            "github": "GitHub profile URL (if available)"
-        }},
+        "fullName": "Full name as it appears on the resume",
+        "email": "Professional email address",
+        "phone": "Primary contact phone number",
+        "city": "City of residence or work",
+        "state": "State of residence or work",
+        "country": "Country of residence or work (default to 'India' if not specified)",
+        "bio": "Professional summary or objective statement",
+        "about": "Detailed description of professional background",
+        "website": "Personal website or professional portfolio URL",
+        "skills": ["List of professional skills"],
+        "interests": ["List of professional or personal interests"],
+        "languages": ["List of languages known"],
         "education": [
             {{
+                "degree": "Degree earned (B.Tech, M.Tech, etc.)",
+                "department": "Field of study or academic department",
                 "institution": "Name of educational institution",
-                "degree": "Degree earned",
-                "major": "Field of study (if specified)",
-                "graduation_year": "Graduation year or 'ongoing' if still studying",
-                "honors": "Honors or GPA (if mentioned)"
+                "graduationYear": "Year of graduation",
+                "isVerified": "Always set to false in this context"
             }}
         ],
-        "experience": [
+        "workExperience": [
             {{
-                "company": "Company or organization name",
-                "position": "Job title or role",
-                "start_date": "Start date of employment",
-                "end_date": "End date of employment (or 'Present' if current job)",
-                "responsibilities": ["List of key responsibilities or achievements"],
-                "location": "Location of work (optional)"
+                "companyName": "Name of company or organization",
+                "role": "Job title or position",
+                "startDate": "Start date of employment",
+                "endDate": "End date of employment (or null if current job)",
+                "description": "Brief description of responsibilities or achievements"
             }}
         ],
         "projects": [
             {{
-                "name": "Project name",
-                "description": "Detailed description of the project",
-                "technologies": ["List of technologies used"],
-                "start_date": "Project start date (if mentioned)",
-                "end_date": "Project end date (if mentioned)",
-                "key_achievements": ["Significant outcomes or impacts"]
+                "title": "Project name",
+                "description": "Detailed project description",
+                "link": "Project URL or repository link (if available)"
             }}
         ],
-        "achievements": [
+        "certifications": [
             {{
-                "title": "Achievement title",
-                "description": "Details about the achievement",
-                "date": "Year or date of achievement (if mentioned)"
+                "name": "Certification name",
+                "issuingOrganization": "Organization that issued the certification",
+                "issueDate": "Date of certification"
             }}
         ]
     }}
@@ -117,38 +118,100 @@ class ResumeComprehensiveExtractor:
         # Split text into chunks
         return [full_text[i:i+max_chars] for i in range(0, len(full_text), max_chars)]
 
-    def clean_json_output(self, raw_output):
+    def clean_and_merge_results(self, raw_outputs):
         """
-        Ensure proper JSON structure and handle multiple chunk extractions.
+        Clean and merge results from multiple chunk extractions.
         """
         try:
-            parsed_results = json.loads(raw_output)
-            
-            # Initialize a comprehensive result structure
+            # Initialize the comprehensive result structure
             final_result = {
-                "personal_info": {},
+                "fullName": None,
+                "email": None,
+                "phone": None,
+                "city": None,
+                "state": None,
+                "country": "India",
+                "bio": None,
+                "about": None,
+                "website": None,
+                "skills": [],
+                "interests": [],
+                "languages": [],
                 "education": [],
-                "experience": [],
+                "workExperience": [],
                 "projects": [],
-                "achievements": []
+                "certifications": []
             }
+
+            # Process each chunk's results
+            for output in raw_outputs:
+                # Merge scalar fields (take first non-null value)
+                scalar_fields = [
+                    "fullName", "email", "phone", "city", "state", 
+                    "bio", "about", "website", "country"
+                ]
+                for field in scalar_fields:
+                    if output.get(field) and not final_result[field]:
+                        final_result[field] = output[field]
+
+                # Merge list fields
+                list_fields = [
+                    "skills", "interests", "languages", 
+                    "education", "workExperience", "projects", "certifications"
+                ]
+                for field in list_fields:
+                    if output.get(field):
+                        # Extend without duplicates
+                        unique_items = [
+                            item for item in output[field] 
+                            if item not in final_result[field]
+                        ]
+                        final_result[field].extend(unique_items)
+
+            # Post-processing
+            # Limit lists to reasonable lengths
+            final_result["skills"] = final_result["skills"][:10]
+            final_result["interests"] = final_result["interests"][:5]
+            final_result["languages"] = final_result["languages"][:4]
+            final_result["education"] = final_result["education"][:3]
+            final_result["workExperience"] = final_result["workExperience"][:5]
+            final_result["projects"] = final_result["projects"][:5]
+            final_result["certifications"] = final_result["certifications"][:5]
+
+            # Default values for missing critical fields
+            if not final_result["fullName"]:
+                final_result["fullName"] = "Unknown"
             
-            # Merge results from multiple chunks
-            for result in parsed_results:
-                # Merge personal info (take first non-empty result)
-                if result.get("personal_info") and not final_result["personal_info"]:
-                    final_result["personal_info"] = result["personal_info"]
-                
-                # Extend lists
-                for key in ["education", "experience", "projects", "achievements"]:
-                    if result.get(key):
-                        final_result[key].extend(result[key])
-            
+            # Ensure dates are in correct format
+            for exp in final_result["workExperience"]:
+                try:
+                    exp["startDate"] = datetime.strptime(exp["startDate"], "%Y-%m-%d") if exp.get("startDate") else None
+                    exp["endDate"] = datetime.strptime(exp["endDate"], "%Y-%m-%d") if exp.get("endDate") else None
+                except (ValueError, TypeError):
+                    exp["startDate"] = None
+                    exp["endDate"] = None
+
+            # Add default values for missing but important fields
+            final_result["createdAt"] = datetime.now()
+            final_result["profilePhoto"] = None
+            final_result["password"] = None  # Will be handled separately
+            final_result["eventsRegistered"] = []
+            final_result["connections"] = []
+            final_result["receivedRequests"] = []
+            final_result["sentRequests"] = []
+            final_result["notifications"] = []
+            final_result["chats"] = []
+            final_result["donationHistory"] = []
+            final_result["posts"] = []
+            final_result["likes"] = []
+            final_result["comments"] = []
+
             return final_result
         
-        except json.JSONDecodeError as e:
-            logger.error(f"JSON Decode Error: {e}")
-            return {"error": "Failed to parse LLM output"}
+        except Exception as e:
+            logger.error(f"Error in cleaning results: {e}")
+            logger.error(traceback.format_exc())
+            return None
 
     def process_resume(self, pdf_file):
         """
@@ -178,8 +241,9 @@ class ResumeComprehensiveExtractor:
                     logger.error(f"Chain Extraction Error for chunk: {chain_error}")
                     extraction_results.append({"error": str(chain_error)})
 
-            # Combine results and clean up
-            combined_results = self.clean_json_output(json.dumps(extraction_results))
+            # Combine and clean results
+            combined_results = self.clean_and_merge_results(extraction_results)
+            
             logger.info(f"Combined Extraction Results: {combined_results}")
             return combined_results
 
