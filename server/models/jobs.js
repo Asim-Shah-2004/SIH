@@ -2,11 +2,6 @@ import mongoose from 'mongoose';
 import crypto from 'crypto';
 
 const jobSchema = new mongoose.Schema({
-  id: {
-    type: String,
-    default: () => crypto.randomUUID(),
-    unique: true,
-  },
   title: {
     type: String,
     required: true,

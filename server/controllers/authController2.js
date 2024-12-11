@@ -1,7 +1,9 @@
-import { User } from '../models/index.js';
+import { User, College } from '../models/index.js';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 dotenv.config();
 
 const transporter = nodemailer.createTransport({
@@ -116,36 +118,36 @@ export const register = async (req, res) => {
 
         // Validate the user object
         if (!user || typeof user !== 'object') {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'User object must be provided' 
+            return res.status(400).json({
+                success: false,
+                error: 'User object must be provided'
             });
         }
 
         // Normalize and validate emails from education array
-        const emails = user.education 
+        const emails = user.education
             ? user.education.map(edu => edu.college_email.toLowerCase().trim())
             : [];
 
         if (emails.length === 0) {
-            return res.status(400).json({ 
-                success: false, 
-                error: 'At least one college email is required' 
+            return res.status(400).json({
+                success: false,
+                error: 'At least one college email is required'
             });
         }
 
         const results = await Promise.all(emails.map(async (email) => {
             try {
                 // Check if a user with this college email already exists
-                let existingUser = await User.findOne({ 
-                    'education.college_email': email 
+                let existingUser = await User.findOne({
+                    'education.college_email': email
                 });
-                
+
                 if (existingUser) {
-                    return { 
-                        email, 
-                        status: 'failed', 
-                        error: 'College email already registered' 
+                    return {
+                        email,
+                        status: 'failed',
+                        error: 'College email already registered'
                     };
                 }
 
@@ -174,7 +176,7 @@ export const register = async (req, res) => {
                     edu => edu.college_email.toLowerCase().trim() === email
                 );
                 const verificationUrl = `http://localhost:3000/auth/${encodeURIComponent(email)}/verify?token=${relevantEducation.verificationToken}`;
-                
+
                 // Send verification email
                 await transporter.sendMail({
                     from: '"Your Company" <noreply@yourcompany.com>',
@@ -183,17 +185,17 @@ export const register = async (req, res) => {
                     html: getVerificationEmail(verificationUrl)
                 });
 
-                return { 
-                    email, 
-                    status: 'success', 
-                    message: 'Verification email sent' 
+                return {
+                    email,
+                    status: 'success',
+                    message: 'Verification email sent'
                 };
             } catch (error) {
                 console.error('Registration error for email:', email, error);
-                return { 
-                    email, 
-                    status: 'failed', 
-                    error: error.message 
+                return {
+                    email,
+                    status: 'failed',
+                    error: error.message
                 };
             }
         }));
@@ -248,7 +250,7 @@ export const verify = async (req, res) => {
 
         // Find the specific education entry to verify
         const educationEntry = user.education.find(
-            edu => 
+            edu =>
                 edu.college_email.toLowerCase().trim() === normalizedEmail &&
                 edu.verificationToken === token
         );
@@ -425,5 +427,48 @@ export const verify = async (req, res) => {
             error: 'Verification failed',
             message: error.message
         });
+    }
+};
+
+export const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        let user = await User.findOne({ email });
+        console.log(user);
+
+        let role = 'user';
+
+        if (!user) {
+            user = await College.findOne({ email });
+            role = 'college';
+        }
+
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+        console.log(user)
+        const isValidPassword = await bcrypt.compare(password, user.password);
+        if (!isValidPassword) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        const token = jwt.sign(
+            {
+                id: user._id,
+                email: user.email,
+            },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        res.json({
+            message: 'Login successful',
+            token,
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+        console.log(error);
+
     }
 };
