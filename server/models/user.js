@@ -10,7 +10,6 @@ const userSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  isUniversityGeneratedPassword: { type: Boolean, default: true },
   profilePhoto: { type: String },
   phone: { type: String, required: true },
   city: { type: String, required: true },
@@ -18,9 +17,13 @@ const userSchema = new mongoose.Schema({
   country: { type: String, required: true },
   education: [
     {
-      degree: { type: String },
-      institution: { type: String },
-      yearOfGraduation: { type: Number, default: null },
+      degree: { type: String, required: true },
+      department: { type: String, required: true },
+      institution: { type: String, required: true },
+      graduationYear: { type: Number, default: null, required: true },
+      college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
+      college_email: { type: String, required: true },
+      isVerified: { type: Boolean, default: false }
     },
   ],
   workExperience: [
@@ -48,10 +51,6 @@ const userSchema = new mongoose.Schema({
     },
   ],
   languages: { type: [String], required: true },
-  location: {
-    latitude: { type: Number, required: true },
-    longitude: { type: Number, required: true },
-  },
   connections: { type: [requestSchema], default: [] },
   receivedRequests: { type: [requestSchema], default: [] },
   sentRequests: {
@@ -59,13 +58,12 @@ const userSchema = new mongoose.Schema({
     default: [],
   },
   notifications: { type: [String], default: [] },
-  bio: { type: String },
+  bio: { type: String, default: '' },
   interests: { type: [String], required: true },
   website: { type: String },
   chats: [
     {
       chatId: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
-      chatType: { type: Boolean, default: false, required: true }, // True for group chat, false for individual chat
       otherParticipant: { type: String },
     },
   ],
@@ -82,19 +80,22 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
-  posts: {
+  posts:
+  {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     default: [],
   },
-  likes: {
+  likes:
+  {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     default: [],
   },
-  comments: {
+  comments:
+  {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     default: [],
   },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', userSchema);

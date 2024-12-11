@@ -13,6 +13,7 @@ const donationCampaignSchema = new mongoose.Schema({
     default: () => crypto.randomUUID(),
     unique: true,
   },
+  college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
   title: { type: String, required: true },
   description: { type: String, required: true },
   goal: { type: Number, required: true },

@@ -73,6 +73,7 @@ const jobSchema = new mongoose.Schema({
       required: true,
     },
   },
+  college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true }
 });
 
 const Job = mongoose.model('Job', jobSchema);
