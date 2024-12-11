@@ -60,6 +60,9 @@ const Manual = ({route, navigation}) => {
     email: resumeData?.personal_info?.email || '',
     phoneNumber: resumeData?.personal_info?.phone || '',
     location: resumeData?.personal_info?.location || '',
+    country: resumeData?.personal_info?.country || '',
+    state: resumeData?.personal_info?.state || '',
+    city: resumeData?.personal_info?.city || '',
     password: '',
     confirmPassword: ''
   });
@@ -133,6 +136,9 @@ const Manual = ({route, navigation}) => {
       profilePhoto: formData.profilePic,
       phone: formData.phoneNumber,
       address: formData.location,
+      country: formData.country,
+      state: formData.state,
+      city: formData.city,
       education: formData.education.map(edu => ({
         degree: edu.degree,
         institution: edu.university,
@@ -181,6 +187,9 @@ const Manual = ({route, navigation}) => {
         profilePhoto: formData.profilePic,
         phone: formData.phoneNumber,
         address: formData.location,
+        country: formData.country,
+        state: formData.state,
+        city: formData.city,
         education: formData.education.map(edu => ({
           degree: edu.degree,
           institution: edu.university,
@@ -292,6 +301,36 @@ const Manual = ({route, navigation}) => {
                   setFormData(prev => ({...prev, phoneNumber: cleaned.slice(0, 10)}));
                 }}
                 keyboardType="numeric"
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Country</Text>
+              <TextInput
+                placeholder="Enter your country"
+                value={formData.country}
+                onChangeText={(text) => setFormData(prev => ({...prev, country: text}))}
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>State</Text>
+              <TextInput
+                placeholder="Enter your state"
+                value={formData.state}
+                onChangeText={(text) => setFormData(prev => ({...prev, state: text}))}
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>City</Text>
+              <TextInput
+                placeholder="Enter your city"
+                value={formData.city}
+                onChangeText={(text) => setFormData(prev => ({...prev, city: text}))}
                 style={styles.input}
               />
             </View>
