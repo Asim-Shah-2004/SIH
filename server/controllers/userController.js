@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt"
-import { User } from '../models/index.js';
+import { User , LandingPageConfig } from '../models/index.js';
 
 const changePassword = async (req, res) => {
   try {
@@ -168,4 +168,14 @@ const getDepartments = async (req, res) => {
 };
 
 
-export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations ,verifyPassword , changePassword, getDepartments};
+const landingPageConfig = async (req, res) => {
+
+  const college_id = req.params.college_id;
+
+  const config = await LandingPageConfig.findById(college_id);
+
+  return res.json(config);
+
+}
+
+export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations ,verifyPassword , changePassword, getDepartments , landingPageConfig };

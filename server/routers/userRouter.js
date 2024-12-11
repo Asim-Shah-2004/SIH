@@ -6,7 +6,8 @@ import {
   getDonations,
   verifyPassword,
   changePassword,
-  getDepartments
+  getDepartments,
+  landingPageConfig
 } from '../controllers/userController.js';
 
 const userRouter = express.Router();
@@ -18,5 +19,6 @@ userRouter.get('/getDepartments', getDepartments);
 userRouter.get('/fetch/:id', getUser);
 userRouter.post('/changePassword',changePassword)
 userRouter.post('/verifyPassword',verifyPassword)
+userRouter.get('/getConfig/:college_id',landingPageConfig);
 
 export default userRouter;

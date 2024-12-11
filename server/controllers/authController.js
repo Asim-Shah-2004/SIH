@@ -60,20 +60,15 @@ export const collegeRegister = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+export const collegeLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    let user = await User.findOne({ email });
-    let role = 'user';
+    // let user = await User.findOne({ email });
+    // let role = 'user';
 
-    console.log(email, password);
-    
+     const user = await College.findOne({ email });
 
-    if (!user) {
-      user = await College.findOne({ email });
-      role = 'college';
-    }
 
 
     if (!user) {
