@@ -23,7 +23,22 @@ const userSchema = new mongoose.Schema({
       graduationYear: { type: Number, default: null, required: true },
       college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
       college_email: { type: String, required: true },
-      isVerified: { type: Boolean, default: false }
+      verificationToken: {
+        type: String,
+        default: null
+      },
+      verificationTokenExpires: {
+        type: Date,
+        default: null
+      },
+      isVerified: {
+        type: Boolean,
+        default: false
+      },
+      verifiedAt: {
+        type: Date,
+        default: null
+      }
     },
   ],
   workExperience: [
