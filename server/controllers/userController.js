@@ -146,4 +146,26 @@ const getDonations = async (req, res) => {
   }
 };
 
-export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations ,verifyPassword , changePassword};
+const getDepartments = async (req, res) => {
+  try {
+    const { college_id } = req.params;
+
+    const users = await User.find({
+      'education.college_id': college_id,
+    });
+
+    const departments = new Set();
+    users.forEach((user) => {
+      user.education
+        .filter((edu) => edu.college_id.toString() === college_id)
+        .forEach((edu) => departments.add(edu.department));
+    });
+
+    res.status(200).json(Array.from(departments));
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch departments' });
+  }
+};
+
+
+export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations ,verifyPassword , changePassword, getDepartments};

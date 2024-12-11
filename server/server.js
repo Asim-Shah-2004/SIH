@@ -120,7 +120,7 @@ io.on('connection', (socket) => {
       await chat.save();
 
       const currUser = await User.findOne({ email: socket.user.email });
-      message.sender = currUser.user.fullName;
+      message.sender = currUser.fullName;
 
       // Emit to all users in the chat room except sender
       socket.to(chatId).emit('receiveMessage', message);
