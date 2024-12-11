@@ -198,7 +198,7 @@ const NewPost = () => {
             <Text className="text-sm font-medium text-gray-700">Media</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             className="flex-row items-center rounded-lg bg-gray-50 px-3"
             onPress={() => handleHelper(AI)}>
             <Ionicons name="sparkles-outline" size={24} color="#4a4a4a" />
@@ -210,7 +210,7 @@ const NewPost = () => {
             onPress={() => setShowPreview(!showPreview)}>
             <Ionicons name="eye-outline" size={24} color="#4a4a4a" />
             <Text className="text-sm font-medium text-gray-700">Preview</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
 
         <TouchableOpacity
