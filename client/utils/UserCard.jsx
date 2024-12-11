@@ -49,14 +49,14 @@ const UserCard = ({ alumni }) => {
       <View className="w-full space-y-2">
         <TouchableOpacity
           onPress={handleViewProfile}
-          className="w-full rounded-md bg-gray-100 px-3 py-2">
+          className="w-full rounded-md bg-gray-100 p-5">
           <Text className="text-center text-xs font-medium text-blue-600">View Profile</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleConnect}
-          className={`w-full rounded-md px-3 py-2 ${reqSet.has(_id) ? 'bg-gray-400' : 'bg-blue-600'}`} // Change the background color conditionally
+          className={`w-full rounded-md px-3 py-2 mt-2 ${reqSet.has(_id) ? 'bg-gray-400' : 'bg-blue-600'}`} // Change the background color conditionally
         >
-          <Text className="text-center text-xs font-medium text-white">
+          <Text className="text-center text-xs font-medium text-white p-2">
             {reqSet.has(_id) ? 'Pending' : 'Connect'} {/* Change text based on the condition */}
           </Text>
         </TouchableOpacity>

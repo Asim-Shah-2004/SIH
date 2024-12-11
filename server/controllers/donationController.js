@@ -105,7 +105,7 @@ export const donateToCampaign = async (req, res) => {
       transactionId: transaction._id,
       campaignId: campaign._id,
     });
-    await user.save({ session });
+    // await user.save({ session });
 
     await session.commitTransaction();
 
@@ -119,6 +119,7 @@ export const donateToCampaign = async (req, res) => {
       error: 'Failed to process donation',
       details: error.message,
     });
+    console.log(error);
   } finally {
     session.endSession();
   }

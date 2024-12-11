@@ -1,67 +1,51 @@
-import { SERVER_URL } from '@env';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, Image, ScrollView, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Alert,
-} from 'react-native';
+import { CheckIcon, XIcon } from 'lucide-react-native';
+import {SERVER_URL} from '@env';
 
 const CITY_COORDINATES = {
-  Mumbai: { latitude: 19.076, longitude: 72.8777 },
-  Delhi: { latitude: 28.6139, longitude: 77.209 },
-  Bangalore: { latitude: 12.9716, longitude: 77.5946 },
+  'Mumbai': { latitude: 19.0760, longitude: 72.8777 },
+  'Delhi': { latitude: 28.6139, longitude: 77.2090 },
+  'Bangalore': { latitude: 12.9716, longitude: 77.5946 }
 };
 
-const Manual = ({ route, navigation }) => {
+const Manual = ({route, navigation}) => { 
   const resumeData = route.params?.resumeData || null;
-
+  
   // Initialize empty data structures for education and experience
-  const emptyEducation = [
-    {
-      degree: '',
-      university: '',
-      graduationYear: '',
-      major: '',
-      honors: '',
-    },
-  ];
+  const emptyEducation = [{
+    degree: '',
+    university: '',
+    graduationYear: '',
+    major: '',
+    honors: ''
+  }];
 
-  const emptyExperience = [
-    {
-      company: '',
-      position: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-    },
-  ];
+  const emptyExperience = [{
+    company: '',
+    position: '',
+    startDate: '',
+    endDate: '',
+    description: ''
+  }];
 
   // Process resumeData only if it exists
-  const newEDU = resumeData
-    ? resumeData.education.map((edu) => ({
-        degree: edu.degree,
-        university: edu.institution,
-        graduationYear: edu.graduation_year,
-        major: edu.major,
-        honors: edu.honors,
-      }))
-    : emptyEducation;
+  const newEDU = resumeData ? resumeData.education.map(edu => ({ 
+    degree: edu.degree,
+    university: edu.institution, 
+    graduationYear: edu.graduation_year,
+    major: edu.major,
+    honors: edu.honors
+  })) : emptyEducation;
 
-  const newJOB = resumeData
-    ? resumeData.experience.map((exp) => ({
-        company: exp.company,
-        position: exp.position,
-        startDate: exp.start_date,
-        endDate: exp.end_date,
-        description: exp.responsibilities[0],
-      }))
-    : emptyExperience;
+  const newJOB = resumeData ? resumeData.experience.map(exp => ({ 
+    company: exp.company, 
+    position: exp.position, 
+    startDate: exp.start_date,
+    endDate: exp.end_date, 
+    description: exp.responsibilities[0]
+  })) : emptyExperience;
 
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
@@ -77,54 +61,49 @@ const Manual = ({ route, navigation }) => {
     phoneNumber: resumeData?.personal_info?.phone || '',
     location: resumeData?.personal_info?.location || '',
     password: '',
-    confirmPassword: '',
-    city: resumeData?.personal_info?.city || '',
-    state: resumeData?.personal_info?.state || '',
-    country: resumeData?.personal_info?.country || '',
-    languages: resumeData?.personal_info?.languages || [],
-    about: resumeData?.personal_info?.about || '',
+    confirmPassword: ''
   });
 
   const [passwordError, setPasswordError] = useState('');
-  const [errors, setErrors] = useState({});
-
+  
   const skillSuggestions = [
-    'React',
-    'JavaScript',
-    'Python',
-    'Design',
-    'Marketing',
-    'Data Analysis',
-    'Machine Learning',
-    'UI/UX',
-    'Communication',
+    'React', 'JavaScript', 'Python', 'Design', 'Marketing', 
+    'Data Analysis', 'Machine Learning', 'UI/UX', 'Communication'
   ];
   const interestSuggestions = [
-    'Technology',
-    'Travel',
-    'Photography',
-    'Cooking',
-    'Sports',
-    'Music',
-    'Reading',
-    'Art',
-    'Fitness',
-    'Gaming',
+    'Technology', 'Travel', 'Photography', 'Cooking', 'Sports', 
+    'Music', 'Reading', 'Art', 'Fitness', 'Gaming'
   ];
 
+  const convertImageToBase64 = async (uri) => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(blob);
+      });
+    } catch (error) {
+      console.error('Error converting image:', error);
+      return null;
+    }
+  };
+
   const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      aspect: [1, 1],
-      base64: true,
+      aspect: [4, 3],
+      quality: 1,
     });
 
     if (!result.canceled) {
-      const base64Image = result.assets[0].base64;
-      setFormData((prev) => ({
+      const base64Image = await convertImageToBase64(result.assets[0].uri);
+      setFormData(prev => ({
         ...prev,
-        profilePic: base64Image,
+        profilePic: base64Image
       }));
     }
   };
@@ -144,22 +123,22 @@ const Manual = ({ route, navigation }) => {
 
   const prepareDataForSubmission = () => {
     const coordinates = getRandomCityCoordinates();
-
+    
     // Format the data according to the backend schema
     const formattedData = {
       fullName: formData.name,
       email: formData.email,
-      password: 'defaultPassword123', // You might want to handle this differently
+      password: "defaultPassword123", // You might want to handle this differently
       isUniversityGeneratedPassword: true,
       profilePhoto: formData.profilePic,
       phone: formData.phoneNumber,
       address: formData.location,
-      education: formData.education.map((edu) => ({
+      education: formData.education.map(edu => ({
         degree: edu.degree,
         institution: edu.university,
-        yearOfGraduation: parseInt(edu.graduationYear, 10),
+        yearOfGraduation: parseInt(edu.graduationYear),
       })),
-      workExperience: formData.workExperience.map((exp) => ({
+      workExperience: formData.workExperience.map(exp => ({
         companyName: exp.company,
         role: exp.position,
         startDate: new Date(exp.startDate),
@@ -183,44 +162,7 @@ const Manual = ({ route, navigation }) => {
     return formattedData;
   };
 
-  const validateFields = () => {
-    const newErrors = {};
-    const requiredFields = {
-      name: 'Full Name',
-      email: 'Email',
-      password: 'Password',
-      phoneNumber: 'Phone Number',
-      city: 'City',
-      state: 'State',
-      country: 'Country',
-    };
-
-    Object.entries(requiredFields).forEach(([field, label]) => {
-      if (!formData[field]) {
-        newErrors[field] = `${label} is required`;
-      }
-    });
-
-    // Validate arrays
-    if (!formData.skills?.length) newErrors.skills = 'At least one skill is required';
-    if (!formData.languages?.length) newErrors.languages = 'At least one language is required';
-    if (!formData.interests?.length) newErrors.interests = 'At least one interest is required';
-
-    // Validate education
-    if (!formData.education?.[0]?.degree || !formData.education?.[0]?.university) {
-      newErrors.education = 'Education details are required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async () => {
-    if (!validateFields()) {
-      Alert.alert('Missing Information', 'Please fill in all required fields');
-      return;
-    }
-
     if (formData.password !== formData.confirmPassword) {
       setPasswordError('Passwords do not match');
       setStep(2);
@@ -229,7 +171,7 @@ const Manual = ({ route, navigation }) => {
 
     try {
       const coordinates = getRandomCityCoordinates();
-
+      
       // Prepare data according to schema
       const formattedData = {
         fullName: formData.name,
@@ -238,15 +180,13 @@ const Manual = ({ route, navigation }) => {
         isUniversityGeneratedPassword: false,
         profilePhoto: formData.profilePic,
         phone: formData.phoneNumber,
-        city: formData.city,
-        state: formData.state,
-        country: formData.country,
-        education: formData.education.map((edu) => ({
+        address: formData.location,
+        education: formData.education.map(edu => ({
           degree: edu.degree,
           institution: edu.university,
-          yearOfGraduation: parseInt(edu.graduationYear, 10) || null,
+          yearOfGraduation: parseInt(edu.graduationYear) || null,
         })),
-        workExperience: formData.workExperience.map((exp) => ({
+        workExperience: formData.workExperience.map(exp => ({
           companyName: exp.company,
           role: exp.position,
           startDate: exp.startDate ? new Date(exp.startDate) : null,
@@ -256,13 +196,12 @@ const Manual = ({ route, navigation }) => {
         skills: formData.skills || [],
         projects: [],
         certifications: [],
-        languages: formData.languages,
+        languages: [],
         location: {
           latitude: coordinates.latitude,
           longitude: coordinates.longitude,
         },
         bio: formData.bio || '',
-        about: formData.about,
         interests: formData.interests || [],
         website: '',
       };
@@ -273,9 +212,9 @@ const Manual = ({ route, navigation }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
+          'Accept': 'application/json',
         },
-        body: JSON.stringify(formattedData), // Make sure to stringify!
+        body: JSON.stringify(formattedData),  // Make sure to stringify!
       });
 
       if (!response.ok) {
@@ -286,35 +225,35 @@ const Manual = ({ route, navigation }) => {
 
       const data = await response.json();
       console.log('Registration successful:', data);
-
+      
       // Navigate to login or next screen
       navigation.navigate('Login');
+      
     } catch (error) {
       console.error('Registration error:', error);
-      Alert.alert('Registration Failed', error.message || 'Please check your data and try again');
+      Alert.alert(
+        'Registration Failed',
+        error.message || 'Please check your data and try again'
+      );
     }
   };
 
-  const isFormValid = () => {
-    const requiredFields = ['name', 'email', 'password', 'phoneNumber', 'city', 'state', 'country'];
-    const hasRequiredFields = requiredFields.every((field) => formData[field]);
-    const hasArrays =
-      formData.skills?.length && formData.languages?.length && formData.interests?.length;
-    const hasEducation = formData.education?.[0]?.degree && formData.education?.[0]?.university;
-
-    return hasRequiredFields && hasArrays && hasEducation;
-  };
-
   const renderStep = () => {
-    switch (step) {
+    switch(step) {
       case 1:
         return (
-          <ScrollView className="space-y-4 p-4">
+          <ScrollView className="p-4 space-y-4">
             <Text style={styles.heading}>Basic Information</Text>
-
-            <TouchableOpacity onPress={pickImage} style={styles.imagePickerContainer}>
+            
+            <TouchableOpacity 
+              onPress={pickImage}
+              style={styles.imagePickerContainer}
+            >
               {formData.profilePic ? (
-                <Image source={{ uri: formData.profilePic }} style={styles.profileImage} />
+                <Image 
+                  source={{ uri: formData.profilePic }} 
+                  style={styles.profileImage}
+                />
               ) : (
                 <View style={styles.imagePlaceholder}>
                   <Text style={styles.imagePlaceholderText}>Add Profile Picture</Text>
@@ -322,87 +261,117 @@ const Manual = ({ route, navigation }) => {
               )}
             </TouchableOpacity>
 
-            {renderInput('Full Name', 'name', { placeholder: 'Enter your full name' })}
-            {renderInput('Email', 'email', {
-              placeholder: 'Enter your email',
-              keyboardType: 'email-address',
-            })}
-            {renderInput('Phone Number', 'phoneNumber', {
-              placeholder: 'Enter your phone number',
-              keyboardType: 'numeric',
-            })}
-            {renderInput('Location', 'location', { placeholder: 'Where are you based?' })}
-            {renderInput('City', 'city', { placeholder: 'Enter your city' })}
-            {renderInput('State', 'state', { placeholder: 'Enter your state' })}
-            {renderInput('Country', 'country', { placeholder: 'Enter your country' })}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Full Name</Text>
+              <TextInput
+                placeholder="Enter your full name"
+                value={formData.name}
+                onChangeText={(text) => setFormData(prev => ({...prev, name: text}))}
+                style={styles.input}
+              />
+            </View>
 
-            <View className="mb-6 rounded-xl bg-white p-4 shadow-sm">
-              <Text className="mb-3 text-lg font-semibold">Languages</Text>
-              <View className="flex-row flex-wrap gap-2">
-                {['English', 'Hindi', 'Spanish', 'French', 'German', 'Chinese'].map(
-                  (lang, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => {
-                        setFormData((prev) => ({
-                          ...prev,
-                          languages: prev.languages.includes(lang)
-                            ? prev.languages.filter((l) => l !== lang)
-                            : [...prev.languages, lang],
-                        }));
-                      }}
-                      className={`rounded-full border px-4 py-2 ${
-                        formData.languages.includes(lang)
-                          ? 'border-black bg-black'
-                          : 'border-gray-200 bg-gray-100'
-                      }`}>
-                      <Text
-                        className={
-                          formData.languages.includes(lang) ? 'text-white' : 'text-gray-700'
-                        }>
-                        {lang}
-                      </Text>
-                    </TouchableOpacity>
-                  )
-                )}
-              </View>
-              {errors.languages && (
-                <Text className="mt-2 text-xs text-red-500">{errors.languages}</Text>
-              )}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                placeholder="Enter your email"
+                value={formData.email}
+                onChangeText={(text) => setFormData(prev => ({...prev, email: text}))}
+                keyboardType="email-address"
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Phone Number</Text>
+              <TextInput
+                placeholder="Enter your phone number"
+                value={formData.phoneNumber}
+                onChangeText={(text) => {
+                  const cleaned = text.replace(/\D/g, '');
+                  setFormData(prev => ({...prev, phoneNumber: cleaned.slice(0, 10)}));
+                }}
+                keyboardType="numeric"
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Location</Text>
+              <TextInput
+                placeholder="Where are you based?"
+                value={formData.location}
+                onChangeText={(text) => setFormData(prev => ({...prev, location: text}))}
+                style={styles.input}
+              />
             </View>
           </ScrollView>
         );
-
+      
       case 2:
         return (
-          <ScrollView className="space-y-4 p-4">
+          <ScrollView className="p-4 space-y-4">
             <Text style={styles.heading}>Profile Details</Text>
 
-            {renderInput('Current Position', 'currentPosition', {
-              placeholder: "What's your current role?",
-            })}
-            {renderInput('New Password', 'password', {
-              placeholder: 'Enter new password',
-              secureTextEntry: true,
-            })}
-            {renderInput('Confirm Password', 'confirmPassword', {
-              placeholder: 'Confirm your password',
-              secureTextEntry: true,
-            })}
-            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-            {renderInput('Bio', 'bio', {
-              placeholder: 'Tell us about yourself',
-              multiline: true,
-              style: styles.textArea,
-            })}
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Current Position</Text>
+              <TextInput
+                placeholder="What's your current role?"
+                value={formData.currentPosition}
+                onChangeText={(text) => setFormData(prev => ({...prev, currentPosition: text}))}
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>New Password</Text>
+              <TextInput
+                placeholder="Enter new password"
+                value={formData.password}
+                onChangeText={(text) => {
+                  setFormData(prev => ({...prev, password: text}));
+                  setPasswordError('');
+                }}
+                secureTextEntry
+                style={styles.input}
+              />
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Confirm Password</Text>
+              <TextInput
+                placeholder="Confirm your password"
+                value={formData.confirmPassword}
+                onChangeText={(text) => {
+                  setFormData(prev => ({...prev, confirmPassword: text}));
+                  setPasswordError('');
+                }}
+                secureTextEntry
+                style={[styles.input, passwordError ? styles.inputError : null]}
+              />
+              {passwordError ? (
+                <Text style={styles.errorText}>{passwordError}</Text>
+              ) : null}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <Text style={styles.label}>Bio</Text>
+              <TextInput
+                placeholder="Tell us about yourself"
+                value={formData.bio}
+                onChangeText={(text) => setFormData(prev => ({...prev, bio: text}))}
+                multiline
+                style={[styles.input, styles.textArea]}
+              />
+            </View>
           </ScrollView>
         );
 
       case 3:
         return (
-          <ScrollView className="space-y-4 p-4">
+          <ScrollView className="p-4 space-y-4">
             <Text style={styles.heading}>Professional Details</Text>
-
+            
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Work Experience</Text>
               {formData.workExperience.map((exp, index) => (
@@ -413,7 +382,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].company = text;
-                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
+                      setFormData(prev => ({...prev, workExperience: newExp}));
                     }}
                     style={styles.input}
                   />
@@ -423,7 +392,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].position = text;
-                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
+                      setFormData(prev => ({...prev, workExperience: newExp}));
                     }}
                     style={styles.input}
                   />
@@ -433,7 +402,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].duration = text;
-                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
+                      setFormData(prev => ({...prev, workExperience: newExp}));
                     }}
                     style={styles.input}
                   />
@@ -443,7 +412,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].duration = text;
-                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
+                      setFormData(prev => ({...prev, workExperience: newExp}));
                     }}
                     style={styles.input}
                   />
@@ -453,7 +422,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newExp = [...formData.workExperience];
                       newExp[index].description = text;
-                      setFormData((prev) => ({ ...prev, workExperience: newExp }));
+                      setFormData(prev => ({...prev, workExperience: newExp}));
                     }}
                     multiline
                     style={[styles.input, styles.textArea]}
@@ -462,20 +431,18 @@ const Manual = ({ route, navigation }) => {
               ))}
               <TouchableOpacity
                 onPress={() => {
-                  setFormData((prev) => ({
+                  setFormData(prev => ({
                     ...prev,
-                    workExperience: [
-                      ...prev.workExperience,
-                      {
-                        company: '',
-                        position: '',
-                        duration: '',
-                        description: '',
-                      },
-                    ],
+                    workExperience: [...prev.workExperience, {
+                      company: '',
+                      position: '',
+                      duration: '',
+                      description: ''
+                    }]
                   }));
                 }}
-                style={styles.addButton}>
+                style={styles.addButton}
+              >
                 <Text style={styles.addButtonText}>+ Add Work Experience</Text>
               </TouchableOpacity>
             </View>
@@ -490,7 +457,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newEdu = [...formData.education];
                       newEdu[index].degree = text;
-                      setFormData((prev) => ({ ...prev, education: newEdu }));
+                      setFormData(prev => ({...prev, education: newEdu}));
                     }}
                     style={styles.input}
                   />
@@ -500,7 +467,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newEdu = [...formData.education];
                       newEdu[index].graduationYear = text;
-                      setFormData((prev) => ({ ...prev, education: newEdu }));
+                      setFormData(prev => ({...prev, education: newEdu}));
                     }}
                     keyboardType="numeric"
                     style={styles.input}
@@ -511,7 +478,7 @@ const Manual = ({ route, navigation }) => {
                     onChangeText={(text) => {
                       const newEdu = [...formData.education];
                       newEdu[index].university = text;
-                      setFormData((prev) => ({ ...prev, education: newEdu }));
+                      setFormData(prev => ({...prev, education: newEdu}));
                     }}
                     style={styles.input}
                   />
@@ -519,85 +486,76 @@ const Manual = ({ route, navigation }) => {
               ))}
               <TouchableOpacity
                 onPress={() => {
-                  setFormData((prev) => ({
+                  setFormData(prev => ({
                     ...prev,
-                    education: [
-                      ...prev.education,
-                      {
-                        degree: '',
-                        graduationYear: '',
-                        university: '',
-                        cgpa: '',
-                      },
-                    ],
+                    education: [...prev.education, {
+                      degree: '',
+                      graduationYear: '',
+                      university: '',
+                      cgpa: ''
+                    }]
                   }));
                 }}
-                style={styles.addButton}>
+                style={styles.addButton}
+              >
                 <Text style={styles.addButtonText}>+ Add Education</Text>
               </TouchableOpacity>
-              {errors.education && <Text style={styles.errorMessage}>{errors.education}</Text>}
             </View>
 
-            <View className="mb-6 rounded-xl bg-white p-4 shadow-sm">
-              <Text className="mb-3 text-lg font-semibold">Skills</Text>
-              <View className="flex-row flex-wrap gap-2">
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Skills</Text>
+              <View style={styles.chipContainer}>
                 {skillSuggestions.map((skill, index) => (
-                  <TouchableOpacity
+                  <TouchableOpacity 
                     key={index}
                     onPress={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        skills: prev.skills.includes(skill)
-                          ? prev.skills.filter((s) => s !== skill)
-                          : [...prev.skills, skill],
-                      }));
+                      if (!formData.skills.includes(skill)) {
+                        setFormData(prev => ({
+                          ...prev, 
+                          skills: [...prev.skills, skill]
+                        }));
+                      }
                     }}
-                    className={`rounded-full border px-4 py-2 ${
-                      formData.skills.includes(skill)
-                        ? 'border-black bg-black'
-                        : 'border-gray-200 bg-gray-100'
-                    }`}>
-                    <Text
-                      className={formData.skills.includes(skill) ? 'text-white' : 'text-gray-700'}>
-                      {skill}
-                    </Text>
+                    style={[
+                      styles.chip,
+                      formData.skills.includes(skill) && styles.chipSelected
+                    ]}
+                  >
+                    <Text style={[
+                      styles.chipText,
+                      formData.skills.includes(skill) && styles.chipTextSelected
+                    ]}>{skill}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.skills && <Text className="mt-2 text-xs text-red-500">{errors.skills}</Text>}
             </View>
 
-            <View className="mb-6 rounded-xl bg-white p-4 shadow-sm">
-              <Text className="mb-3 text-lg font-semibold">Interests</Text>
-              <View className="flex-row flex-wrap gap-2">
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Interests</Text>
+              <View style={styles.chipContainer}>
                 {interestSuggestions.map((interest, index) => (
-                  <TouchableOpacity
+                  <TouchableOpacity 
                     key={index}
                     onPress={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        interests: prev.interests.includes(interest)
-                          ? prev.interests.filter((i) => i !== interest)
-                          : [...prev.interests, interest],
-                      }));
+                      if (!formData.interests.includes(interest)) {
+                        setFormData(prev => ({
+                          ...prev, 
+                          interests: [...prev.interests, interest]
+                        }));
+                      }
                     }}
-                    className={`rounded-full border px-4 py-2 ${
-                      formData.interests.includes(interest)
-                        ? 'border-black bg-black'
-                        : 'border-gray-200 bg-gray-100'
-                    }`}>
-                    <Text
-                      className={
-                        formData.interests.includes(interest) ? 'text-white' : 'text-gray-700'
-                      }>
-                      {interest}
-                    </Text>
+                    style={[
+                      styles.chip,
+                      formData.interests.includes(interest) && styles.chipSelected
+                    ]}
+                  >
+                    <Text style={[
+                      styles.chipText,
+                      formData.interests.includes(interest) && styles.chipTextSelected
+                    ]}>{interest}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              {errors.interests && (
-                <Text className="mt-2 text-xs text-red-500">{errors.interests}</Text>
-              )}
             </View>
           </ScrollView>
         );
@@ -671,14 +629,6 @@ const Manual = ({ route, navigation }) => {
     },
     section: {
       marginBottom: 24,
-      backgroundColor: '#ffffff',
-      padding: 16,
-      borderRadius: 12,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
     },
     sectionTitle: {
       fontSize: 18,
@@ -696,11 +646,9 @@ const Manual = ({ route, navigation }) => {
       paddingVertical: 6,
       borderRadius: 16,
       backgroundColor: '#e0e0e0',
-      borderWidth: 1,
-      borderColor: '#e0e0e0',
     },
     chipSelected: {
-      backgroundColor: '#000',
+      backgroundColor: '#1a1a1a',
     },
     chipText: {
       color: '#4a4a4a',
@@ -743,9 +691,6 @@ const Manual = ({ route, navigation }) => {
       fontWeight: '600',
       textAlign: 'center',
     },
-    nextButtonDisabled: {
-      backgroundColor: '#cccccc',
-    },
     stepIndicator: {
       textAlign: 'center',
       color: '#666',
@@ -763,7 +708,7 @@ const Manual = ({ route, navigation }) => {
       borderWidth: 1,
       borderColor: '#e0e0e0',
     },
-
+    
     educationCard: {
       backgroundColor: '#fff',
       padding: 16,
@@ -772,7 +717,7 @@ const Manual = ({ route, navigation }) => {
       borderWidth: 1,
       borderColor: '#e0e0e0',
     },
-
+    
     addButton: {
       backgroundColor: '#f0f0f0',
       padding: 12,
@@ -780,79 +725,45 @@ const Manual = ({ route, navigation }) => {
       alignItems: 'center',
       marginTop: 8,
     },
-
+    
     addButtonText: {
       color: '#1a1a1a',
       fontSize: 16,
       fontWeight: '600',
     },
-    inputRequired: {
-      borderColor: '#ff4444',
-    },
-    requiredIndicator: {
-      color: '#ff4444',
-      marginLeft: 4,
-    },
-    errorMessage: {
-      color: '#ff4444',
-      fontSize: 12,
-      marginTop: 4,
-    },
     ...additionalStyles,
   });
-
-  const renderInput = (label, field, options = {}) => (
-    <View style={styles.inputContainer}>
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Text style={styles.label}>{label}</Text>
-        <Text style={styles.requiredIndicator}>*</Text>
-      </View>
-      <TextInput
-        {...options}
-        value={formData[field]}
-        onChangeText={(text) => {
-          setFormData((prev) => ({ ...prev, [field]: text }));
-          setErrors((prev) => ({ ...prev, [field]: null }));
-        }}
-        style={[styles.input, errors[field] && styles.inputRequired]}
-      />
-      {errors[field] && <Text style={styles.errorMessage}>{errors[field]}</Text>}
-    </View>
-  );
-
-  const renderFooter = () => (
-    <View style={styles.footer}>
-      <View style={styles.navigationButtons}>
-        {step > 1 && (
-          <TouchableOpacity
-            onPress={() => setStep((prev) => prev - 1)}
-            style={[styles.button, styles.backButton]}>
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity
-          onPress={() => {
-            if (step < 3) setStep((prev) => prev + 1);
-            else handleSubmit();
-          }}
-          disabled={step === 3 && !isFormValid()}
-          style={[
-            styles.button,
-            styles.nextButton,
-            step === 3 && !isFormValid() && styles.nextButtonDisabled,
-          ]}>
-          <Text style={styles.nextButtonText}>{step === 3 ? 'Submit' : 'Next'}</Text>
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.stepIndicator}>Step {step} of 3</Text>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
       {renderStep()}
-      {renderFooter()}
+      <View style={styles.footer}>
+        <View style={styles.navigationButtons}>
+          {step > 1 && (
+            <TouchableOpacity 
+              onPress={() => setStep(prev => prev - 1)}
+              style={[styles.button, styles.backButton]}
+            >
+              <Text style={styles.backButtonText}>Back</Text>
+            </TouchableOpacity>
+          )}
+          
+          <TouchableOpacity 
+            onPress={() => {
+              if (step < 3) setStep(prev => prev + 1);
+              else {
+                handleSubmit();
+              }
+            }}
+            style={[styles.button, styles.nextButton]}
+          >
+            <Text style={styles.nextButtonText}>
+              {step === 3 ? 'Submit' : 'Next'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.stepIndicator}>Step {step} of 3</Text>
+      </View>
     </View>
   );
 };

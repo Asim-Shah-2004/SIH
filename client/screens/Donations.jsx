@@ -29,6 +29,8 @@ const formatIndianNumber = (num) => {
   }
 };
 
+
+
 const DonationPortal = ({ navigation }) => {
   const [donationAmount, setDonationAmount] = useState('');
   const [donationHistory, setDonationHistory] = useState([]);
@@ -37,7 +39,35 @@ const DonationPortal = ({ navigation }) => {
   const [selectedCause, setSelectedCause] = useState({});
   const { token, role } = useAuth();
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+  const [showDonorsModal, setShowDonorsModal] = useState(false);
+  const [selectedDonors, setSelectedDonors] = useState([]);
+  const [selectedCampaignDetails, setSelectedCampaignDetails] = useState(null);
+  const [isDonorsLoading, setIsDonorsLoading] = useState(false);
 
+
+  useEffect(() => {
+    const fetchRegisteredUsers = async () => {
+        try {
+          const response = await axios.get(`${SERVER_URL}/donationcampaigns/${id}/registered`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.data) {
+            console.log(response.data);
+            setRegisteredUsers(response.data); // Make sure to access response.data
+          }
+        } catch (error) {
+          console.error('Error fetching registered users:', error);
+          setRegisteredUsers([]); // Set to empty array on error
+        }
+    };
+  
+    fetchRegisteredUsers();
+  }, []);
+
+
+  
   const fetchDonationHistory = async () => {
     try {
       const response = await axios.get(`${SERVER_URL}/users/donations`, {
@@ -52,6 +82,25 @@ const DonationPortal = ({ navigation }) => {
     }
   };
 
+  const fetchDonors = async (id) => {
+    setIsDonorsLoading(true);
+    try {
+      const response = await axios.get(`${SERVER_URL}/donationcampaigns/${id}/getDonors`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+      console.log('Donors data:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching donors:', error);
+      return [];
+    } finally {
+      setIsDonorsLoading(false);
+    }
+  };
+
+
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
@@ -59,9 +108,9 @@ const DonationPortal = ({ navigation }) => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }); // Use this if testing on physical device
-        setCampaigns(response.data); // Update campaigns with fetched data
-        setSelectedCause(response.data[0]); // Set the first cause as selected
+        });
+        setCampaigns(response.data);
+        setSelectedCause(response.data[0]);
       } catch (error) {
         console.error('Error fetching donation data:', error);
         alert('Failed to load donation campaigns. Please try again later.');
@@ -175,30 +224,54 @@ const DonationPortal = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Modern Donation Amounts with Indian Format - Updated Colors */}
-        <View className="mb-4">
-          <View className="flex-row flex-wrap gap-2">
-            {item.suggestedDonations.map((amount, index) => (
-              <TouchableOpacity
-                key={index}
-                className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
-                onPress={() => setDonationAmount(amount.toString())}>
-                <Text className="text-base font-medium text-blue-600">
-                  {formatIndianNumber(amount)}
-                </Text>
-              </TouchableOpacity>
-            ))}
+        {role === 'alumni' &&
+          <View className="mb-4">
+            <View className="flex-row flex-wrap gap-2">
+              {item.suggestedDonations.map((amount, index) => (
+                <TouchableOpacity
+                  key={index}
+                  className="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3"
+                  onPress={() => setDonationAmount(amount.toString())}>
+                  <Text className="text-base font-medium text-blue-600">
+                    {formatIndianNumber(amount)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-
-        {/* Tax Benefits - Green Color */}
+        }
         <Text className="mb-4 text-sm font-medium text-emerald-600">{item.taxBenefits}</Text>
 
-        <TouchableOpacity
-          className="rounded-xl bg-blue-500 px-4 py-3"
-          onPress={() => selectCause(item)}>
-          <Text className="text-center text-base font-bold text-white">Select This Cause</Text>
-        </TouchableOpacity>
+        {role === 'alumni' &&
+          <TouchableOpacity
+            className="rounded-xl bg-blue-500 px-4 py-3"
+            onPress={() => selectCause(item)}>
+            <Text className="text-center text-base font-bold text-white">Select This Cause</Text>
+          </TouchableOpacity>
+        }
+
+        {
+          role !== 'alumni' && (
+            <TouchableOpacity
+              className="rounded-xl bg-blue-500 px-4 py-3"
+              onPress={async () => {
+                const donors = await fetchDonors(item._id);
+                if (donors && donors.length > 0) {
+                  setSelectedDonors(donors);
+                  setSelectedCampaignDetails(item);
+                  setShowDonorsModal(true);
+                } else {
+                  alert('No donors found for this campaign');
+                }
+              }}>
+              <Text className="text-center text-base font-bold text-white">View Details</Text>
+            </TouchableOpacity>
+          )
+
+        }
+
+
+
       </View>
     </Animated.View>
   );
@@ -215,6 +288,39 @@ const DonationPortal = ({ navigation }) => {
         </View>
       </View>
       <Text className="mt-1 text-xs text-gray-500">Transaction ID: {item.user}</Text>
+    </View>
+  );
+
+  const renderDonorItem = ({ item }) => (
+    <View className="mb-2 rounded-lg bg-white p-4 shadow-sm">
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center flex-1">
+          <Image
+            source={{ 
+              uri: item.user?.profilePhoto || 
+                   'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e' 
+            }}
+            className="h-10 w-10 rounded-full"
+          />
+          <View className="ml-3 flex-1">
+            <Text className="font-semibold text-gray-900">
+              {item.user?.fullName || item.name}
+            </Text>
+            <Text className="text-lg font-bold text-blue-600">
+              {formatIndianNumber(item.amount)}
+            </Text>
+            <View className="flex-row items-center mt-1">
+              <Text className="text-xs text-gray-500">
+                {new Date(item.transactionDate).toLocaleDateString()}
+              </Text>
+              <View className="mx-2 h-1 w-1 rounded-full bg-gray-300" />
+              <Text className="text-xs font-medium text-blue-500">
+                {item.transactionMethod}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
     </View>
   );
 
@@ -261,7 +367,7 @@ const DonationPortal = ({ navigation }) => {
           </View>
         ) : (
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => { }}
             className="mx-4 my-4 rounded-lg bg-blue-600 px-5 py-3">
             <Text className="text-center font-bold text-white">Post a New Donation</Text>
           </TouchableOpacity>
@@ -348,6 +454,51 @@ const DonationPortal = ({ navigation }) => {
           initialNumToRender={3}
         />
       </View>
+
+      {/* Donors Modal */}
+      <Modal
+        animationType="slide"
+        transparent
+        visible={showDonorsModal}
+        onRequestClose={() => setShowDonorsModal(false)}>
+        <View className="flex-1 justify-end bg-black/50">
+          <View className="h-3/4 rounded-t-3xl bg-white p-6">
+            <View className="mb-6 flex-row items-center justify-between">
+              <View>
+                <Text className="text-2xl font-bold text-gray-900">Campaign Donors</Text>
+                {selectedCampaignDetails && (
+                  <Text className="text-sm text-gray-600">{selectedCampaignDetails.title}</Text>
+                )}
+              </View>
+              <TouchableOpacity
+                onPress={() => setShowDonorsModal(false)}
+                className="rounded-full bg-gray-100 p-2">
+                <MaterialCommunityIcons name="close" size={24} color="#4B5563" />
+              </TouchableOpacity>
+            </View>
+            {isDonorsLoading ? (
+              <View className="flex-1 items-center justify-center">
+                <Text>Loading donors...</Text>
+              </View>
+            ) : selectedDonors.length > 0 ? (
+              <FlatList
+                data={selectedDonors}
+                renderItem={renderDonorItem}
+                keyExtractor={(item) => item._id?.toString() || Math.random().toString()}
+                showsVerticalScrollIndicator={false}
+                contentContainerClassName="pb-6"
+                decelerationRate="normal"
+                bounces
+              />
+            ) : (
+              <View className="flex-1 items-center justify-center">
+                <MaterialCommunityIcons name="account-group-outline" size={48} color="#9CA3AF" />
+                <Text className="mt-4 text-center text-gray-500">No donors yet</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
 
       <PaymentModal
         open={paymentModalOpen}
