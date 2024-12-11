@@ -6,5 +6,7 @@ import College from './college.js';
 import Media from './media.js';
 import Transaction from './transactions.js';
 import Post from './post.js';
+import Chat from './chat.js';
+import Group from './group.js';
 
-export { Event, Job, DonationCampaign, User, College, Media, Transaction, Post };
+export { Event, Job, DonationCampaign, User, College, Media, Transaction, Chat, Post, Group };

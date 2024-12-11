@@ -243,6 +243,7 @@ const MessageScreen = ({ route }) => {
             key={msg._id || `temp-${msg.timestamp}`}
             {...msg}
             isUploading={!!uploadingMessages[msg._id]}
+            showSenderName={chatData.chatType}
           />
         ))}
       </View>

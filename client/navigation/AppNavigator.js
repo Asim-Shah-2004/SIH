@@ -10,6 +10,7 @@ import All from '../screens/All';
 import AlumniDirectory from '../screens/AlumniDirectory';
 import Call from '../screens/Call';
 import Chat from '../screens/Chat';
+import CommunityChat from '../screens/CommunityChat';
 import LoadingScreen from '../screens/LoadingScreen';
 import Message from '../screens/Message';
 import Notifications from '../screens/Notifications';
@@ -69,7 +70,8 @@ export default function AppNavigator() {
             ) : (
               <>
                 <Stack.Screen name="MainDrawer" component={DrawerNavigator} />
-                <Stack.Screen name="Chat" component={Chat} options={screenConfig.headerScreens} />
+                <Stack.Screen name="Chats" component={Chat} options={screenConfig.headerScreens} />
+                <Stack.Screen name="Community Chats" component={CommunityChat} options={screenConfig.headerScreens} />
                 <Stack.Screen
                   name="Message"
                   component={Message}

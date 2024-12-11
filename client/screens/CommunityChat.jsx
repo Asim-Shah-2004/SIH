@@ -13,12 +13,11 @@ import {
 } from 'react-native';
 
 import { useAuth } from '../providers/AuthProvider';
-import { FontAwesome6 } from '@expo/vector-icons';
 
 const MAX_RETRIES = 3;
 const INITIAL_RETRY_DELAY = 1000;
 
-const ChatScreen = () => {
+const CommunityChatScreen = () => {
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [chats, setChats] = useState([]);
@@ -101,55 +100,41 @@ const ChatScreen = () => {
           )}
         </View>
       ) : (
-        <>
-          <TouchableOpacity
-            className="flex-row items-center justify-between border bg-white p-4"
-            onPress={() => { navigation.navigate('Community Chats'); }}>
-            <Text className="text-lg font-semibold text-text">
-              Go to Communities
-            </Text>
-            <FontAwesome6
-              name='chevron-right'
-              size={14}
-              color="#1f2937"
-            />
-          </TouchableOpacity>
-          <FlatList
-            data={chats.filter((chat) => !chat.chatType)}
-            keyExtractor={(item) => item.chatId}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                className="flex-row items-center border bg-white p-4"
-                onPress={() => handleChatPress(item)}>
-                <View className="relative">
-                  <Image
-                    source={{
-                      uri: item.profilePhoto || 'https://via.placeholder.com/50',
-                    }}
-                    className="h-12 w-12 rounded-full"
-                  />
-                </View>
-                <View className="ml-4 flex-1">
-                  <Text className="text-lg font-semibold text-text" numberOfLines={1}>
-                    {item.otherParticipantName}
-                  </Text>
-                  <Text className="mt-1 text-highlight" numberOfLines={1}>
-                    {item.lastMessage}
-                  </Text>
-                </View>
-                <View className="items-end">
-                  <Text className="text-sm text-highlight">
-                    {new Date(item.lastMessageTimestamp).toLocaleDateString()}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            )}
-          />
-        </>
+        <FlatList
+          data={chats.filter((chat) => chat.chatType)}
+          keyExtractor={(item) => item.chatId}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              className="flex-row items-center border bg-white p-4"
+              onPress={() => handleChatPress(item)}>
+              <View className="relative">
+                <Image
+                  source={{
+                    uri: item.profilePhoto || 'https://via.placeholder.com/50',
+                  }}
+                  className="h-12 w-12 rounded-full"
+                />
+              </View>
+              <View className="ml-4 flex-1">
+                <Text className="text-lg font-semibold text-text" numberOfLines={1}>
+                  {item.otherParticipantName}
+                </Text>
+                <Text className="mt-1 text-highlight" numberOfLines={1}>
+                  {item.lastMessage}
+                </Text>
+              </View>
+              <View className="items-end">
+                <Text className="text-sm text-highlight">
+                  {new Date(item.lastMessageTimestamp).toLocaleDateString()}
+                </Text>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
       )}
     </View>
   );
 };
 
-export default ChatScreen;
+export default CommunityChatScreen;

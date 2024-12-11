@@ -177,7 +177,7 @@ const NewPost = () => {
         />
         <TextInput
           className="max-h-[120px] min-h-[40px] flex-1 rounded-lg bg-gray-100 p-4 text-base shadow-sm"
-          placeholder="What's on your mind? (Markdown supported)"
+          placeholder="What's on your mind?"
           multiline
           value={newPost}
           onChangeText={setNewPost}

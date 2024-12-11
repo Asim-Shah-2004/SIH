@@ -22,6 +22,7 @@ const MessageBubble = ({
   type,
   text,
   sender,
+  senderName,
   timestamp,
   uri,
   fileName,
@@ -29,6 +30,7 @@ const MessageBubble = ({
   mimeType,
   isUploading,
   uploadFailed,
+  showSenderName = false,
 }) => {
   const [sound, setSound] = useState();
   const [isPlaying, setIsPlaying] = useState(false);
@@ -165,135 +167,154 @@ const MessageBubble = ({
     return null;
   };
 
+  const renderSenderName = () => {
+    if (showSenderName && sender !== user.email) {
+      return <Text className="text-sm font-medium text-black">{senderName}</Text>;
+    }
+    return null;
+  };
+
   return (
     <TouchableOpacity onPress={handleDoubleTap} activeOpacity={0.9}>
       <View
         className={`relative mb-2 max-w-[80%] ${
           sender === user.email ? 'self-end bg-primary' : 'self-start bg-white'
-        } rounded-2xl px-4 py-2.5 shadow-sm ${sender === 'them' && 'border-accent/10 border'}`}>
+        } rounded-2xl px-4 py-2.5 shadow-sm ${sender !== user.email && 'border-accent/10 border'}`}>
         {renderUploadingState()}
         {type === 'text' && (
-          <Markdown
-            markdownit={MarkdownIt({ linkify: true }).disable([
-              'hr',
-              'blockquote',
-              'fence',
-              'table',
-              'image',
-            ])}
-            style={{
-              text: {
-                fontSize: 15,
-              },
-              body: {
-                fontSize: 15,
-              },
-              paragraph: {
-                flexWrap: 'wrap',
-                flexDirection: 'row',
-                alignItems: 'flex-start',
-                marginBottom: 4,
-              },
-              link: {
-                color: '#2563eb',
-                textDecorationLine: 'underline',
-              },
-              heading1: {
-                marginTop: 4,
-                marginBottom: 4,
-                fontSize: 20,
-                fontWeight: 'bold',
-              },
-              heading2: {
-                marginTop: 4,
-                marginBottom: 4,
-                fontSize: 18,
-                fontWeight: 'bold',
-              },
-              code_block: {
-                padding: 4,
-                borderRadius: 4,
-                fontFamily: 'monospace',
-              },
-              bullet_list: {
-                color: '#fff',
-              },
-              ordered_list: {
-                color: '#fff',
-              },
-            }}
-            rules={{
-              textgroup: (node, children) => {
-                return (
-                  <Text
-                    className={`${sender === user.email ? 'text-white' : 'text-text'} `}
-                    key={node.key}>
-                    {children}
-                  </Text>
-                );
-              },
-              text: (node) => {
-                return <Text key={node.key}>{node.content}</Text>;
-              },
-            }}>
-            {text}
-          </Markdown>
+          <>
+            {renderSenderName()}
+            <Markdown
+              markdownit={MarkdownIt({ linkify: true }).disable([
+                'hr',
+                'blockquote',
+                'fence',
+                'table',
+                'image',
+              ])}
+              style={{
+                text: {
+                  fontSize: 15,
+                },
+                body: {
+                  fontSize: 15,
+                },
+                paragraph: {
+                  flexWrap: 'wrap',
+                  flexDirection: 'row',
+                  alignItems: 'flex-start',
+                  marginBottom: 4,
+                },
+                link: {
+                  color: '#2563eb',
+                  textDecorationLine: 'underline',
+                },
+                heading1: {
+                  marginTop: 4,
+                  marginBottom: 4,
+                  fontSize: 20,
+                  fontWeight: 'bold',
+                },
+                heading2: {
+                  marginTop: 4,
+                  marginBottom: 4,
+                  fontSize: 18,
+                  fontWeight: 'bold',
+                },
+                code_block: {
+                  padding: 4,
+                  borderRadius: 4,
+                  fontFamily: 'monospace',
+                },
+                bullet_list: {
+                  color: '#fff',
+                },
+                ordered_list: {
+                  color: '#fff',
+                },
+              }}
+              rules={{
+                textgroup: (node, children) => {
+                  return (
+                    <Text
+                      className={`${sender === user.email ? 'text-white' : 'text-text'} `}
+                      key={node.key}>
+                      {children}
+                    </Text>
+                  );
+                },
+                text: (node) => {
+                  return <Text key={node.key}>{node.content}</Text>;
+                },
+              }}>
+              {text}
+            </Markdown>
+          </>
         )}
         {type === 'image' && (
-          <Image
-            source={{ uri: `${SERVER_URL}/media/image/${uri}` }}
-            className="h-48 w-48 rounded-lg"
-            resizeMode="cover"
-          />
+          <>
+            {renderSenderName()}
+            <Image
+              source={{ uri: `${SERVER_URL}/media/image/${uri}` }}
+              className="h-48 w-48 rounded-lg"
+              resizeMode="cover"
+            />
+          </>
         )}
         {type === 'document' && (
-          <TouchableOpacity
-            className="flex-row items-center gap-2"
-            onPress={handleDocumentPress}
-            disabled={isDownloading}>
-            <View className="relative">
-              <Ionicons
-                name="document-outline"
-                size={24}
-                className={sender === user.email ? 'text-white' : 'text-text'}
-              />
-              {isDownloading && (
-                <View className="absolute inset-0 flex items-center justify-center">
-                  <View className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-primary" />
-                </View>
-              )}
-            </View>
-            <View>
-              <Text className={sender === user.email ? 'text-white' : 'text-text'}>{fileName}</Text>
-              <Text
-                className={`text-xs ${sender === user.email ? 'text-white/70' : 'text-highlight/70'}`}>
-                {isDownloading
-                  ? `Downloading... ${downloadProgress.toFixed(0)}%`
-                  : `${(fileSize / 1024).toFixed(1)} KB`}
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-        {type === 'audio' && (
-          <View className="flex-row items-center gap-3">
+          <>
+            {renderSenderName()}
             <TouchableOpacity
-              onPress={handleAudioPlayback}
-              disabled={isLoading}
-              className="bg-accent/10 rounded-full p-2">
-              {isLoading ? (
-                <View className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-primary" />
-              ) : (
+              className="flex-row items-center gap-2"
+              onPress={handleDocumentPress}
+              disabled={isDownloading}>
+              <View className="relative">
                 <Ionicons
-                  name={isPlaying ? 'pause' : 'play'}
-                  size={20}
+                  name="document-outline"
+                  size={24}
                   className={sender === user.email ? 'text-white' : 'text-text'}
                 />
-              )}
+                {isDownloading && (
+                  <View className="absolute inset-0 flex items-center justify-center">
+                    <View className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-primary" />
+                  </View>
+                )}
+              </View>
+              <View>
+                <Text className={sender === user.email ? 'text-white' : 'text-text'}>{fileName}</Text>
+                <Text
+                  className={`text-xs ${sender === user.email ? 'text-white/70' : 'text-highlight/70'}`}>
+                  {isDownloading
+                    ? `Downloading... ${downloadProgress.toFixed(0)}%`
+                    : `${(fileSize / 1024).toFixed(1)} KB`}
+                </Text>
+              </View>
             </TouchableOpacity>
-            <Text className={sender === user.email ? 'text-white' : 'text-text'}>
-              Voice message
-            </Text>
-          </View>
+          </>
+        )}
+        {type === 'audio' && (
+          <>
+            {renderSenderName()}
+            <View className="flex-row items-center gap-3">
+              <TouchableOpacity
+                onPress={handleAudioPlayback}
+                disabled={isLoading}
+                className="bg-accent/10 rounded-full p-2">
+                {isLoading ? (
+                  <View className="h-5 w-5 animate-spin rounded-full border-2 border-accent border-t-primary" />
+                ) : (
+                  <Ionicons
+                    name={isPlaying ? 'pause' : 'play'}
+                    size={20}
+                    className={sender === user.email ? 'text-white' : 'text-text'}
+                  />
+                )}
+              </TouchableOpacity>
+              <Text className={sender === user.email ? 'text-white' : 'text-text'}>
+                Voice message
+              </Text>
+            </View>
+          </>
         )}
         <View className="flex-row items-center justify-end gap-1">
           <Animated.View style={animatedStyle}>

@@ -18,9 +18,11 @@ import {
   mediaUploadRouter,
   chatRouter,
   postRouter,
+  groupRouter,
 } from './routers/index.js';
 import { socketAuthMiddleware } from './middleware/socketAuthMiddleware.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
+import User from './models/user.js';
 
 const app = express();
 const server = createServer(app);
@@ -52,6 +54,7 @@ app.use(
 
 app.use('/auth', authRouter);
 app.use('/media', mediaGetRouter);
+app.use('/group', groupRouter);
 
 app.use(authenticateToken);
 
@@ -115,6 +118,9 @@ io.on('connection', (socket) => {
       chat.lastMessageTimestamp = new Date(message.timestamp);
 
       await chat.save();
+
+      const currUser = await User.findOne({ email: socket.user.email });
+      message.sender = currUser.user.fullName;
 
       // Emit to all users in the chat room except sender
       socket.to(chatId).emit('receiveMessage', message);

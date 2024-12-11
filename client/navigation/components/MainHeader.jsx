@@ -10,7 +10,7 @@ export default function MainHeader() {
   const navigation = useNavigation();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleChatPress = () => navigation.navigate('Chat');
+  const handleChatPress = () => navigation.navigate('Chats');
   const handleNotificationsPress = () => navigation.navigate('Alerts');
   const handleProfilePress = () => navigation.openDrawer();
   const handleSearch = () => {

@@ -65,6 +65,7 @@ const userSchema = new mongoose.Schema({
   chats: [
     {
       chatId: { type: mongoose.Schema.Types.ObjectId, ref: 'Chat' },
+      chatType: { type: Boolean, default: false, required: true }, // True for group chat, false for individual chat
       otherParticipant: { type: String },
     },
   ],
@@ -81,22 +82,19 @@ const userSchema = new mongoose.Schema({
       },
     },
   ],
-  posts:
-  {
+  posts: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     default: [],
   },
-  likes:
-  {
+  likes: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     default: [],
   },
-  comments:
-  {
+  comments: {
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
     default: [],
   },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
 });
 
 const User = mongoose.model('User', userSchema);
