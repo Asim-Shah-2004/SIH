@@ -9,7 +9,10 @@ export const getAllEvents = async (req, res) => {
     const { college_id, role } = req.query;
 
     if (role === 'college') {
-      const events = await Event.find({ college_id: id });
+      const events = await Event.find({ college_id }).populate({
+        path: 'registered',
+        select: '_id fullName profilePhoto email',
+      });
 
       res.status(200).json(events);
       return;
@@ -25,7 +28,7 @@ export const getAllEvents = async (req, res) => {
       select: '_id fullName profilePhoto email',
     });
 
-    const eligibleEvents = events.filter((event) => {
+    let eligibleEvents = events.filter((event) => {
       return user.education.some((edu) => {
         const isValidDepartment = event.department.includes(edu.department);
         const isValidYear =

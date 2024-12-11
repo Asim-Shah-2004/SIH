@@ -56,7 +56,7 @@ app.use('/auth', authRouter);
 app.use('/media', mediaGetRouter);
 app.use('/group', groupRouter);
 
-// app.use(authenticateToken);
+app.use(authenticateToken);
 
 app.use('/media', mediaUploadRouter);
 app.use('/events', eventRouter);

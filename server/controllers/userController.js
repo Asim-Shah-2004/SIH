@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt"
+import mongoose from "mongoose";
 import { User , LandingPageConfig } from '../models/index.js';
 
 const changePassword = async (req, res) => {
@@ -148,19 +149,17 @@ const getDonations = async (req, res) => {
 
 const getDepartments = async (req, res) => {
   try {
-    const { college_id } = req.params;
+    const { college_id } = req.query;
 
-    const users = await User.find({
-      'education.college_id': college_id,
-    });
+    const users = await User.find();
 
     const departments = new Set();
     users.forEach((user) => {
       user.education
-        .filter((edu) => edu.college_id.toString() === college_id)
-        .forEach((edu) => departments.add(edu.department));
+      .filter((edu) => edu.college_id.toString() === college_id)
+      .forEach((edu) => departments.add(edu.department));
     });
-
+    
     res.status(200).json(Array.from(departments));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch departments' });
