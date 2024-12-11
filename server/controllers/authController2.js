@@ -14,28 +14,97 @@ const transporter = nodemailer.createTransport({
 
 const getVerificationEmail = (verificationUrl) => `
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .button { 
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #4F46E5;
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .email-header {
+            background: linear-gradient(135deg, #6366F1, #4F46E5);
+            color: white;
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .email-header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .email-body {
+            padding: 30px 20px;
+        }
+        .email-body p {
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        .verify-button {
+            display: block;
+            width: 220px;
+            margin: 30px auto;
+            padding: 15px 25px;
+            background-color: #6366F1;
             color: white;
             text-decoration: none;
-            border-radius: 4px;
-            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .verify-button:hover {
+            background-color: #4F46E5;
+        }
+        .footer {
+            background-color: #f4f6f9;
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #718096;
+        }
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 15px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Verify Your Email</h1>
-        <p>Click the button below to verify your email address. This link will expire in 24 hours.</p>
-        <a href="${verificationUrl}" class="button">Verify Email</a>
-        <p>If you didn't request this, please ignore this email.</p>
+    <div class="email-container">
+        <div class="email-header">
+            <svg class="logo" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="30" fill="white" fill-opacity="0.2"/>
+                <path d="M30 15L40 25H35V40H25V25H20L30 15Z" fill="white"/>
+            </svg>
+            <h1>Verify Your Email Address</h1>
+        </div>
+        <div class="email-body">
+            <p>Hello!</p>
+            <p>You're almost there. Click the button below to verify your college email address. This helps us ensure the authenticity of your account.</p>
+            <a href="${verificationUrl}" class="verify-button">Verify Email Address</a>
+            <p>If you didn't request this verification, you can safely ignore this email. The verification link will expire in 24 hours.</p>
+            <p>Need help? Contact our support team.</p>
+        </div>
+        <div class="footer">
+            © ${new Date().getFullYear()} Your Company. All rights reserved.
+        </div>
     </div>
 </body>
 </html>
@@ -210,10 +279,144 @@ export const verify = async (req, res) => {
         await user.save();
 
         // Redirect or respond
-        return res.json({
-            success: true,
-            message: 'College email verified successfully'
-        });
+        return res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Email Verified!</title>
+                <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+                <style>
+                    body, html {
+                        margin: 0;
+                        padding: 0;
+                        height: 100%;
+                        font-family: 'Inter', sans-serif;
+                        background: linear-gradient(135deg, #6366F1, #4F46E5);
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        overflow: hidden;
+                    }
+                    .container {
+                        background: white;
+                        border-radius: 20px;
+                        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+                        text-align: center;
+                        padding: 40px;
+                        max-width: 500px;
+                        position: relative;
+                        z-index: 10;
+                        transform: scale(0.9);
+                        opacity: 0;
+                        animation: popIn 0.6s ease-out forwards;
+                    }
+                    @keyframes popIn {
+                        0% {
+                            transform: scale(0.6);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform: scale(1);
+                            opacity: 1;
+                        }
+                    }
+                    .checkmark {
+                        width: 100px;
+                        height: 100px;
+                        border-radius: 50%;
+                        background: #4CAF50;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        margin: 0 auto 20px;
+                        animation: pulse 1.5s infinite;
+                    }
+                    .checkmark svg {
+                        width: 50px;
+                        height: 50px;
+                        fill: white;
+                    }
+                    @keyframes pulse {
+                        0% { transform: scale(1); }
+                        50% { transform: scale(1.1); }
+                        100% { transform: scale(1); }
+                    }
+                    h1 {
+                        color: #2D3748;
+                        margin-bottom: 15px;
+                        font-size: 2rem;
+                    }
+                    p {
+                        color: #4A5568;
+                        margin-bottom: 20px;
+                        line-height: 1.6;
+                    }
+                    .confetti-container {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        pointer-events: none;
+                        z-index: 1;
+                    }
+                    .confetti {
+                        width: 15px;
+                        height: 15px;
+                        background-color: #f1f1f1;
+                        position: absolute;
+                        left: 50%;
+                        animation: fall 3s linear infinite;
+                        transform-origin: bottom;
+                    }
+                    @keyframes fall {
+                        to {
+                            transform: 
+                                translateY(100vh) 
+                                rotate(360deg);
+                        }
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="confetti-container" id="confetti"></div>
+                <div class="container">
+                    <div class="checkmark">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                        </svg>
+                    </div>
+                    <h1>Email Verified!</h1>
+                    <p>Congratulations! Your college email has been successfully verified. You can now access all features of our platform.</p>
+                </div>
+        
+                <script>
+                    function createConfetti() {
+                        const container = document.getElementById('confetti');
+                        const colors = ['#6366F1', '#4F46E5', '#f1f1f1', '#4CAF50', '#FF6B6B'];
+                        
+                        for (let i = 0; i < 100; i++) {
+                            const confetti = document.createElement('div');
+                            confetti.classList.add('confetti');
+                            
+                            // Randomize properties
+                            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                            confetti.style.left = 55;
+                            confetti.style.animationDelay = 2;
+                            confetti.style.transform = rotate(150deg);
+                            
+                            container.appendChild(confetti);
+                        }
+                    }
+        
+                    // Create confetti when page loads
+                    createConfetti();
+                </script>
+            </body>
+            </html>
+        `);
 
     } catch (error) {
         console.error('Verification error:', error);
