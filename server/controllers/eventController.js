@@ -11,7 +11,7 @@ export const getAllEvents = async (req, res) => {
     if (role === 'college') {
       const events = await Event.find({ college_id }).populate({
         path: 'registered',
-        select: '_id fullName profilePhoto email',
+        select: '_id fullName profilePhoto email phone city state country location education',
       });
 
       res.status(200).json(events);
@@ -82,10 +82,14 @@ export const registerForEvent = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
+    
     const event = await Event.findOne({ _id: id });
     const user = await User.findOne({ _id: userId });
 
     if (!event) return res.status(404).json({ error: 'Event not found' });
+
+    if (event.registered.includes(userId))
+      return res.status(400).json({ error: 'Already registered for event' });
 
     event.registered.push(userId);
     user.eventsRegistered.push(id);
@@ -124,4 +128,20 @@ export const registerForEvent = async (req, res) => {
     res.status(400).json({ error: 'Failed to register for event' });
   }
 };
+
+export const deleteParticipant = async (req, res) => {
+  const { id } = req.params;
+  const {userId} = req.body;
+
+  const event = await Event.findOne({ _id: id });
+  const user = await User.findOne({ _id: userId});
+
+  event.registered = event.registered.filter(id => id.toString() !== userId);
+  user.eventsRegistered = user.eventsRegistered.filter(eventId => eventId.toString() !== id);
+  
+  await event.save();
+  await user.save();
+  
+  res.status(200).json({ message: 'Participant removed successfully' });
+}
 

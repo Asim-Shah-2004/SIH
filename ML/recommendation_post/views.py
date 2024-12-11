@@ -28,9 +28,9 @@ class PersistentFAISSRecommendationEngine:
         try:
             # MongoDB Connection
             self.client = MongoClient(mongo_url)
-            self.db = self.client['SIH']
-            self.users_collection = self.db['users3']
-            self.posts_collection = self.db['post3']
+            self.db = self.client['SIH07']
+            self.users_collection = self.db['users']
+            self.posts_collection = self.db['posts']
             self.index_collection = self.db['faiss_indices']  # New collection for index storage
             
             # Embedding Model
