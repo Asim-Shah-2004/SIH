@@ -9,7 +9,7 @@ import {
 
 const jobRouter = express.Router();
 
-jobRouter.get('/', getAllJobs);
+jobRouter.get('/:college_id', getAllJobs);
 jobRouter.get('/:id', getJobById);
 jobRouter.post('/', addJob);
 jobRouter.put('/:id', updateJob);

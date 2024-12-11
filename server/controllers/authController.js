@@ -2,14 +2,11 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { User, College } from '../models/index.js';
 
-export const register = async (req, res) => {
+export const collegeRegister = async (req, res) => {
   try {
     const { email, password, role, ...otherData } = req.body;
 
-    const existingUser =
-      role === 'college'
-        ? await College.findOne({ email })
-        : await User.findOne({ email });
+    const existingUser = await College.findOne({ email })
 
     if (existingUser) {
       return res.status(400).json({ message: 'Email already registered' });
@@ -24,10 +21,8 @@ export const register = async (req, res) => {
       password: hashedPassword,
     };
 
-    const newUser =
-      role === 'college'
-        ? await College.create(userData)
-        : await User.create(userData);
+    const newUser = await College.create(userData)
+        
 
     const token = jwt.sign(
       {

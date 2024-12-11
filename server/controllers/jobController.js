@@ -2,12 +2,31 @@ import { Job } from '../models/index.js';
 
 export const getAllJobs = async (req, res) => {
   try {
-    const jobs = await Job.find();
+    // Extract the college_id from query parameters
+    const { college_id } = req.params;
+
+    // Validate the presence of college_id
+    if (!college_id) {
+      return res.status(400).json({ error: "college_id is required" });
+    }
+
+    // Query the database for jobs with the provided college_id
+    const jobs = await Job.find({ college_id });
+
+    // Check if jobs exist for the given college_id
+    if (!jobs || jobs.length === 0) {
+      return res.status(404).json({ message: "No jobs found for the provided college_id" });
+    }
+
+    // Send the jobs data in the response
     res.status(200).json(jobs);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch jobs' });
+    // Log the error and return an appropriate error response
+    console.error("Error fetching jobs:", error);
+    res.status(500).json({ error: "Failed to fetch jobs" });
   }
 };
+
 
 export const getJobById = async (req, res) => {
   try {
