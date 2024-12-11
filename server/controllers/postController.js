@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import { Post, User } from "../models/index.js";
 
 export const createPost = async (req, res) => {
@@ -83,6 +82,7 @@ export const deletePost = async (req, res) => {
 export const addComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
+    const user = await User.findById(req.user.id);
 
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
@@ -93,7 +93,10 @@ export const addComment = async (req, res) => {
     };
 
     post.comments.push(newComment);
+    user.comments.push(post._id);
+
     await post.save();
+    await user.save();
 
     res.status(201).json(post.comments);
   } catch (error) {
@@ -128,12 +131,19 @@ export const updateComment = async (req, res) => {
 export const deleteComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
+    const user = await User.findById(req.user.id);
 
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
-    const comment = post.comments.id(req.params.commentId);
+    const commentIndex = post.comments.findIndex(
+      comment => comment._id.toString() === req.params.commentId
+    );
 
-    if (!comment) return res.status(404).json({ message: 'Comment not found' });
+    if (commentIndex === -1) {
+      return res.status(404).json({ message: 'Comment not found' });
+    }
+
+    const comment = post.comments[commentIndex];
 
     if (
       comment.userId.toString() !== req.user.id &&
@@ -141,9 +151,12 @@ export const deleteComment = async (req, res) => {
     ) {
       return res.status(403).json({ message: 'Not authorized to delete this comment' });
     }
+    
+    post.comments.splice(commentIndex, 1);
+    user.comments.pull(post._id);
 
-    comment.remove();
     await post.save();
+    await user.save();
 
     res.status(200).json({ message: 'Comment deleted successfully' });
   } catch (error) {
@@ -151,28 +164,43 @@ export const deleteComment = async (req, res) => {
   }
 };
 
+
 export const toggleLike = async (req, res) => {
   try {
     const post = await Post.findById(req.params.postId);
+    const user = await User.findById(req.user.id);
 
     if (!post) return res.status(404).json({ message: 'Post not found' });
 
+    // Check if the user already liked the post
     const likeIndex = post.likes.findIndex(
       like => like.userId.toString() === req.user.id
     );
 
     if (likeIndex > -1) {
       post.likes.splice(likeIndex, 1);
+      const userLikeIndex = user.likes.findIndex(
+        likedPostId => likedPostId.toString() === post._id.toString()
+      );
+      if (userLikeIndex > -1) {
+        user.likes.splice(userLikeIndex, 1);
+      }
     } else {
       post.likes.push({ userId: req.user.id });
+      if (!user.likes.includes(post._id.toString())) {
+        user.likes.push(post._id);
+      }
     }
 
     await post.save();
+    await user.save();
+
     res.status(200).json(post.likes);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
+
 
 export const addReaction = async (req, res) => {
   try {
