@@ -1,36 +1,36 @@
 import bcrypt from "bcrypt"
 import mongoose from "mongoose";
-import { User , LandingPageConfig } from '../models/index.js';
+import { User, LandingPageConfig, College } from '../models/index.js';
 
 const changePassword = async (req, res) => {
   try {
     const { newPassword } = req.body;
-    const userId = req.user.id; 
+    const userId = req.user.id;
 
     if (newPassword.length < 8) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Password must be at least 8 characters long' 
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 8 characters long'
       });
     }
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
-    await User.findByIdAndUpdate(userId, { 
-      password: hashedPassword 
+    await User.findByIdAndUpdate(userId, {
+      password: hashedPassword
     }, { new: true });
 
-    res.status(200).json({ 
-      success: true, 
-      message: 'Password changed successfully' 
+    res.status(200).json({
+      success: true,
+      message: 'Password changed successfully'
     });
 
   } catch (error) {
     console.error('Password change error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error occurred while changing password' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error occurred while changing password'
     });
   }
 };
@@ -42,31 +42,31 @@ const verifyPassword = async (req, res) => {
 
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: 'User not found' 
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
       });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
     if (isMatch) {
-      return res.status(200).json({ 
-        success: true, 
-        message: 'Password verified successfully' 
+      return res.status(200).json({
+        success: true,
+        message: 'Password verified successfully'
       });
     } else {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Incorrect current password' 
+      return res.status(401).json({
+        success: false,
+        message: 'Incorrect current password'
       });
     }
 
   } catch (error) {
     console.error('Password verification error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Server error occurred during password verification' 
+    res.status(500).json({
+      success: false,
+      message: 'Server error occurred during password verification'
     });
   }
 };
@@ -156,10 +156,10 @@ const getDepartments = async (req, res) => {
     const departments = new Set();
     users.forEach((user) => {
       user.education
-      .filter((edu) => edu.college_id.toString() === college_id)
-      .forEach((edu) => departments.add(edu.department));
+        .filter((edu) => edu.college_id.toString() === college_id)
+        .forEach((edu) => departments.add(edu.department));
     });
-    
+
     res.status(200).json(Array.from(departments));
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch departments' });
@@ -177,4 +177,14 @@ const landingPageConfig = async (req, res) => {
 
 }
 
-export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations ,verifyPassword , changePassword, getDepartments , landingPageConfig };
+const getCollege = async (req, res) => {
+  try {
+    const user = await College.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations, verifyPassword, changePassword, getDepartments, getCollege, landingPageConfig };
