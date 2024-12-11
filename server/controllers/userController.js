@@ -4,9 +4,10 @@ import { User, LandingPageConfig, College } from '../models/index.js';
 
 const changePassword = async (req, res) => {
   try {
-    const { newPassword } = req.body;
+    const { currentPassword, newPassword, confirmPassword } = req.body;
     const userId = req.user.id;
 
+    // Validate new password
     if (newPassword.length < 8) {
       return res.status(400).json({
         success: false,
@@ -14,6 +15,32 @@ const changePassword = async (req, res) => {
       });
     }
 
+    // Check if new password matches confirm password
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password and confirm password do not match'
+      });
+    }
+
+    // Verify current password
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    // Hash and update new password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(newPassword, salt);
 
