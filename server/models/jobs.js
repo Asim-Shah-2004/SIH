@@ -11,7 +11,6 @@ const jobSchema = new mongoose.Schema({
   },
   logo: {
     type: String,
-    required: true,
   },
   location: {
     type: String,
@@ -65,6 +64,10 @@ const jobSchema = new mongoose.Schema({
     name: {
       type: String,
       required: true,
+    },
+    id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true }

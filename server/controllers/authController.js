@@ -9,9 +9,9 @@ export const collegeRegister = async (req, res) => {
     const existingUser = await College.findOne({ email })
 
     if (existingUser) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email already registered' 
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered'
       });
     }
 
@@ -25,7 +25,7 @@ export const collegeRegister = async (req, res) => {
     };
 
     const newUser = await College.create(userData)
-        
+
 
     const token = jwt.sign(
       {
@@ -52,10 +52,10 @@ export const collegeRegister = async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Registration failed', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
     });
   }
 };
@@ -67,16 +67,15 @@ export const collegeLogin = async (req, res) => {
     // let user = await User.findOne({ email });
     // let role = 'user';
 
-     const user = await College.findOne({ email });
+    const user = await College.findOne({ email });
 
     console.log(user);
-    
+
 
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    console.log(user)
     const isValidPassword = password;
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid credentials' });
@@ -93,6 +92,7 @@ export const collegeLogin = async (req, res) => {
 
     res.json({
       message: 'Login successful',
+      user,
       token,
     });
   } catch (error) {
@@ -107,9 +107,9 @@ export const userRegister = async (req, res) => {
     const existingUser = await User.findOne({ email })
 
     if (existingUser) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Email already registered' 
+      return res.status(400).json({
+        success: false,
+        message: 'Email already registered'
       });
     }
 
@@ -123,7 +123,7 @@ export const userRegister = async (req, res) => {
     };
 
     const newUser = await User.create(userData)
-        
+
 
     const token = jwt.sign(
       {
@@ -150,10 +150,10 @@ export const userRegister = async (req, res) => {
     });
   } catch (error) {
     console.error('Registration error:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Registration failed', 
-      error: error.message 
+    res.status(500).json({
+      success: false,
+      message: 'Registration failed',
+      error: error.message
     });
   }
 };
@@ -165,7 +165,7 @@ export const userLogin = async (req, res) => {
     // let user = await User.findOne({ email });
     // let role = 'user';
 
-     const user = await User.findOne({ email });
+    const user = await User.findOne({ email });
 
 
 
@@ -173,7 +173,7 @@ export const userLogin = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    
+
     const isValidPassword = password;
     if (!isValidPassword) {
       return res.status(400).json({ message: 'Invalid credentials' });

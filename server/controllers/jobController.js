@@ -31,6 +31,8 @@ export const getAllJobs = async (req, res) => {
 export const getJobById = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
+
     const job = await Job.findOne({ id });
     if (!job) return res.status(404).json({ error: 'Job not found' });
     res.status(200).json(job);
@@ -48,6 +50,8 @@ export const addJob = async (req, res) => {
     res
       .status(400)
       .json({ error: 'Failed to create job', details: error.message });
+    console.log(error);
+
   }
 };
 
