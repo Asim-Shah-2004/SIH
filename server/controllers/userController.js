@@ -93,6 +93,18 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
+export const getAllAlumni = async (req, res) => {
+  const { college_id } = req.params;
+  try {
+    const users = await User.find({ 
+      'education.college_id': college_id,
+    });
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 export const getUser = async (req, res) => {
   try {
     const { id } = req.params;
