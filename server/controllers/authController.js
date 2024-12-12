@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
 import { User, College } from '../models/index.js';
+import nodemailer from 'nodemailer';
+import crypto from 'crypto';
 
-const SALT = Number(process.env.SALT_ROUNDS)
 
 export const collegeRegister = async (req, res) => {
   try {
@@ -130,9 +131,109 @@ export const userLogin = async (req, res) => {
   }
 };
 
+const transporter = nodemailer.createTransport({
+  service: 'gmail', // Or your preferred email service
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+// Function to generate a strong random password
+const generateRandomPassword = (length = 12) => {
+  return crypto.randomBytes(length).toString('hex').slice(0, length);
+};
+
+// Function to send welcome email
+const sendWelcomeEmail = async (email, password, fullName) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: 'Welcome to College Portal',
+    html: `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { 
+          max-width: 600px; 
+          margin: 0 auto; 
+          padding: 20px; 
+          background-color: #f4f4f4;
+          border-radius: 10px;
+        }
+        .header { 
+          background-color: #4a4a4a; 
+          color: white; 
+          text-align: center; 
+          padding: 20px;
+          border-radius: 10px 10px 0 0;
+        }
+        .content { 
+          background-color: white; 
+          padding: 20px; 
+          border-radius: 0 0 10px 10px;
+        }
+        .credentials { 
+          background-color: #f0f0f0; 
+          padding: 15px; 
+          border-radius: 5px; 
+          margin: 20px 0;
+        }
+        .footer { 
+          text-align: center; 
+          color: #777; 
+          margin-top: 20px; 
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>Welcome to College Portal</h1>
+        </div>
+        <div class="content">
+          <h2>Hello ${fullName},</h2>
+          <p>Welcome to our College Portal! We're excited to have you on board.</p>
+          
+          <div class="credentials">
+            <h3>Your Login Credentials:</h3>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Temporary Password:</strong> ${password}</p>
+            <p><em>Please change your password after first login.</em></p>
+          </div>
+          
+          <p>To get started:</p>
+          <ol>
+            <li>Visit our portal at [PORTAL_URL]</li>
+            <li>Log in with the credentials above</li>
+            <li>Update your password in the profile settings</li>
+          </ol>
+          
+          <p>If you have any questions, please contact our support team.</p>
+        </div>
+        <div class="footer">
+          <p>&copy; ${new Date().getFullYear()} College Portal. All rights reserved.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`Welcome email sent to ${email}`);
+  } catch (error) {
+    console.error(`Failed to send email to ${email}:`, error);
+  }
+};
+
 export const bulkCreateUsers = async (req, res) => {
-  const uploadedUsers = []; // Track successfully uploaded users
-  const failedUsers = []; // Track users that failed to upload
+  const uploadedUsers = []; 
+  const failedUsers = []; 
 
   try {
     const users = req.body;
@@ -149,25 +250,83 @@ export const bulkCreateUsers = async (req, res) => {
     // Process users one by one
     for (const userData of users) {
       try {
+        // Generate random password
+        const randomPassword = generateRandomPassword();
+        
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(randomPassword, 10);
+
+        // Normalize user data
+        const normalizedUserData = {
+          fullName: userData.fullName || '',
+          email: userData.email || '',
+          password: hashedPassword, // Store hashed password
+          profilePhoto: userData.profilePhoto || '',
+          phone: userData.phone || '',
+          city: userData.city || '',
+          state: userData.state || '',
+          country: userData.country || '',          
+          // Normalize education (handle array-like structure)
+          education: Array.isArray(userData['education[0]']) 
+            ? userData['education[0]'].map(edu => ({
+              degree: edu.degree || '',
+              department: edu.department || '',
+              institution: edu.institution || '',
+              graduationYear: parseInt(edu.graduationYear) || null,
+              college_id: edu.college_id || null,
+              college_email: edu.college_email || '',
+              isVerified: edu.isVerified === 'TRUE'
+            }))
+            : [],
+
+          // Normalize work experience
+          workExperience: Array.isArray(userData['workExperience[0]']) 
+            ? userData['workExperience[0]'].map(work => ({
+              companyName: work.companyName ? work.companyName.replace(/"/g, '') : '',
+              role: work.role ? work.role.replace(/"/g, '') : '',
+              startDate: work.startDate ? new Date(work.startDate) : null,
+              endDate: work.endDate ? new Date(work.endDate) : null,
+              description: work.description || ''
+            }))
+            : [],
+
+          // Normalize skills (handle array-like structure)
+          skills: [
+            userData['skills[0]'],
+            userData['skills[1]'],
+            userData['skills[2]'],
+            userData['skills[3]'],
+            userData['skills[4]']
+          ].filter(skill => skill && skill.trim() !== ''),
+
+          // Normalize interests
+          interests: [
+            userData['interests[0]'],
+            userData['interests[1]'],
+            userData['interests[2]']
+          ].filter(interest => interest && interest.trim() !== ''),
+
+          about: userData.about || '',
+        };
+
         // Check for existing user
-        const existingUser = await User.findOne({
-          name: userData.name,
-          year: userData.year,
-          department: userData.department,
-        });
+        const existingUser = await User.findOne({ email: normalizedUserData.email });
 
         let user;
         if (existingUser) {
           // Update existing user
-          existingUser.set(userData);
+          existingUser.set(normalizedUserData);
           user = await existingUser.save();
-          console.log(`Updated user: ${user.name}`);
+          console.log(`Updated user: ${user.fullName}`);
         } else {
           // Create new user
-          user = new User(userData);
+          user = new User(normalizedUserData);
           await user.save();
-          console.log(`Created user: ${user.name}`);
+          console.log(`Created user: ${user.fullName}`);
         }
+
+        // Send welcome email (with random password)
+        await sendWelcomeEmail(normalizedUserData.email, randomPassword, normalizedUserData.fullName);
 
         // Log successful upload
         uploadedUsers.push(user);
