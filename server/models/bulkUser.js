@@ -26,6 +26,6 @@ const UserSchema = new mongoose.Schema({
 // Create a compound unique index to prevent duplicate entries
 UserSchema.index({ name: 1, year: 1, department: 1 }, { unique: true });
 
-const Userss =  mongoose.model('AsimTest3', UserSchema);
+const Userss =  mongoose.model('userss', UserSchema);
 
 export default Userss;
