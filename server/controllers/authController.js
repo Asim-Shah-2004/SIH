@@ -3,7 +3,6 @@ import { User, College } from '../models/index.js';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 
-
 export const collegeRegister = async (req, res) => {
   try {
     const { name, email, password, ...otherData } = req.body;
@@ -132,11 +131,11 @@ export const userLogin = async (req, res) => {
 };
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // Or your preferred email service
+  service: 'Gmail',
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  }
+      user: process.env.EMAIL_USER,
+      pass: process.env.APP_PASSWORD,
+  },
 });
 
 // Function to generate a strong random password
