@@ -1,24 +1,21 @@
 import express from 'express';
 import {
-  getAllDonationCampaigns,
+  getAllCollegeDonationCampaigns,
   getDonationCampaignById,
   addDonationCampaign,
-  updateDonationCampaign,
   deleteDonationCampaign,
   donateToCampaign,
   getDonors,
 } from '../controllers/donationController.js';
 
-import { authenticateToken } from '../middleware/authenticateToken.js';
-
 const donationCampaignRouter = express.Router();
 
-donationCampaignRouter.get('/:college_id', getAllDonationCampaigns);
-donationCampaignRouter.get('/:id',authenticateToken ,getDonationCampaignById);
-donationCampaignRouter.post('/',authenticateToken ,addDonationCampaign);
-donationCampaignRouter.put('/:id',authenticateToken ,updateDonationCampaign);
-donationCampaignRouter.delete('/:id',authenticateToken ,deleteDonationCampaign);
-donationCampaignRouter.post('/:id/donate',authenticateToken ,donateToCampaign);
-donationCampaignRouter.get('/:id/getDonors',authenticateToken ,getDonors);
+donationCampaignRouter.get('/:college_id', getAllCollegeDonationCampaigns);
+donationCampaignRouter.post('/:college_id', addDonationCampaign);
+donationCampaignRouter.delete('/:college_id', deleteDonationCampaign);
+donationCampaignRouter.get('/:id/single', getDonationCampaignById);
+
+donationCampaignRouter.post('/:id/donate', donateToCampaign);
+donationCampaignRouter.get('/:id/getDonors', getDonors);
 
 export default donationCampaignRouter;

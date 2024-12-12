@@ -17,8 +17,7 @@ const collegeSchema = new mongoose.Schema({
   gallery: [String],
   registeredAlumni: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   alumni_emails: [{ type: String }],
-  alumni: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  createdAt: { type: Date, default: Date.now },
+  requestForAlumniPortal: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 });
 
 const College = mongoose.model('College', collegeSchema);

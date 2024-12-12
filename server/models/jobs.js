@@ -5,12 +5,18 @@ const jobSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  company: {
+  description: {
     type: String,
     required: true,
   },
-  logo: {
-    type: String,
+  company: {
+    name: {
+      type: String,
+      required: true,
+    },
+    logo: {
+      type: String,
+    },
   },
   location: {
     type: String,
@@ -22,12 +28,12 @@ const jobSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: ['Full-time', 'Part-time', 'Contract', 'Internship'], // Example values
+    enum: ['Full-time', 'Part-time', 'Contract', 'Internship'],
     required: true,
   },
   experience: {
-    type: String,
-    required: true,
+    minYears: { type: Number, required: true },
+    maxYears: { type: Number, required: true },
   },
   skills: {
     type: [String],
@@ -37,40 +43,25 @@ const jobSchema = new mongoose.Schema({
     type: [String],
     default: [],
   },
-  description: {
-    type: String,
-    required: true,
-  },
-  postedDate: {
-    type: Date,
-    default: Date.now,
-  },
-  department: {
-    type: String,
-    required: true,
-  },
+  department: [{ type: String, required: true }],
   vacancies: {
     type: Number,
     default: 1,
-  },
-  requirements: {
-    type: [String],
-    default: [],
   },
   jdPdf: {
     type: String,
   },
   postedBy: {
-    name: {
-      type: String,
-      required: true,
-    },
-    id: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-    },
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true,
   },
-  college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true }
+  applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  college_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'College',
+    required: true,
+  },
 });
 
 const Job = mongoose.model('Job', jobSchema);

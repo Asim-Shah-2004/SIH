@@ -1,34 +1,32 @@
-import bcrypt from "bcrypt"
-import mongoose from "mongoose";
-import { User, LandingPageConfig, College } from '../models/index.js';
+import bcrypt from 'bcrypt';
+import { User, LandingPageConfig } from '../models/index.js';
 
-const changePassword = async (req, res) => {
+const SALT = Number(process.env.SALT_ROUNDS);
+
+export const changePassword = async (req, res) => {
   try {
+    const { userId } = req.params;
     const { currentPassword, newPassword, confirmPassword } = req.body;
-    const userId = req.user.id;
 
-    // Validate new password
     if (newPassword.length < 8) {
       return res.status(400).json({
         success: false,
-        message: 'Password must be at least 8 characters long'
+        message: 'Password must be at least 8 characters long',
       });
     }
 
-    // Check if new password matches confirm password
     if (newPassword !== confirmPassword) {
       return res.status(400).json({
         success: false,
-        message: 'New password and confirm password do not match'
+        message: 'New password and confirm password do not match',
       });
     }
 
-    // Verify current password
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: 'User not found'
+        message: 'User not found',
       });
     }
 
@@ -36,71 +34,31 @@ const changePassword = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: 'Current password is incorrect'
+        message: 'Current password is incorrect',
       });
     }
 
     // Hash and update new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
+    const hashedPassword = await bcrypt.hash(newPassword, SALT);
     await User.findByIdAndUpdate(userId, {
-      password: hashedPassword
-    }, { new: true });
+      password: hashedPassword,
+    });
 
     res.status(200).json({
       success: true,
-      message: 'Password changed successfully'
+      message: 'Password changed successfully',
     });
-
   } catch (error) {
     console.error('Password change error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error occurred while changing password'
+      message: 'Server error occurred while changing password',
     });
   }
 };
 
-const verifyPassword = async (req, res) => {
-  try {
-    const { password } = req.body;
-    const userId = req.user.id;
-
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (isMatch) {
-      return res.status(200).json({
-        success: true,
-        message: 'Password verified successfully'
-      });
-    } else {
-      return res.status(401).json({
-        success: false,
-        message: 'Incorrect current password'
-      });
-    }
-
-  } catch (error) {
-    console.error('Password verification error:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Server error occurred during password verification'
-    });
-  }
-};
-
-
-const getAllUsersExceptConnections = async (req, res) => {
-  const id = req.user.id;
+export const getAllUsersExceptConnections = async (req, res) => {
+  const { id } = req.params;
 
   try {
     const user = await User.findById(id);
@@ -111,7 +69,7 @@ const getAllUsersExceptConnections = async (req, res) => {
     // Create a Set of connection user IDs for quick lookup
     const connectionsSet = new Set(
       user.connections &&
-      user.connections.map((connection) => connection._id.toString())
+        user.connections.map((connection) => connection._id.toString())
     );
 
     // Filter users who are not in the connections Set
@@ -125,8 +83,8 @@ const getAllUsersExceptConnections = async (req, res) => {
   }
 };
 
-const getAllUsers = async (req, res) => {
-  const id = req.user.id;
+export const getAllUsers = async (req, res) => {
+  const { id } = req.params;
   try {
     const users = await User.find({ _id: { $ne: id } });
     res.status(200).json(users);
@@ -135,9 +93,10 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-const getUser = async (req, res) => {
+export const getUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const { id } = req.params;
+    const user = await User.findById(id);
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.status(200).json(user);
   } catch (error) {
@@ -145,11 +104,11 @@ const getUser = async (req, res) => {
   }
 };
 
-const getDonations = async (req, res) => {
+export const getDonations = async (req, res) => {
   try {
-    const { email } = req.user;
+    const { userId } = req.params;
 
-    const user = await User.findOne({ email })
+    const user = await User.findById(userId )
       .populate({
         path: 'donationHistory.transactionId',
         model: 'Transaction',
@@ -174,44 +133,11 @@ const getDonations = async (req, res) => {
   }
 };
 
-const getDepartments = async (req, res) => {
-  try {
-    const { college_id } = req.query;
-
-    const users = await User.find();
-
-    const departments = new Set();
-    users.forEach((user) => {
-      user.education
-        .filter((edu) => edu.college_id.toString() === college_id)
-        .forEach((edu) => departments.add(edu.department));
-    });
-
-    res.status(200).json(Array.from(departments));
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch departments' });
-  }
-};
-
-
-const landingPageConfig = async (req, res) => {
-
+export const landingPageConfig = async (req, res) => {
   const college_id = req.params.college_id;
 
   const config = await LandingPageConfig.findById(college_id);
 
   return res.json(config);
-
-}
-
-const getCollege = async (req, res) => {
-  try {
-    const user = await College.findById(req.params.id);
-    if (!user) return res.status(404).json({ message: 'User not found' });
-    res.status(200).json(user);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
 };
 
-export { getAllUsers, getUser, getAllUsersExceptConnections, getDonations, verifyPassword, changePassword, getDepartments, getCollege, landingPageConfig };

@@ -1,18 +1,19 @@
 import express from 'express';
 import {
-  getAllJobs,
-  getJobById,
-  addJob,
-  updateJob,
-  deleteJob,
+addJob,
+deleteJob,
+applyJob,
+getAllCollegeJobs,
+getJobById
 } from '../controllers/jobController.js';
 
 const jobRouter = express.Router();
 
-jobRouter.get('/:college_id', getAllJobs);
-jobRouter.get('/:id', getJobById);
-jobRouter.post('/', addJob);
-jobRouter.put('/:id', updateJob);
-jobRouter.delete('/:id', deleteJob);
+jobRouter.get('/:job_id', getJobById);
+jobRouter.delete('/:job_id', deleteJob);
+jobRouter.post('/:college_id/:userId', addJob);
+
+jobRouter.get('/apply/:job_id/:userId', applyJob);
+jobRouter.get('/college/:college_id', getAllCollegeJobs);
 
 export default jobRouter;

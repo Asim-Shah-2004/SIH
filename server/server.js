@@ -22,7 +22,6 @@ import {
   collegeRouter,
 } from './routers/index.js';
 import { socketAuthMiddleware } from './middleware/socketAuthMiddleware.js';
-import { authenticateToken } from './middleware/authenticateToken.js';
 import User from './models/user.js';
 
 const app = express();
@@ -48,8 +47,6 @@ app.use(
   cors({
     origin: '*',
     methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true,
   })
 );
 
@@ -58,13 +55,9 @@ app.use('/media', mediaGetRouter);
 app.use('/group', groupRouter);
 app.use('/users', userRouter);
 app.use('/donationcampaigns', donationCampaignRouter);
-
-app.use(authenticateToken);
-
 app.use('/media', mediaUploadRouter);
 app.use('/events', eventRouter);
 app.use('/jobs', jobRouter);
-app.use('/donationcampaigns', donationCampaignRouter);
 app.use('/connections', connectionRouter);
 app.use('/users', userRouter);
 app.use('/chat', chatRouter);

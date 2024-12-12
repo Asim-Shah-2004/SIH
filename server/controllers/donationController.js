@@ -1,11 +1,9 @@
 import { DonationCampaign, User, Transaction } from '../models/index.js';
 import mongoose from 'mongoose';
 
-export const getAllDonationCampaigns = async (req, res) => {
+export const getAllCollegeDonationCampaigns = async (req, res) => {
   try {
     const { college_id } = req.params;
-    // console.log(college_id);
-    // Ensure that college_id is provided in the query parameters
     if (!college_id) {
       return res.status(400).json({ error: 'College ID is required' });
     }
@@ -15,7 +13,9 @@ export const getAllDonationCampaigns = async (req, res) => {
 
     // If no campaigns are found, return a message
     if (campaigns.length === 0) {
-      return res.status(404).json({ message: 'No donation campaigns found for this college' });
+      return res
+        .status(404)
+        .json({ message: 'No donation campaigns found for this college' });
     }
 
     // Return the campaigns if found
@@ -25,7 +25,6 @@ export const getAllDonationCampaigns = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch donation campaigns' });
   }
 };
-
 
 export const getDonationCampaignById = async (req, res) => {
   try {
@@ -40,7 +39,9 @@ export const getDonationCampaignById = async (req, res) => {
 
 export const addDonationCampaign = async (req, res) => {
   try {
+    const { college_id } = req.params;
     const newCampaign = new DonationCampaign(req.body);
+    newCampaign.college_id = college_id;
     const savedCampaign = await newCampaign.save();
     res.status(201).json(savedCampaign);
   } catch (error) {
@@ -51,32 +52,12 @@ export const addDonationCampaign = async (req, res) => {
   }
 };
 
-export const updateDonationCampaign = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const updatedCampaign = await DonationCampaign.findOneAndUpdate(
-      { id },
-      req.body,
-      {
-        new: true,
-        runValidators: true,
-      }
-    );
-    if (!updatedCampaign)
-      return res.status(404).json({ error: 'Campaign not found' });
-    res.status(200).json(updatedCampaign);
-  } catch (error) {
-    res.status(400).json({
-      error: 'Invalid campaign ID or failed to update campaign',
-      details: error.message,
-    });
-  }
-};
-
 export const deleteDonationCampaign = async (req, res) => {
   try {
-    const { id } = req.params;
-    const deletedCampaign = await DonationCampaign.findOneAndDelete({ id });
+    const { college_id } = req.params;
+    const deletedCampaign = await DonationCampaign.findOneAndDelete({
+      college_id,
+    });
     if (!deletedCampaign)
       return res.status(404).json({ error: 'Campaign not found' });
     res.status(200).json({ message: 'Campaign deleted successfully' });
@@ -93,10 +74,9 @@ export const donateToCampaign = async (req, res) => {
 
   try {
     const { id } = req.params;
-    const { email } = req.user;
-    const { amount, transactionMethod } = req.body;
+    const { userId, amount, transactionMethod } = req.body;
 
-    const user = await User.findOne({ email }).session(session);
+    const user = await User.findById(userId).session(session);
     if (!user) {
       throw new Error('User not found');
     }
@@ -107,7 +87,7 @@ export const donateToCampaign = async (req, res) => {
     }
 
     const transaction = new Transaction({
-      user: user._id,
+      user: userId,
       amount,
       transactionMethod,
     });
@@ -144,10 +124,7 @@ export const donateToCampaign = async (req, res) => {
 
 export const getDonors = async (req, res) => {
   try {
-    console.log('getDonors');
-
     const { id } = req.params;
-    console.log(id);
 
     const campaign = await DonationCampaign.findById(id).populate({
       path: 'transactions',
@@ -157,16 +134,11 @@ export const getDonors = async (req, res) => {
         select: '_id fullName profilePhoto',
       },
     });
-    console.log(campaign);
     res.status(200).json(campaign.transactions);
-  }
-  catch (error) {
+  } catch (error) {
     res.status(400).json({
       error: 'Failed to get donor',
       details: error.message,
     });
   }
-}
-
-
-
+};
