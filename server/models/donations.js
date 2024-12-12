@@ -7,7 +7,7 @@ const campaignManagerSchema = new mongoose.Schema({
 });
 
 const donationCampaignSchema = new mongoose.Schema({
-  college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: false },
+  college_id: { type: mongoose.Schema.Types.ObjectId, ref: 'College', required: true },
   title: { type: String, required: false },
   description: { type: String, required: false },
   goal: { type: Number, required: false },

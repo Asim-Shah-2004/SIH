@@ -59,8 +59,8 @@ export const collegeLogin = async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      id: newCollege._id,
-      collegeData: newCollege
+      id: college._id,
+      collegeData: college
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -122,8 +122,8 @@ export const userLogin = async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      id: newUser._id,
-      user: newUser
+      id: user._id,
+      user
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -150,7 +150,7 @@ export const bulkCreateUsers = async (req, res) => {
     for (const userData of users) {
       try {
         // Check for existing user
-        const existingUser = await Userss.findOne({
+        const existingUser = await User.findOne({
           name: userData.name,
           year: userData.year,
           department: userData.department,
@@ -164,7 +164,7 @@ export const bulkCreateUsers = async (req, res) => {
           console.log(`Updated user: ${user.name}`);
         } else {
           // Create new user
-          user = new Userss(userData);
+          user = new User(userData);
           await user.save();
           console.log(`Created user: ${user.name}`);
         }
