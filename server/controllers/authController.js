@@ -80,7 +80,7 @@ export const userRegister = async (req, res) => {
       });
     }
 
-    const hashedPassword =  await bcrypt.hash(password, SALT);
+    const hashedPassword = await bcrypt.hash(password, SALT);
 
     const userData = {
       email,
@@ -122,11 +122,12 @@ export const userLogin = async (req, res) => {
 
     res.json({
       message: 'Login successful',
-      id: newUser._id,
-      user: newUser
+      id: user._id,
+      user: user
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
+    console.log('Error:', error);
   }
 };
 
