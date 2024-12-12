@@ -40,6 +40,7 @@ export const addJob = async (req, res) => {
   try {
     const { college_id, userId } = req.params;
     const user = await User.findById(userId);
+    console.log(user);
 
     if (!user) return res.status(404).json({ error: 'User not found' });
 
@@ -76,7 +77,7 @@ export const deleteJob = async (req, res) => {
 
 export const applyJob = async (req, res) => {
   try {
-    const { job_id , userId} = req.params;
+    const { job_id, userId } = req.params;
     const job = await Job.findById(job_id);
     const user = await User.findById(userId);
 
