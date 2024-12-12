@@ -1,4 +1,4 @@
-import { College } from '../models/index.js';
+import { College, User } from '../models/index.js';
 
 export const getCollege = async (req, res) => {
   try {
