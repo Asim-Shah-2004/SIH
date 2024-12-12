@@ -115,7 +115,7 @@ const getVerificationEmail = (verificationUrl) => `
 export const register = async (req, res) => {
     try {
         const { user } = req.body;
-
+        
         // Validate the user object
         if (!user || typeof user !== 'object') {
             return res.status(400).json({

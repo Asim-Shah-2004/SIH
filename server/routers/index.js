@@ -8,6 +8,7 @@ import { mediaGetRouter, mediaUploadRouter } from './mediaRouter.js';
 import chatRouter from './chatRouter.js';
 import postRouter from "./postRouter.js";
 import groupRouter from "./groupRouter.js";
+import collegeRouter from './collegeRouter.js';
 
 export {
   eventRouter,
@@ -20,5 +21,6 @@ export {
   chatRouter,
   donationCampaignRouter,
   postRouter,
-  groupRouter
+  groupRouter,
+  collegeRouter
 };

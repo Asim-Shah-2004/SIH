@@ -19,6 +19,7 @@ import {
   chatRouter,
   postRouter,
   groupRouter,
+  collegeRouter,
 } from './routers/index.js';
 import { socketAuthMiddleware } from './middleware/socketAuthMiddleware.js';
 import { authenticateToken } from './middleware/authenticateToken.js';
@@ -29,7 +30,7 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: {
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
   },
 });
 
@@ -46,7 +47,7 @@ app.use(morgan('dev'));
 app.use(
   cors({
     origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
   })
@@ -68,6 +69,7 @@ app.use('/connections', connectionRouter);
 app.use('/users', userRouter);
 app.use('/chat', chatRouter);
 app.use('/posts', postRouter);
+app.use('/college', collegeRouter);
 
 app.get('/', (req, res) => {
   res.send('<h1>Hello World</h1>');
