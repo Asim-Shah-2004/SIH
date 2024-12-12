@@ -55,6 +55,8 @@ app.use(
 app.use('/auth', authRouter);
 app.use('/media', mediaGetRouter);
 app.use('/group', groupRouter);
+app.use('/users', userRouter);
+app.use('/donationcampaigns', donationCampaignRouter);
 
 app.use(authenticateToken);
 

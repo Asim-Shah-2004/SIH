@@ -161,7 +161,7 @@ export const userRegister = async (req, res) => {
 export const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-
+    console.log(email, password)
     // let user = await User.findOne({ email });
     // let role = 'user';
 

@@ -11,16 +11,19 @@ import {
   getCollege
 } from '../controllers/userController.js';
 
+import { authenticateToken } from '../middleware/authenticateToken.js';
+
 const userRouter = express.Router();
 
-userRouter.get('/getAll', getAllUsers);
-userRouter.get('/getAllexCon', getAllUsers);
-userRouter.get('/donations', getDonations);
-userRouter.get('/getDepartments', getDepartments);
-userRouter.get('/fetch/:id', getUser);
-userRouter.get('/fetchCollege/:id', getCollege);
-userRouter.post('/changePassword', changePassword)
-userRouter.post('/verifyPassword', verifyPassword)
-userRouter.get('/getConfig/:college_id', landingPageConfig);
+userRouter.get('/getConfig/:college_id',landingPageConfig);
+
+userRouter.get('/getAll',authenticateToken ,getAllUsers);
+userRouter.get('/getAllexCon', authenticateToken ,getAllUsers);
+userRouter.get('/donations',authenticateToken ,getDonations);
+userRouter.get('/getDepartments',authenticateToken ,getDepartments);
+userRouter.get('/fetch/:id',authenticateToken ,getUser);
+userRouter.post('/changePassword',authenticateToken ,changePassword)
+userRouter.post('/verifyPassword',authenticateToken ,verifyPassword)
+
 
 export default userRouter;

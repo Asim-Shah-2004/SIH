@@ -3,12 +3,29 @@ import mongoose from 'mongoose';
 
 export const getAllDonationCampaigns = async (req, res) => {
   try {
-    const campaigns = await DonationCampaign.find();
+    const { college_id } = req.params;
+    // console.log(college_id);
+    // Ensure that college_id is provided in the query parameters
+    if (!college_id) {
+      return res.status(400).json({ error: 'College ID is required' });
+    }
+
+    // Fetch the donation campaigns by the provided college_id
+    const campaigns = await DonationCampaign.find({ college_id });
+
+    // If no campaigns are found, return a message
+    if (campaigns.length === 0) {
+      return res.status(404).json({ message: 'No donation campaigns found for this college' });
+    }
+
+    // Return the campaigns if found
     res.status(200).json(campaigns);
   } catch (error) {
+    console.error(error); // Log the error for debugging purposes
     res.status(500).json({ error: 'Failed to fetch donation campaigns' });
   }
 };
+
 
 export const getDonationCampaignById = async (req, res) => {
   try {
@@ -84,7 +101,7 @@ export const donateToCampaign = async (req, res) => {
       throw new Error('User not found');
     }
 
-    const campaign = await DonationCampaign.findOne({ id }).session(session);
+    const campaign = await DonationCampaign.findById(id).session(session);
     if (!campaign) {
       throw new Error('Campaign not found');
     }
