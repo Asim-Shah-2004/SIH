@@ -40,8 +40,8 @@ const userSchema = new mongoose.Schema({
     {
       companyName: { type: String },
       role: { type: String },
-      startDate: { type: Date },
-      endDate: { type: Date, default: null },
+      startDate: { type: String },
+      endDate: { type: String, default: null },
       description: { type: String },
     },
   ],

@@ -21,7 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/',include('spam.urls')),
     path('api/',include('meme_generator.urls')),
-   
+    path('api/',include('halloffame.urls')),
    path('api/',include('post_analysis.urls')),
    path('api/',include('resume_autofill.urls')),
    path('api/',include('rewriteAI.urls')),
@@ -29,5 +29,7 @@ urlpatterns = [
    path('api/',include('chat_pdf.urls')),
    path('api/',include('texttosql.urls')),
    path('api/',include('recommendation_post.urls'))
+  
+   
    
 ]

@@ -9,5 +9,6 @@ import Post from './post.js';
 import Chat from './chat.js';
 import Group from './group.js';
 import LandingPageConfig from './landingPageConfig.js';
+import Userss from './bulkUser.js';
 
-export { Event, Job, DonationCampaign, User, College, Media, Transaction, Chat, Post, Group , LandingPageConfig};
+export { Event, Job, DonationCampaign, User, College, Media, Transaction, Chat, Post, Group , LandingPageConfig , Userss};

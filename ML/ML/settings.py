@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'rewriteAI',
     'recommendation',
     'chat_pdf',
-    'recommendation_post'
+    'recommendation_post',
+    'halloffame'
 ]
 
 MIDDLEWARE = [
